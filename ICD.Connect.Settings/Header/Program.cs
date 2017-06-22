@@ -1,10 +1,8 @@
 ﻿using System;
-using Crestron.SimplSharp.Reflection;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
-
 #if SIMPLSHARP
-
+using Crestron.SimplSharp.Reflection;
 #else
 using System.Reflection;
 #endif

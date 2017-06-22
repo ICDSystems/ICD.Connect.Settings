@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Crestron.SimplSharp;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
-
 #if SIMPLSHARP
-
+using Crestron.SimplSharp;
 #else
 using System.Net;
 #endif

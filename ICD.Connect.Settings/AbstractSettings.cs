@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Crestron.SimplSharp.Reflection;
 using ICD.Common.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 #if SIMPLSHARP
-
+using Crestron.SimplSharp.Reflection;
 #else
 using System.Reflection;
 #endif
