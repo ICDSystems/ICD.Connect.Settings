@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.EventArguments;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 #if SIMPLSHARP
@@ -92,6 +93,11 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		public abstract string FactoryName { get; }
 
+		/// <summary>
+		/// Gets the type of the originator for this settings instance.
+		/// </summary>
+		public abstract Type OriginatorType { get; }
+
 		#endregion
 
 		#region Methods
@@ -102,6 +108,9 @@ namespace ICD.Connect.Settings
 		/// <param name="writer"></param>
 		public void ToXml(IcdXmlTextWriter writer)
 		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+
 			WriteStartElement(writer);
 			{
 				WriteNameElement(writer);
@@ -123,7 +132,18 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		public abstract IOriginator ToOriginator(IDeviceFactory factory);
+		public IOriginator ToOriginator(IDeviceFactory factory)
+		{
+			if (!OriginatorType.IsAssignableTo(typeof(IOriginator)))
+				throw new InvalidOperationException(string.Format("{0} is not assignable to {1}", OriginatorType.Name, typeof(IOriginator).Name));
+
+			IOriginator output = ReflectionUtils.CreateInstance(OriginatorType) as IOriginator;
+			if (output == null)
+				throw new InvalidCastException();
+
+			output.ApplySettings(this, factory);
+			return output;
+		}
 
 		/// <summary>
 		/// Returns the collection of ids that the settings will depend on.
@@ -175,6 +195,9 @@ namespace ICD.Connect.Settings
 		/// <param name="writer"></param>
 		private void WriteStartElement(IcdXmlTextWriter writer)
 		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+
 			writer.WriteStartElement(Element);
 			WriteIdAttribute(writer);
 			WriteTypeAttribute(writer);
@@ -187,6 +210,9 @@ namespace ICD.Connect.Settings
 		/// <param name="writer"></param>
 		private void WriteIdAttribute(IcdXmlTextWriter writer)
 		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+
 			writer.WriteAttributeString(ID_ATTRIBUTE, Id.ToString());
 		}
 
@@ -196,6 +222,9 @@ namespace ICD.Connect.Settings
 		/// <param name="writer"></param>
 		private void WriteTypeAttribute(IcdXmlTextWriter writer)
 		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+
 			writer.WriteAttributeString(TYPE_ATTRIBUTE, FactoryName);
 		}
 
@@ -205,6 +234,9 @@ namespace ICD.Connect.Settings
 		/// <param name="writer"></param>
 		private void WriteVersionAttribute(IcdXmlTextWriter writer)
 		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+
 			writer.WriteAttributeString(VERSION_ATTRIBUTE, AssemblyVersion);
 		}
 
@@ -214,6 +246,9 @@ namespace ICD.Connect.Settings
 		/// <param name="writer"></param>
 		private void WriteNameElement(IcdXmlTextWriter writer)
 		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+
 			writer.WriteElementString(NAME_ELEMENT, Name);
 		}
 
@@ -224,6 +259,9 @@ namespace ICD.Connect.Settings
 		/// <param name="xml"></param>
 		protected static void ParseXml(AbstractSettings instance, string xml)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			instance.Id = GetIdFromXml(xml);
 			instance.Name = GetNameFromXml(xml);
 			instance.m_AssemblyVersion = GetVersionFromXml(xml);

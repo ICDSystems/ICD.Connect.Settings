@@ -40,6 +40,11 @@ namespace ICD.Connect.Settings
 		string FactoryName { get; }
 
 		/// <summary>
+		/// Gets the type of the originator for this settings instance.
+		/// </summary>
+		Type OriginatorType { get; }
+
+		/// <summary>
 		/// Writes the settings to xml.
 		/// </summary>
 		/// <param name="writer"></param>
