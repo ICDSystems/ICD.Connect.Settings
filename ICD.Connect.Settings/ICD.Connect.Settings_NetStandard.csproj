@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\lib\Utils\src\ICD.Common\ICD.Common_NetStandard.csproj" />
+    <ProjectReference Include="..\..\ICD.Common.Utils\ICD.Common.Utils\ICD.Common.Utils_NetStandard.csproj" />
   </ItemGroup>
 
 </Project>

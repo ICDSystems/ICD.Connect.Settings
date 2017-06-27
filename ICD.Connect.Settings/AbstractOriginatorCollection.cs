@@ -8,7 +8,8 @@ using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings
 {
-	public abstract class AbstractOriginatorCollection<TChild> : IOriginatorCollection<TChild> where TChild : IOriginator
+	public abstract class AbstractOriginatorCollection<TChild> : IOriginatorCollection<TChild>
+		where TChild : IOriginator
 	{
 		public event EventHandler OnChildrenChanged;
 
@@ -151,6 +152,27 @@ namespace ICD.Connect.Settings
 
 			throw new InvalidCastException(string.Format("{0} is not of type {1}", typeof(TChild).Name,
 			                                             typeof(TInstanceType).Name));
+		}
+
+		/// <summary>
+		/// Outputs the child with the given id.
+		/// Returns false if there is no child with the given id.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="child"></param>
+		/// <returns></returns>
+		public bool TryGetChild(int id, out TChild child)
+		{
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				return m_Children.TryGetValue(id, out child);
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
 		}
 
 		/// <summary>
