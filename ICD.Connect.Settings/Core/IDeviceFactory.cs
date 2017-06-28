@@ -21,8 +21,6 @@ namespace ICD.Connect.Settings.Core
 
 		[PublicAPI]
 		T GetOriginatorById<T>(int id) where T : class, IOriginator;
-
-		//ICore GetCore();
 	}
 
 	public static class DeviceFactoryExtensions
