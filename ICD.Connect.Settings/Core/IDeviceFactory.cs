@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 
@@ -27,6 +28,9 @@ namespace ICD.Connect.Settings.Core
 	{
 		public static IEnumerable<IOriginator> GetOriginators(this IDeviceFactory factory)
 		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
 			return factory.GetOriginatorIds().Select(o => factory.GetOriginatorById(o));
 		}
 	}
