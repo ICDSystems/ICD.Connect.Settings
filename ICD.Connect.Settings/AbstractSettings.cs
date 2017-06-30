@@ -137,9 +137,16 @@ namespace ICD.Connect.Settings
 			if (!OriginatorType.IsAssignableTo(typeof(IOriginator)))
 				throw new InvalidOperationException(string.Format("{0} is not assignable to {1}", OriginatorType.Name, typeof(IOriginator).Name));
 
-			IOriginator output = ReflectionUtils.CreateInstance(OriginatorType) as IOriginator;
-			if (output == null)
-				throw new InvalidCastException();
+			IOriginator output;
+
+			try
+			{
+				output = (IOriginator)ReflectionUtils.CreateInstance(OriginatorType);
+			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException(String.Format("{0} failed to create instance of {1}", GetType().Name, OriginatorType.Name), e);
+			}
 
 			output.ApplySettings(this, factory);
 			return output;
