@@ -145,13 +145,12 @@ namespace ICD.Connect.Settings
 			where TInstanceType : TChild
 		{
 			TChild child = GetChild(id);
-			TInstanceType output = (TInstanceType)child;
 
-			if (output != null)
-				return output;
+			if (!child.GetType().IsAssignableTo(typeof(TInstanceType)))
+				throw new InvalidCastException(string.Format("{0} id {1} is not of type {2}", child.GetType().Name,
+				                                             id, typeof(TInstanceType).Name));
 
-			throw new InvalidCastException(string.Format("{0} is not of type {1}", typeof(TChild).Name,
-			                                             typeof(TInstanceType).Name));
+			return (TInstanceType)child;
 		}
 
 		/// <summary>
