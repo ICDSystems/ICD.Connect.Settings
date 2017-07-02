@@ -110,7 +110,7 @@ namespace ICD.Connect.Settings
 					if (item != m_Collection[item.Id])
 					{
 						ServiceProvider.TryGetService<ILoggerService>().AddEntry(eSeverity.Warning,
-						                                                         "{0} already exists for id {1}, tried adding {2}",
+						                                                         "{0} already exists for id {1}, failed to add {2}",
 						                                                         m_Collection[item.Id].GetType().Name, item.Id,
 						                                                         item.GetType().Name);
 					}
