@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.EventArguments;
+using ICD.Common.Permissions;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Core;
@@ -12,6 +13,8 @@ namespace ICD.Connect.Settings
 	/// </summary>
 	public interface ISettings
 	{
+		#region Events
+
 		/// <summary>
 		/// Raised when the id is changed.
 		/// </summary>
@@ -23,6 +26,10 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		[PublicAPI]
 		event EventHandler<StringEventArgs> OnNameChanged;
+
+		#endregion
+
+		#region Properties
 
 		/// <summary>
 		/// Unique ID for the settings.
@@ -45,6 +52,15 @@ namespace ICD.Connect.Settings
 		Type OriginatorType { get; }
 
 		/// <summary>
+		/// Gets the list of permissions
+		/// </summary>
+		IEnumerable<Permission> Permissions { get; set; } 
+
+		#endregion
+
+		#region Methods
+
+		/// <summary>
 		/// Writes the settings to xml.
 		/// </summary>
 		/// <param name="writer"></param>
@@ -64,5 +80,7 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		/// <returns></returns>
 		IEnumerable<int> GetDeviceDependencies();
+
+		#endregion
 	}
 }

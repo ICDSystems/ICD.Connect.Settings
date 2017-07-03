@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.EventArguments;
+using ICD.Common.Permissions;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
@@ -22,6 +23,9 @@ namespace ICD.Connect.Settings
 		public const string TYPE_ATTRIBUTE = "type";
 		public const string NAME_ELEMENT = "Name";
 		private const string VERSION_ATTRIBUTE = "assemblyVersion";
+
+		private const string PERMISSION_ELEMENT = "Permission";
+		private const string PERMISSIONS_ELEMENT = PERMISSION_ELEMENT + "s";
 
 		public event EventHandler<IntEventArgs> OnIdChanged;
 		public event EventHandler<StringEventArgs> OnNameChanged;
@@ -97,6 +101,11 @@ namespace ICD.Connect.Settings
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public abstract Type OriginatorType { get; }
+
+		/// <summary>
+		/// Gets the list of permissions
+		/// </summary>
+		public IEnumerable<Permission> Permissions { get; set; } 
 
 		#endregion
 
@@ -192,6 +201,21 @@ namespace ICD.Connect.Settings
 			return XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT);
 		}
 
+		/// <summary>
+		/// Gets the set of permissions from the xml element
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		private static IEnumerable<Permission> GetPermissionsFromXml(string xml)
+		{
+			string permissionsElement;
+			if (XmlUtils.TryGetChildElementAsString(xml, PERMISSIONS_ELEMENT, out permissionsElement))
+			{
+				foreach (var permission in XmlUtils.GetChildElementsAsString(permissionsElement, PERMISSION_ELEMENT))
+					yield return Permission.FromXml(permission);
+			}
+		}
+
 		#endregion
 
 		#region Protected Methods
@@ -272,6 +296,7 @@ namespace ICD.Connect.Settings
 			instance.Id = GetIdFromXml(xml);
 			instance.Name = GetNameFromXml(xml);
 			instance.m_AssemblyVersion = GetVersionFromXml(xml);
+			instance.Permissions = GetPermissionsFromXml(xml);
 		}
 
 		#endregion
