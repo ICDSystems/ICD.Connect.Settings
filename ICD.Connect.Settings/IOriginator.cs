@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using ICD.Common.Permissions;
 using ICD.Common.Properties;
 using ICD.Connect.Settings.Core;
 
@@ -40,6 +42,11 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		[PublicAPI]
 		string Name { get; set; }
+
+		/// <summary>
+		/// Set of permissions specific to this originator
+		/// </summary>
+		IEnumerable<Permission> Permissions { get; }
 
 		#endregion
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ICD.Common.Permissions;
 using ICD.Common.Services;
 using ICD.Common.Services.Logging;
 using ICD.Common.Utils;
@@ -42,6 +44,11 @@ namespace ICD.Connect.Settings
 		/// Returns true if this instance has been disposed.
 		/// </summary>
 		public bool IsDisposed { get; private set; }
+
+		/// <summary>
+		/// Set of permissions specific to this originator
+		/// </summary>
+		public IEnumerable<Permission> Permissions { get; private set; } 
 
 		/// <summary>
 		/// Logging service for all your logging needs
@@ -89,6 +96,20 @@ namespace ICD.Connect.Settings
 
 			if (!string.IsNullOrEmpty(Name) && Name != GetType().Name)
 				addPropertyAndValue("Name", Name);
+		}
+
+		/// <summary>
+		/// Clears the permissions stored in the PermissionsManager for this object
+		/// and sets them to the current permissions of the object.
+		/// </summary>
+		public void ResetPermissions()
+		{
+			var permissionsManager = ServiceProvider.TryGetService<PermissionsManager>();
+			if (permissionsManager != null)
+			{
+				permissionsManager.RemoveObjectPermissions(this);
+				permissionsManager.SetObjectPermissions(this, Permissions);
+			}
 		}
 
 		#endregion
@@ -140,6 +161,7 @@ namespace ICD.Connect.Settings
 		{
 			settings.Id = Id;
 			settings.Name = Name;
+			settings.Permissions = Permissions.ToList();
 
 			CopySettingsFinal(settings);
 		}
@@ -163,6 +185,9 @@ namespace ICD.Connect.Settings
 
 			Id = settings.Id;
 			Name = settings.Name;
+			Permissions = settings.Permissions.ToList();
+
+			ResetPermissions();
 
 			ApplySettingsFinal(settings, factory);
 
@@ -187,6 +212,9 @@ namespace ICD.Connect.Settings
 
 			Id = 0;
 			Name = null;
+			Permissions = Enumerable.Empty<Permission>();
+
+			ResetPermissions();
 
 			ClearSettingsFinal();
 
