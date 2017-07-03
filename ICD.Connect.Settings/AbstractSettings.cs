@@ -34,23 +34,6 @@ namespace ICD.Connect.Settings
 		private int m_Id;
 		private Version m_AssemblyVersion;
 
-		protected string AssemblyVersion
-		{
-			get
-			{
-				return GetType()
-#if SIMPLSHARP
-					.GetCType()
-#else
-                    .GetTypeInfo()
-#endif
-					.Assembly
-					.GetName()
-					.Version
-					.ToString();
-			}
-		}
-
 		#region Properties
 
 		/// <summary>
@@ -106,6 +89,23 @@ namespace ICD.Connect.Settings
 		/// Gets the list of permissions
 		/// </summary>
 		public IEnumerable<Permission> Permissions { get; set; } 
+
+		protected string AssemblyVersion
+		{
+			get
+			{
+				return GetType()
+#if SIMPLSHARP
+						.GetCType()
+#else
+                    .GetTypeInfo()
+#endif
+						.Assembly
+						.GetName()
+						.Version
+						.ToString();
+			}
+		}
 
 		#endregion
 
