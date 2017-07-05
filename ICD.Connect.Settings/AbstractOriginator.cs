@@ -161,7 +161,7 @@ namespace ICD.Connect.Settings
 		{
 			settings.Id = Id;
 			settings.Name = Name;
-			settings.Permissions = Permissions.ToList();
+			settings.Permissions = (Permissions ?? Enumerable.Empty<Permission>()).ToList();
 
 			CopySettingsFinal(settings);
 		}
