@@ -85,6 +85,7 @@
     <Compile Include="Core\ICore.cs" />
     <Compile Include="IOriginatorCollection.cs" />
     <None Include="ObfuscationSettings.cs" />
+    <Compile Include="OriginatorAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AbstractOriginator.cs" />
     <Compile Include="AbstractSettings.cs" />
@@ -99,6 +100,10 @@
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ICD.Common.Permissions\ICD.Common.Permissions\ICD.Common.Permissions_SimplSharp.csproj">
+      <Project>{36A8C910-4035-4F68-B0B6-2EC2D18FD939}</Project>
+      <Name>ICD.Common.Permissions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ICD.Common.Utils\ICD.Common.Utils\ICD.Common.Utils_SimplSharp.csproj">
       <Project>{CB4055C6-D59E-479E-9C56-2C92335A7D9A}</Project>
       <Name>ICD.Common.Utils_SimplSharp</Name>
