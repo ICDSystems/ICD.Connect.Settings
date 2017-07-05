@@ -185,7 +185,7 @@ namespace ICD.Connect.Settings
 
 			Id = settings.Id;
 			Name = settings.Name;
-			Permissions = settings.Permissions.ToList();
+			Permissions = (settings.Permissions ?? Enumerable.Empty<Permission>()).ToList();
 
 			ResetPermissions();
 
