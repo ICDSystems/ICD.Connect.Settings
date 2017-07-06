@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ICD.Common.Services;
-using ICD.Common.Services.Logging;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
@@ -106,16 +104,7 @@ namespace ICD.Connect.Settings
 			try
 			{
 				if (m_Collection.ContainsKey(item.Id))
-				{
-					if (item != m_Collection[item.Id])
-					{
-						ServiceProvider.TryGetService<ILoggerService>().AddEntry(eSeverity.Warning,
-						                                                         "{0} already exists for id {1}, failed to add {2}",
-						                                                         m_Collection[item.Id].GetType().Name, item.Id,
-						                                                         item.GetType().Name);
-					}
 					return false;
-				}
 
 				m_Collection[item.Id] = item;
 			}
