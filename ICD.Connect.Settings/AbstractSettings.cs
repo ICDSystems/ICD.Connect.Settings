@@ -154,7 +154,7 @@ namespace ICD.Connect.Settings
 			}
 			catch (Exception e)
 			{
-				throw new InvalidOperationException(String.Format("{0} failed to create instance of {1}", GetType().Name, OriginatorType.Name), e);
+				throw new InvalidOperationException(String.Format("{0} failed to create instance of {1} - Error Message: {2} Inner Message:{3}", GetType().Name, OriginatorType.Name, e.Message, e.InnerException), e);
 			}
 
 			output.ApplySettings(this, factory);
