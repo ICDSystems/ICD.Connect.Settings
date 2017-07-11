@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Attributes.Properties;
 using ICD.Common.Permissions;
 using ICD.Common.Services;
 using ICD.Common.Services.Logging;
@@ -48,6 +49,7 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Set of permissions specific to this originator
 		/// </summary>
+		[SettingsProperty(SettingsProperty.ePropertyType.Hidden)]
 		public IEnumerable<Permission> Permissions { get; private set; } 
 
 		/// <summary>
