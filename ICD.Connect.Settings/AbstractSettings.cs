@@ -5,12 +5,12 @@ using ICD.Common.Permissions;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharp.Reflection;
 #else
 using System.Reflection;
 #endif
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
 {
