@@ -68,7 +68,25 @@ namespace ICD.Connect.Settings.Core
 			if (factory == null)
 				throw new ArgumentNullException("factory");
 
-			return factory.GetOriginatorIds().Select(o => factory.GetOriginatorById(o));
+			return factory.GetOriginators(factory.GetOriginatorIds());
+		}
+
+		/// <summary>
+		/// Lazy-loads and returns the originators with the given ids.
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		[PublicAPI]
+		public static IEnumerable<IOriginator> GetOriginators(this IDeviceFactory factory, IEnumerable<int> ids)
+		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
+			if (ids == null)
+				throw new ArgumentNullException("ids");
+
+			return ids.Select(o => factory.GetOriginatorById(o));
 		}
 
 		/// <summary>
@@ -82,6 +100,23 @@ namespace ICD.Connect.Settings.Core
 				throw new ArgumentNullException("factory");
 
 			factory.GetOriginators().Execute();
+		}
+
+		/// <summary>
+		/// Lazy-loads the originators for the given ids.
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <param name="ids"></param>
+		[PublicAPI]
+		public static void LoadOriginators(this IDeviceFactory factory, IEnumerable<int> ids)
+		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
+			if (ids == null)
+				throw new ArgumentNullException("ids");
+
+			factory.GetOriginators(ids).Execute();
 		}
 
 		/// <summary>
