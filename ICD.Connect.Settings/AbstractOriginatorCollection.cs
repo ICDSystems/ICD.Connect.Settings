@@ -124,14 +124,14 @@ namespace ICD.Connect.Settings
 				TChild output;
 				if (m_Children.TryGetValue(id, out output))
 					return output;
-
-				string message = string.Format("{0} no child found with id {1}", GetType().Name, id);
-				throw new KeyNotFoundException(message);
 			}
 			finally
 			{
 				m_ChildrenSection.Leave();
 			}
+
+			string message = string.Format("{0} no child found with id {1}", GetType().Name, id);
+			throw new KeyNotFoundException(message);
 		}
 
 		/// <summary>
@@ -146,11 +146,12 @@ namespace ICD.Connect.Settings
 		{
 			TChild child = GetChild(id);
 
-			if (!child.GetType().IsAssignableTo(typeof(TInstanceType)))
-				throw new InvalidCastException(string.Format("{0} id {1} is not of type {2}", child.GetType().Name,
-				                                             id, typeof(TInstanceType).Name));
+			if (child.GetType().IsAssignableTo(typeof(TInstanceType)))
+				return (TInstanceType)child;
 
-			return (TInstanceType)child;
+			string message = string.Format("{0} id {1} is not of type {2}", child.GetType().Name,
+			                               id, typeof(TInstanceType).Name);
+			throw new InvalidCastException(message);
 		}
 
 		/// <summary>
