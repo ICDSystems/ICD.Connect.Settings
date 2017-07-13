@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
+using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings.Core
 {
+	public delegate void OriginatorLoadedCallback(IOriginator originator);
+
 	/// <summary>
 	/// IDeviceFactory represents a factory that instantiates dependencies.
 	/// 
@@ -14,24 +17,86 @@ namespace ICD.Connect.Settings.Core
 	/// </summary>
 	public interface IDeviceFactory
 	{
+		/// <summary>
+		/// Raised each time an originator is initially loaded
+		/// </summary>
+		event OriginatorLoadedCallback OnOriginatorLoaded;
+
+		/// <summary>
+		/// Lazy-loads the originator with the given id.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[PublicAPI]
 		IOriginator GetOriginatorById(int id);
 
+		/// <summary>
+		/// Gets all of the available ids for originators that can be instantiated.
+		/// </summary>
+		/// <returns></returns>
 		[PublicAPI]
 		IEnumerable<int> GetOriginatorIds();
 
+		/// <summary>
+		/// Lazy loads the originators of the given type.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		[PublicAPI]
+		IEnumerable<T> GetOriginators<T>() where T : class, IOriginator;
+
+		/// <summary>
+		/// Lazy loads the originator with the given id and casts to the given type.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[PublicAPI]
 		T GetOriginatorById<T>(int id) where T : class, IOriginator;
 	}
 
 	public static class DeviceFactoryExtensions
 	{
+		/// <summary>
+		/// Lazy-loads and returns all of the originators.
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		[PublicAPI]
 		public static IEnumerable<IOriginator> GetOriginators(this IDeviceFactory factory)
 		{
 			if (factory == null)
 				throw new ArgumentNullException("factory");
 
 			return factory.GetOriginatorIds().Select(o => factory.GetOriginatorById(o));
+		}
+
+		/// <summary>
+		/// Lazy-loads all of the originators.
+		/// </summary>
+		/// <param name="factory"></param>
+		[PublicAPI]
+		public static void LoadOriginators(this IDeviceFactory factory)
+		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
+			factory.GetOriginators().Execute();
+		}
+
+		/// <summary>
+		/// Lazy-loads the originators of the given type. 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="factory"></param>
+		[PublicAPI]
+		public static void LoadOriginators<T>(this IDeviceFactory factory)
+			where T : class, IOriginator
+		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
+			factory.GetOriginators<T>().Execute();
 		}
 	}
 }
