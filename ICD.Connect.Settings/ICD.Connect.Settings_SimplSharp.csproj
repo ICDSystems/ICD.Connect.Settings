@@ -76,6 +76,7 @@
     <Compile Include="Attributes\Factories\XmlDestinationSettingsFactoryMethodAttribute.cs" />
     <Compile Include="Attributes\Factories\XmlDeviceSettingsFactoryMethodAttribute.cs" />
     <Compile Include="Attributes\Factories\XmlPanelSettingsFactoryMethodAttribute.cs" />
+    <Compile Include="Attributes\Factories\XmlPartitionSettingsFactoryMethod.cs" />
     <Compile Include="Attributes\Factories\XmlPortSettingsFactoryMethodAttribute.cs" />
     <Compile Include="Attributes\Factories\XmlRoomSettingsFactoryMethodAttribute.cs" />
     <Compile Include="Attributes\Factories\XmlSourceSettingsFactoryMethodAttribute.cs" />
