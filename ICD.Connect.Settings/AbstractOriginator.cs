@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICD.Common.Attributes.Properties;
 using ICD.Common.Permissions;
 using ICD.Common.Services;
 using ICD.Common.Services.Logging;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings

@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 
-namespace ICD.Common.Attributes.Properties
+namespace ICD.Connect.Settings.Attributes
 {
 	/// <summary>
 	/// Provides information on a settings property.
