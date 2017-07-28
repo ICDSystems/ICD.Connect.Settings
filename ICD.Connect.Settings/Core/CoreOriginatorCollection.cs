@@ -2,7 +2,7 @@
 
 namespace ICD.Connect.Settings.Core
 {
-	public class CoreOriginatorCollection : AbstractOriginatorCollection<IOriginator>
+	public sealed class CoreOriginatorCollection : AbstractOriginatorCollection<IOriginator>
 	{
 		public CoreOriginatorCollection()
 		{

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings
@@ -13,6 +14,7 @@ namespace ICD.Connect.Settings
 	{
 		public event EventHandler OnChildrenChanged;
 
+		private readonly Dictionary<Type, IcdHashSet<TChild>> m_TypeToChildren; 
 		private readonly Dictionary<int, TChild> m_Children;
 		private readonly SafeCriticalSection m_ChildrenSection;
 
@@ -36,15 +38,21 @@ namespace ICD.Connect.Settings
 		/// Constructor.
 		/// </summary>
 		protected AbstractOriginatorCollection()
+			: this(Enumerable.Empty<TChild>())
 		{
-			m_Children = new Dictionary<int, TChild>();
-			m_ChildrenSection = new SafeCriticalSection();
 		}
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="children"></param>
 		protected AbstractOriginatorCollection(IEnumerable<TChild> children)
 		{
-			m_Children = children.ToDictionary(c => c.Id, c => c);
+			m_TypeToChildren = new Dictionary<Type, IcdHashSet<TChild>>();
+			m_Children = new Dictionary<int, TChild>();
 			m_ChildrenSection = new SafeCriticalSection();
+
+			SetChildren(children);
 		}
 
 		#region Methods
@@ -60,6 +68,8 @@ namespace ICD.Connect.Settings
 			{
 				if (Count == 0)
 					return;
+
+				m_TypeToChildren.Clear();
 				m_Children.Clear();
 			}
 			finally
@@ -95,18 +105,31 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public IEnumerable<TChild> GetChildren()
 		{
-			return m_ChildrenSection.Execute(() => m_Children.OrderValuesByKey().ToArray());
+			return m_ChildrenSection.Execute(() => m_Children.Values.ToArray());
 		}
 
 		/// <summary>
 		/// Gets all of the children of the given type.
 		/// </summary>
-		/// <typeparam name="TInstanceType"></typeparam>
+		/// <typeparam name="TInstance"></typeparam>
 		/// <returns></returns>
-		public IEnumerable<TInstanceType> GetChildren<TInstanceType>()
-			where TInstanceType : TChild
+		public IEnumerable<TInstance> GetChildren<TInstance>()
+			where TInstance : TChild
 		{
-			return GetChildren().OfType<TInstanceType>();
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				IcdHashSet<TChild> children;
+				if (!m_TypeToChildren.TryGetValue(typeof(TInstance), out children))
+					return Enumerable.Empty<TInstance>();
+
+				return children.Cast<TInstance>().ToArray();
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
 		}
 
 		/// <summary>
@@ -135,22 +158,49 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
+		/// Gets the first child of the given type.
+		/// </summary>
+		/// <typeparam name="TInstance"></typeparam>
+		/// <returns></returns>
+		public TInstance GetChild<TInstance>()
+			where TInstance : TChild
+		{
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				IcdHashSet<TChild> children;
+				m_TypeToChildren.TryGetValue(typeof(TInstance), out children);
+
+				if (children == null || children.Count == 0)
+					throw new InvalidOperationException(string.Format("No {0} of type {1}", typeof(TChild).Name,
+					                                                  typeof(TInstance).Name));
+
+				return (TInstance)children.First();
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
+		}
+
+		/// <summary>
 		/// Gets the child with the given id.
 		/// </summary>
-		/// <typeparam name="TInstanceType"></typeparam>
+		/// <typeparam name="TInstance"></typeparam>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[NotNull]
-		public TInstanceType GetChild<TInstanceType>(int id)
-			where TInstanceType : TChild
+		public TInstance GetChild<TInstance>(int id)
+			where TInstance : TChild
 		{
 			TChild child = GetChild(id);
 
-			if (child.GetType().IsAssignableTo(typeof(TInstanceType)))
-				return (TInstanceType)child;
+			if (child.GetType().IsAssignableTo(typeof(TInstance)))
+				return (TInstance)child;
 
 			string message = string.Format("{0} id {1} is not of type {2}", child.GetType().Name,
-			                               id, typeof(TInstanceType).Name);
+			                               id, typeof(TInstance).Name);
 			throw new InvalidCastException(message);
 		}
 
@@ -192,12 +242,22 @@ namespace ICD.Connect.Settings
 		/// <returns>False if a child with the given id already exists.</returns>
 		public bool AddChild(TChild child)
 		{
+			if (child == null)
+				throw new ArgumentNullException("child");
+
 			m_ChildrenSection.Enter();
 
 			try
 			{
 				if (ContainsChild(child.Id))
 					return false;
+
+				foreach (Type type in child.GetType().GetAllTypes())
+				{
+					if (!m_TypeToChildren.ContainsKey(type))
+						m_TypeToChildren[type] = new IcdHashSet<TChild>();
+					m_TypeToChildren[type].Add(child);
+				}
 
 				m_Children.Add(child.Id, child);
 			}
@@ -217,6 +277,9 @@ namespace ICD.Connect.Settings
 		/// <returns>False if the core does not contain the child.</returns>
 		public bool RemoveChild(TChild child)
 		{
+			if (child == null)
+				throw new ArgumentNullException("child");
+
 			m_ChildrenSection.Enter();
 
 			try
@@ -226,6 +289,12 @@ namespace ICD.Connect.Settings
 
 				if (!m_Children.Remove(child.Id))
 					return false;
+
+				foreach (Type type in child.GetType().GetAllTypes())
+				{
+					if (m_TypeToChildren.ContainsKey(type))
+						m_TypeToChildren[type].Remove(child);
+				}
 			}
 			finally
 			{

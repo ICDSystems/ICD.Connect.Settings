@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ICD.Common.Properties;
 
 namespace ICD.Connect.Settings
 {
@@ -50,6 +51,14 @@ namespace ICD.Connect.Settings
 		/// <param name="id"></param>
 		/// <returns></returns>
 		TChild this[int id] { get; }
+
+		/// <summary>
+		/// Gets the first child of the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <returns></returns>
+		[NotNull]
+		TInstanceType GetChild<TInstanceType>() where TInstanceType : TChild;
 
 		/// <summary>
 		/// Gets the child with the given id.
