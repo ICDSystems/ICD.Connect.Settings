@@ -46,6 +46,7 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Set of permissions specific to this originator
 		/// </summary>
+		[PublicAPI]
 		IEnumerable<Permission> Permissions { get; }
 
 		#endregion
