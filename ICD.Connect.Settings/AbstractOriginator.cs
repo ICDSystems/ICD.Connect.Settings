@@ -6,7 +6,6 @@ using ICD.Common.Services;
 using ICD.Common.Services.Logging;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
@@ -49,7 +48,6 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Set of permissions specific to this originator
 		/// </summary>
-		[SettingsProperty(SettingsProperty.ePropertyType.Hidden)]
 		public IEnumerable<Permission> Permissions { get; private set; } 
 
 		/// <summary>

@@ -5,6 +5,7 @@ using ICD.Common.Permissions;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharp.Reflection;
@@ -88,7 +89,8 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Gets the list of permissions
 		/// </summary>
-		public IEnumerable<Permission> Permissions { get; set; } 
+		[SettingsProperty(SettingsProperty.ePropertyType.Hidden)]
+		public IEnumerable<Permission> Permissions { get; set; }
 
 		protected string AssemblyVersion
 		{
@@ -98,7 +100,7 @@ namespace ICD.Connect.Settings
 #if SIMPLSHARP
 						.GetCType()
 #else
-                    .GetTypeInfo()
+						.GetTypeInfo()
 #endif
 						.Assembly
 						.GetName()
