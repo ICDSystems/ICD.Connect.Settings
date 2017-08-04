@@ -153,6 +153,9 @@ namespace ICD.Connect.Settings
 			try
 			{
 				output = (IOriginator)ReflectionUtils.CreateInstance(OriginatorType);
+				
+				// This instance came from settings, so we want to store it back to settings.
+				output.Serialize = true;
 			}
 			catch (Exception e)
 			{

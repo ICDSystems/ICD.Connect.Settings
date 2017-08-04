@@ -49,6 +49,11 @@ namespace ICD.Connect.Settings
 		[PublicAPI]
 		IEnumerable<Permission> Permissions { get; }
 
+		/// <summary>
+		/// When true this instance is serialized to the system config.
+		/// </summary>
+		bool Serialize { get; set; }
+
 		#endregion
 
 		#region Methods

@@ -48,7 +48,12 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Set of permissions specific to this originator
 		/// </summary>
-		public IEnumerable<Permission> Permissions { get; private set; } 
+		public IEnumerable<Permission> Permissions { get; private set; }
+
+		/// <summary>
+		/// When true this instance is serialized to the system config.
+		/// </summary>
+		public bool Serialize { get; set; }
 
 		/// <summary>
 		/// Logging service for all your logging needs
