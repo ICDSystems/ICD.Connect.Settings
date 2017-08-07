@@ -100,7 +100,7 @@ namespace ICD.Connect.Settings
 				addPropertyAndValue("Id", Id);
 
 			if (!string.IsNullOrEmpty(Name) && Name != GetType().Name)
-				addPropertyAndValue("Name", Name);
+				addPropertyAndValue("Name", StringUtils.ToRepresentation(Name));
 		}
 
 		/// <summary>
