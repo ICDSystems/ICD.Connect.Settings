@@ -1,12 +1,12 @@
 ﻿namespace ICD.Connect.Settings.Attributes.Factories
 {
-	public sealed class XmlUserInterfaceFactorySettingsFactoryMethod : AbstractXmlFactoryMethodAttribute
+	public sealed class XmlThemeSettingsFactoryMethod : AbstractXmlFactoryMethodAttribute
 	{
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="typeName"></param>
-		public XmlUserInterfaceFactorySettingsFactoryMethod(string typeName)
+		public XmlThemeSettingsFactoryMethod(string typeName)
 			: base(typeName)
 		{
 		}

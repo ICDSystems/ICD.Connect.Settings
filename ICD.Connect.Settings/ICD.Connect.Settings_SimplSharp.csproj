@@ -81,7 +81,7 @@
     <Compile Include="Attributes\Factories\XmlRoomSettingsFactoryMethodAttribute.cs" />
     <Compile Include="Attributes\Factories\XmlSourceSettingsFactoryMethodAttribute.cs" />
     <Compile Include="Attributes\Factories\XmlStaticRouteSettingsFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlUserInterfaceFactorySettingsFactoryMethod.cs" />
+    <Compile Include="Attributes\Factories\XmlThemeSettingsFactoryMethod.cs" />
     <Compile Include="Attributes\SettingsProperty.cs" />
     <Compile Include="Core\CoreOriginatorCollection.cs" />
     <Compile Include="Core\ICore.cs" />
