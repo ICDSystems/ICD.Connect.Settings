@@ -271,6 +271,25 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
+		/// Assigns a unique id to the child and adds it to the collection.
+		/// </summary>
+		/// <param name="child"></param>
+		public void AddChildAssignId(TChild child)
+		{
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				child.Id = MathUtils.GetNewId(m_Children.Keys);
+				AddChild(child);
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
+		}
+
+		/// <summary>
 		/// Removes the child from the core.
 		/// </summary>
 		/// <param name="child"></param>
