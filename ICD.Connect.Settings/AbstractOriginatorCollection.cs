@@ -242,6 +242,7 @@ namespace ICD.Connect.Settings
 		/// <returns>False if a child with the given id already exists.</returns>
 		public bool AddChild(TChild child)
 		{
+// ReSharper disable once CompareNonConstrainedGenericWithNull
 			if (child == null)
 				throw new ArgumentNullException("child");
 
@@ -296,6 +297,7 @@ namespace ICD.Connect.Settings
 		/// <returns>False if the core does not contain the child.</returns>
 		public bool RemoveChild(TChild child)
 		{
+// ReSharper disable once CompareNonConstrainedGenericWithNull
 			if (child == null)
 				throw new ArgumentNullException("child");
 
