@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.EventArguments;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Permissions;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
