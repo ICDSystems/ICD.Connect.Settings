@@ -44,6 +44,12 @@ namespace ICD.Connect.Settings
 		string Name { get; set; }
 
 		/// <summary>
+		/// The name that is used for the originator while in a combine space.
+		/// </summary>
+		[PublicAPI]
+		string CombineName { get; set; }
+
+		/// <summary>
 		/// Set of permissions specific to this originator
 		/// </summary>
 		[PublicAPI]
@@ -87,5 +93,25 @@ namespace ICD.Connect.Settings
 		void ClearSettings();
 
 		#endregion
+	}
+
+	public static class OriginatorExtensions
+	{
+		/// <summary>
+		/// Gets the name for the originator based on the current room combine state.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="combine"></param>
+		/// <returns></returns>
+		public static string GetName(this IOriginator extends, bool combine)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			if (combine && !string.IsNullOrEmpty(extends.CombineName))
+				return extends.CombineName;
+
+			return extends.Name;
+		}
 	}
 }

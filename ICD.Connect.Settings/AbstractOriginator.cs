@@ -41,6 +41,11 @@ namespace ICD.Connect.Settings
 		public string Name { get; set; }
 
 		/// <summary>
+		/// The name that is used for the originator while in a combine space.
+		/// </summary>
+		public string CombineName { get; set; }
+
+		/// <summary>
 		/// Returns true if this instance has been disposed.
 		/// </summary>
 		public bool IsDisposed { get; private set; }
@@ -110,11 +115,11 @@ namespace ICD.Connect.Settings
 		public void ResetPermissions()
 		{
 			var permissionsManager = ServiceProvider.TryGetService<PermissionsManager>();
-			if (permissionsManager != null)
-			{
-				permissionsManager.RemoveObjectPermissions(this);
-				permissionsManager.SetObjectPermissions(this, Permissions);
-			}
+			if (permissionsManager == null)
+				return;
+
+			permissionsManager.RemoveObjectPermissions(this);
+			permissionsManager.SetObjectPermissions(this, Permissions);
 		}
 
 		#endregion

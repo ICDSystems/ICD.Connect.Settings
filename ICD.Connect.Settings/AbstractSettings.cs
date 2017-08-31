@@ -23,6 +23,7 @@ namespace ICD.Connect.Settings
 		public const string ID_ATTRIBUTE = "id";
 		public const string TYPE_ATTRIBUTE = "type";
 		public const string NAME_ELEMENT = "Name";
+		public const string COMBINE_NAME_ELEMENT = "CombineName";
 		private const string VERSION_ATTRIBUTE = "assemblyVersion";
 
 		private const string PERMISSION_ELEMENT = "Permission";
@@ -70,6 +71,11 @@ namespace ICD.Connect.Settings
 				OnNameChanged.Raise(this, new StringEventArgs(m_Name));
 			}
 		}
+
+		/// <summary>
+		/// Custom name for the originator in a combined space.
+		/// </summary>
+		public string CombineName { get; set; }
 
 		/// <summary>
 		/// Gets the xml element.
@@ -174,16 +180,6 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public abstract IEnumerable<int> GetDeviceDependencies();
 
-		/// <summary>
-		/// Returns the value of the id attribute from the given xml.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		private static int GetIdFromXml(string xml)
-		{
-			return XmlUtils.GetAttributeAsInt(xml, ID_ATTRIBUTE);
-		}
-
 		private static Version GetVersionFromXml(string xml)
 		{
 			if (XmlUtils.HasAttribute(xml, VERSION_ATTRIBUTE))
@@ -194,16 +190,6 @@ namespace ICD.Connect.Settings
 			}
 
 			return new Version(1, 0);
-		}
-
-		/// <summary>
-		/// Gets the name from the xml element.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		private static string GetNameFromXml(string xml)
-		{
-			return XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT);
 		}
 
 		/// <summary>
@@ -286,6 +272,7 @@ namespace ICD.Connect.Settings
 				throw new ArgumentNullException("writer");
 
 			writer.WriteElementString(NAME_ELEMENT, Name);
+			writer.WriteElementString(COMBINE_NAME_ELEMENT, CombineName);
 		}
 
 		/// <summary>
@@ -298,8 +285,9 @@ namespace ICD.Connect.Settings
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 
-			instance.Id = GetIdFromXml(xml);
-			instance.Name = GetNameFromXml(xml);
+			instance.Id = XmlUtils.GetAttributeAsInt(xml, ID_ATTRIBUTE);
+			instance.Name = XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT);
+			instance.CombineName = XmlUtils.TryReadChildElementContentAsString(xml, COMBINE_NAME_ELEMENT);
 			instance.m_AssemblyVersion = GetVersionFromXml(xml);
 			instance.Permissions = GetPermissionsFromXml(xml);
 		}

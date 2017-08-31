@@ -32,17 +32,22 @@ namespace ICD.Connect.Settings
 		#region Properties
 
 		/// <summary>
-		/// Unique ID for the settings.
+		/// Unique ID for the originator.
 		/// </summary>
 		int Id { get; set; }
 
 		/// <summary>
-		/// Custom name for the settings.
+		/// Custom name for the originator.
 		/// </summary>
 		string Name { get; set; }
 
 		/// <summary>
-		/// The name of the factory (typically the name of the originator).
+		/// Custom name for the originator in a combined space.
+		/// </summary>
+		string CombineName { get; set; }
+
+		/// <summary>
+		/// The lookup name for the settings (typically the name of the originator).
 		/// </summary>
 		string FactoryName { get; }
 
