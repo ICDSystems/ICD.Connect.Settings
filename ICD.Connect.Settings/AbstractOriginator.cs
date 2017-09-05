@@ -61,9 +61,9 @@ namespace ICD.Connect.Settings
 		public bool Serialize { get; set; }
 
 		/// <summary>
-		/// Logging service for all your logging needs
+		/// Logger for the originator.
 		/// </summary>
-		protected ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
+		public ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
 		#endregion
 

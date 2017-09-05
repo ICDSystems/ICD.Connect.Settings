@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Properties;
+using ICD.Common.Services.Logging;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
@@ -59,6 +60,11 @@ namespace ICD.Connect.Settings
 		/// When true this instance is serialized to the system config.
 		/// </summary>
 		bool Serialize { get; set; }
+
+		/// <summary>
+		/// Logger for the originator.
+		/// </summary>
+		ILoggerService Logger { get; }
 
 		#endregion
 
