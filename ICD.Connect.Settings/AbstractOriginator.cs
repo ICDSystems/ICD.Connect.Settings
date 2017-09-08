@@ -88,11 +88,9 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public override string ToString()
 		{
-			List<string> properties = new List<string>();
-			BuildStringRepresentationProperties((name, value) => properties.Add(string.Format("{0}={1}", name, value)));
-
-			string propertiesString = string.Join(", ", properties.ToArray());
-			return string.Format("{0}({1})", GetType().Name, propertiesString);
+			ReprBuilder builder = new ReprBuilder(this);
+			BuildStringRepresentationProperties(builder.AppendProperty);
+			return builder.ToString();
 		}
 
 		/// <summary>
@@ -105,7 +103,7 @@ namespace ICD.Connect.Settings
 				addPropertyAndValue("Id", Id);
 
 			if (!string.IsNullOrEmpty(Name) && Name != GetType().Name)
-				addPropertyAndValue("Name", StringUtils.ToRepresentation(Name));
+				addPropertyAndValue("Name", Name);
 		}
 
 		/// <summary>
