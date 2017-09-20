@@ -205,6 +205,40 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
+		/// Returns the first instance of the given type from the given instance ids.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		public TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids)
+			where TInstanceType : TChild
+		{
+			if (ids == null)
+				throw new ArgumentNullException("ids");
+
+			return ids.Select(id => GetChild(id))
+			          .OfType<TInstanceType>()
+			          .FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Gets the children with the given ids, matching the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		public IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids)
+			where TInstanceType : TChild
+		{
+			if (ids == null)
+				throw new ArgumentNullException("ids");
+
+			return ids.Select(id => GetChild(id))
+			          .OfType<TInstanceType>()
+			          .ToArray();
+		}
+
+		/// <summary>
 		/// Outputs the child with the given id.
 		/// Returns false if there is no child with the given id.
 		/// </summary>
