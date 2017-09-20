@@ -78,6 +78,17 @@ namespace ICD.Connect.Settings
 		TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild;
 
 		/// <summary>
+		/// Returns the first instance of the given type from the given instance ids.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="ids"></param>
+		/// <param name="selector"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector)
+			where TInstanceType : TChild;
+
+		/// <summary>
 		/// Gets the children with the given ids, matching the given type.
 		/// </summary>
 		/// <typeparam name="TInstanceType"></typeparam>

@@ -216,9 +216,28 @@ namespace ICD.Connect.Settings
 			if (ids == null)
 				throw new ArgumentNullException("ids");
 
+			return GetChild<TInstanceType>(ids, i => true);
+		}
+
+		/// <summary>
+		/// Returns the first instance of the given type from the given instance ids.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="ids"></param>
+		/// <param name="selector"></param>
+		/// <returns></returns>
+		public TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector)
+			where TInstanceType : TChild
+		{
+			if (ids == null)
+				throw new ArgumentNullException("ids");
+
+			if (selector == null)
+				throw new ArgumentNullException("selector");
+
 			return ids.Select(id => GetChild(id))
 			          .OfType<TInstanceType>()
-			          .FirstOrDefault();
+			          .FirstOrDefault(selector);
 		}
 
 		/// <summary>
