@@ -2,11 +2,6 @@
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
-#if SIMPLSHARP
-using Crestron.SimplSharp;
-#else
-using System.Net;
-#endif
 
 namespace ICD.Connect.Settings.Header
 {
@@ -23,13 +18,14 @@ namespace ICD.Connect.Settings.Header
 
 		public Version Firmware { get; set; }
 
-		public IPAddress NetworkAddress { get; set; }
+		public string NetworkAddress { get; set; }
 
 		/// <summary>
 		/// Creates a new Processor settings instance.
 		/// Initializes the properties with default values
 		/// </summary>
-		public Processor() : this(false)
+		public Processor()
+			: this(false)
 		{
 		}
 
@@ -43,24 +39,15 @@ namespace ICD.Connect.Settings.Header
 		{
 			if (currentSettings)
 			{
-#if SIMPLSHARP
-				Model = CrestronUtils.ModelName;
-				Firmware = CrestronUtils.ModelVersion;
-#else
-                Model = Environment.MachineName;
-                Firmware = new Version("1.0.0.0");
-#endif
-				string address = IcdEnvironment.NetworkAddresses.FirstOrDefault() ?? "127.0.0.1";
-				int i;
-				NetworkAddress = new IPAddress(address.Split('.')
-				                                      .Select(s => (byte)(StringUtils.TryParse(s, out i) ? i : 255))
-				                                      .ToArray());
+				Model = ProcessorUtils.ModelName;
+				Firmware = ProcessorUtils.ModelVersion;
+				NetworkAddress = IcdEnvironment.NetworkAddresses.FirstOrDefault() ?? "127.0.0.1";
 			}
 			else
 			{
-				Model = "";
+				Model = string.Empty;
 				Firmware = new Version("0.0.0.0");
-				NetworkAddress = IPAddress.None;
+				NetworkAddress = string.Empty;
 			}
 		}
 
@@ -81,7 +68,7 @@ namespace ICD.Connect.Settings.Header
 		{
 			writer.WriteElementString(MODEL_ELEMENT, Model);
 			writer.WriteElementString(FIRMWARE_ELEMENT, Firmware.ToString());
-			writer.WriteElementString(NETWORK_ADDRESS_ELEMENT, NetworkAddress.ToString());
+			writer.WriteElementString(NETWORK_ADDRESS_ELEMENT, NetworkAddress);
 		}
 
 		public static Processor ParseXml(string xml)
@@ -94,16 +81,9 @@ namespace ICD.Connect.Settings.Header
 			};
 		}
 
-		private static IPAddress GetNetworkAddressFromXml(string xml)
+		private static string GetNetworkAddressFromXml(string xml)
 		{
-			string ip = XmlUtils.TryReadChildElementContentAsString(xml, NETWORK_ADDRESS_ELEMENT);
-			if (ip == null)
-				return IPAddress.None;
-
-			int i;
-			return new IPAddress(ip.Split('.')
-			                       .Select(s => (byte)(StringUtils.TryParse(s, out i) ? i : 255))
-			                       .ToArray());
+			return XmlUtils.TryReadChildElementContentAsString(xml, NETWORK_ADDRESS_ELEMENT);
 		}
 
 		private static Version GetFirmwareFromXml(string xml)
