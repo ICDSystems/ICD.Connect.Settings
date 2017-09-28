@@ -124,7 +124,7 @@ namespace ICD.Connect.Settings
 				if (!m_TypeToChildren.TryGetValue(typeof(TInstance), out children))
 					return Enumerable.Empty<TInstance>();
 
-				return children.Cast<TInstance>().ToArray();
+				return children.OfType<TInstance>().ToArray();
 			}
 			finally
 			{
