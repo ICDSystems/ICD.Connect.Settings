@@ -7,11 +7,6 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Core;
-#if SIMPLSHARP
-using Crestron.SimplSharp.Reflection;
-#else
-using System.Reflection;
-#endif
 
 namespace ICD.Connect.Settings
 {
@@ -24,7 +19,6 @@ namespace ICD.Connect.Settings
 		public const string TYPE_ATTRIBUTE = "type";
 		public const string NAME_ELEMENT = "Name";
 		public const string COMBINE_NAME_ELEMENT = "CombineName";
-		private const string VERSION_ATTRIBUTE = "assemblyVersion";
 
 		private const string PERMISSION_ELEMENT = "Permission";
 		private const string PERMISSIONS_ELEMENT = PERMISSION_ELEMENT + "s";
@@ -34,7 +28,6 @@ namespace ICD.Connect.Settings
 
 		private string m_Name;
 		private int m_Id;
-		private Version m_AssemblyVersion;
 
 		#region Properties
 
@@ -97,23 +90,6 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		[SettingsProperty(SettingsProperty.ePropertyType.Hidden)]
 		public IEnumerable<Permission> Permissions { get; set; }
-
-		protected string AssemblyVersion
-		{
-			get
-			{
-				return GetType()
-#if SIMPLSHARP
-						.GetCType()
-#else
-						.GetTypeInfo()
-#endif
-						.Assembly
-						.GetName()
-						.Version
-						.ToString();
-			}
-		}
 
 		#endregion
 
@@ -180,18 +156,6 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public abstract IEnumerable<int> GetDeviceDependencies();
 
-		private static Version GetVersionFromXml(string xml)
-		{
-			if (XmlUtils.HasAttribute(xml, VERSION_ATTRIBUTE))
-			{
-				string version = XmlUtils.GetAttributeAsString(xml, VERSION_ATTRIBUTE);
-				if (!string.IsNullOrEmpty(version))
-					return new Version(version);
-			}
-
-			return new Version(1, 0);
-		}
-
 		/// <summary>
 		/// Gets the set of permissions from the xml element
 		/// </summary>
@@ -223,7 +187,6 @@ namespace ICD.Connect.Settings
 			writer.WriteStartElement(Element);
 			WriteIdAttribute(writer);
 			WriteTypeAttribute(writer);
-			WriteVersionAttribute(writer);
 		}
 
 		/// <summary>
@@ -248,18 +211,6 @@ namespace ICD.Connect.Settings
 				throw new ArgumentNullException("writer");
 
 			writer.WriteAttributeString(TYPE_ATTRIBUTE, FactoryName);
-		}
-
-		/// <summary>
-		/// Writes the version attribute to xml.
-		/// </summary>
-		/// <param name="writer"></param>
-		private void WriteVersionAttribute(IcdXmlTextWriter writer)
-		{
-			if (writer == null)
-				throw new ArgumentNullException("writer");
-
-			writer.WriteAttributeString(VERSION_ATTRIBUTE, AssemblyVersion);
 		}
 
 		/// <summary>
@@ -288,7 +239,6 @@ namespace ICD.Connect.Settings
 			instance.Id = XmlUtils.GetAttributeAsInt(xml, ID_ATTRIBUTE);
 			instance.Name = XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT);
 			instance.CombineName = XmlUtils.TryReadChildElementContentAsString(xml, COMBINE_NAME_ELEMENT);
-			instance.m_AssemblyVersion = GetVersionFromXml(xml);
 			instance.Permissions = GetPermissionsFromXml(xml);
 		}
 
