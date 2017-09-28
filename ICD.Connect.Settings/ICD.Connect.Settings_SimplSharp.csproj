@@ -70,18 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractOriginatorCollection.cs" />
-    <Compile Include="Attributes\Factories\AbstractXmlFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlConnectionSettingsFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlDestinationGroupSettingsFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlDestinationSettingsFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlDeviceSettingsFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlPanelSettingsFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlPartitionSettingsFactoryMethod.cs" />
-    <Compile Include="Attributes\Factories\XmlPortSettingsFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlRoomSettingsFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlSourceSettingsFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlStaticRouteSettingsFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\Factories\XmlThemeSettingsFactoryMethod.cs" />
+    <Compile Include="Attributes\XmlFactoryMethodAttribute.cs" />
     <Compile Include="Attributes\SettingsProperty.cs" />
     <Compile Include="Core\CoreOriginatorCollection.cs" />
     <Compile Include="Core\ICore.cs" />
