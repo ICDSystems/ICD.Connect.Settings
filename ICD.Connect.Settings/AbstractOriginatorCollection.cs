@@ -241,6 +241,16 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
+		/// Gets the children with the given ids.
+		/// </summary>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		public IEnumerable<TChild> GetChildren(IEnumerable<int> ids)
+		{
+			return GetChildren<TChild>(ids);
+		}
+
+		/// <summary>
 		/// Gets the children with the given ids, matching the given type.
 		/// </summary>
 		/// <typeparam name="TInstanceType"></typeparam>

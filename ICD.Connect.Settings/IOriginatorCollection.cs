@@ -89,6 +89,13 @@ namespace ICD.Connect.Settings
 			where TInstanceType : TChild;
 
 		/// <summary>
+		/// Gets the children with the given ids.
+		/// </summary>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		IEnumerable<TChild> GetChildren(IEnumerable<int> ids);
+
+		/// <summary>
 		/// Gets the children with the given ids, matching the given type.
 		/// </summary>
 		/// <typeparam name="TInstanceType"></typeparam>
