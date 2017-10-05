@@ -130,9 +130,15 @@ namespace ICD.Connect.Settings
 		/// <param name="disposing"></param>
 		private void Dispose(bool disposing)
 		{
+			OnSettingsClearing = null;
+			OnSettingsCleared = null;
+			OnSettingsApplied = null;
+
 			if (!IsDisposed)
 				DisposeFinal(disposing);
 			IsDisposed = IsDisposed || disposing;
+
+			ClearSettings();
 		}
 
 		/// <summary>
@@ -141,9 +147,6 @@ namespace ICD.Connect.Settings
 		/// <param name="disposing"></param>
 		protected virtual void DisposeFinal(bool disposing)
 		{
-			OnSettingsClearing = null;
-			OnSettingsCleared = null;
-			OnSettingsApplied = null;
 		}
 
 		#endregion
