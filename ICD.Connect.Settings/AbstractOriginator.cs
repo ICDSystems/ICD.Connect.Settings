@@ -134,11 +134,11 @@ namespace ICD.Connect.Settings
 			OnSettingsCleared = null;
 			OnSettingsApplied = null;
 
+			ClearSettings();
+
 			if (!IsDisposed)
 				DisposeFinal(disposing);
 			IsDisposed = IsDisposed || disposing;
-
-			ClearSettings();
 		}
 
 		/// <summary>
