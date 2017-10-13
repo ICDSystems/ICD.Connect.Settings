@@ -26,17 +26,38 @@ namespace ICD.Connect.Settings
 		void SetChildren(IEnumerable<TChild> children);
 
 		/// <summary>
-		/// Gets all of the children.
+		/// Gets the child with the given id.
 		/// </summary>
+		/// <param name="id"></param>
 		/// <returns></returns>
-		IEnumerable<TChild> GetChildren();
+		TChild this[int id] { get; }
 
 		/// <summary>
-		/// Gets all of the children of the given type.
+		/// Adds the child to the core.
 		/// </summary>
-		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="child"></param>
+		/// <returns>False if a child with the given id already exists.</returns>
+		bool AddChild(TChild child);
+
+		/// <summary>
+		/// Assigns a unique id to the child and adds it to the collection.
+		/// </summary>
+		/// <param name="child"></param>
+		void AddChildAssignId(TChild child);
+
+		/// <summary>
+		/// Removes the child from the core.
+		/// </summary>
+		/// <param name="child"></param>
+		/// <returns>False if the core does not contain the child.</returns>
+		bool RemoveChild(TChild child);
+
+		/// <summary>
+		/// Returns true if there is a child with the given id.
+		/// </summary>
+		/// <param name="id"></param>
 		/// <returns></returns>
-		IEnumerable<TInstanceType> GetChildren<TInstanceType>() where TInstanceType : TChild;
+		bool ContainsChild(int id);
 
 		/// <summary>
 		/// Gets the child with the given id.
@@ -44,13 +65,6 @@ namespace ICD.Connect.Settings
 		/// <param name="id"></param>
 		/// <returns></returns>
 		TChild GetChild(int id);
-
-		/// <summary>
-		/// Gets the child with the given id.
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		TChild this[int id] { get; }
 
 		/// <summary>
 		/// Gets the first child of the given type.
@@ -89,11 +103,24 @@ namespace ICD.Connect.Settings
 			where TInstanceType : TChild;
 
 		/// <summary>
+		/// Gets all of the children.
+		/// </summary>
+		/// <returns></returns>
+		IEnumerable<TChild> GetChildren();
+
+		/// <summary>
 		/// Gets the children with the given ids.
 		/// </summary>
 		/// <param name="ids"></param>
 		/// <returns></returns>
 		IEnumerable<TChild> GetChildren(IEnumerable<int> ids);
+
+		/// <summary>
+		/// Gets all of the children of the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <returns></returns>
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>() where TInstanceType : TChild;
 
 		/// <summary>
 		/// Gets the children with the given ids, matching the given type.
@@ -113,32 +140,5 @@ namespace ICD.Connect.Settings
 		/// <param name="child"></param>
 		/// <returns></returns>
 		bool TryGetChild(int id, out TChild child);
-
-		/// <summary>
-		/// Returns true if there is a child with the given id.
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		bool ContainsChild(int id);
-
-		/// <summary>
-		/// Adds the child to the core.
-		/// </summary>
-		/// <param name="child"></param>
-		/// <returns>False if a child with the given id already exists.</returns>
-		bool AddChild(TChild child);
-
-		/// <summary>
-		/// Assigns a unique id to the child and adds it to the collection.
-		/// </summary>
-		/// <param name="child"></param>
-		void AddChildAssignId(TChild child);
-
-		/// <summary>
-		/// Removes the child from the core.
-		/// </summary>
-		/// <param name="child"></param>
-		/// <returns>False if the core does not contain the child.</returns>
-		bool RemoveChild(TChild child);
 	}
 }
