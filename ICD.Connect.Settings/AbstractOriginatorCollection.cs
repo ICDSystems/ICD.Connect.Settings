@@ -268,6 +268,15 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
+		/// Gets all of the child ids in the collection.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<int> GetChildrenIds()
+		{
+			return m_ChildrenSection.Execute(() => m_Children.Keys);
+		}
+
+		/// <summary>
 		/// Outputs the child with the given id.
 		/// Returns false if there is no child with the given id.
 		/// </summary>

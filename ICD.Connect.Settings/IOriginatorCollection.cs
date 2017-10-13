@@ -103,6 +103,8 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild;
 
+		IEnumerable<int> GetChildrenIds();
+
 		/// <summary>
 		/// Outputs the child with the given id.
 		/// Returns false if there is no child with the given id.
