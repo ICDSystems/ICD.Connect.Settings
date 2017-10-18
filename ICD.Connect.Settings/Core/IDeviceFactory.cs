@@ -23,6 +23,14 @@ namespace ICD.Connect.Settings.Core
 		event OriginatorLoadedCallback OnOriginatorLoaded;
 
 		/// <summary>
+		/// Returns true if the factory contains any settings that will resolve to the given originator type.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		[PublicAPI]
+		bool HasOriginators<T>() where T : class, IOriginator;
+
+		/// <summary>
 		/// Lazy-loads the originator with the given id.
 		/// </summary>
 		/// <param name="id"></param>
