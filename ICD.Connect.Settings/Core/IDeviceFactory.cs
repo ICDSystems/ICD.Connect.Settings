@@ -98,6 +98,20 @@ namespace ICD.Connect.Settings.Core
 		}
 
 		/// <summary>
+		/// Lazy-loads the originator with the given id.
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <param name="id"></param>
+		[PublicAPI]
+		public static void LoadOriginator(this IDeviceFactory factory, int id)
+		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
+			factory.GetOriginatorById(id);
+		}
+
+		/// <summary>
 		/// Lazy-loads all of the originators.
 		/// </summary>
 		/// <param name="factory"></param>
