@@ -74,6 +74,7 @@
     <Compile Include="Attributes\SettingsProperty.cs" />
     <Compile Include="Core\CoreOriginatorCollection.cs" />
     <Compile Include="Core\ICore.cs" />
+    <Compile Include="IdUtils.cs" />
     <Compile Include="IOriginatorCollection.cs" />
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="OriginatorAction.cs" />
