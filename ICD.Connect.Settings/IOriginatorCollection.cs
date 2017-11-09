@@ -40,12 +40,6 @@ namespace ICD.Connect.Settings
 		bool AddChild(TChild child);
 
 		/// <summary>
-		/// Assigns a unique id to the child and adds it to the collection.
-		/// </summary>
-		/// <param name="child"></param>
-		void AddChildAssignId(TChild child);
-
-		/// <summary>
 		/// Removes the child from the core.
 		/// </summary>
 		/// <param name="child"></param>

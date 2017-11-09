@@ -180,15 +180,6 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Returns an unused id.
-		/// </summary>
-		/// <returns></returns>
-		public int GetNewId()
-		{
-			return m_CollectionSection.Execute(() => MathUtils.GetNewId(m_Collection.Keys));
-		}
-
-		/// <summary>
 		/// Clears the collection.
 		/// </summary>
 		public void Clear()
