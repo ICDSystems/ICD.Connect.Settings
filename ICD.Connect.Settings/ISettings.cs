@@ -59,7 +59,12 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Gets the list of permissions
 		/// </summary>
-		IEnumerable<Permission> Permissions { get; set; } 
+		IEnumerable<Permission> Permissions { get; set; }
+
+        /// <summary>
+        /// Returns the count from the collection of ids that the settings depends on.
+        /// </summary>
+        int DependencyCount { get; }
 
 		#endregion
 
@@ -79,12 +84,12 @@ namespace ICD.Connect.Settings
 		IOriginator ToOriginator(IDeviceFactory factory);
 
 		/// <summary>
-		/// Returns the collection of ids that the settings will depend on.
+		/// Returns true if the settings depend on a device with the given ID.
 		/// For example, to instantiate an IR Port from settings, the device the physical port
 		/// belongs to will need to be instantiated first.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<int> GetDeviceDependencies();
+		bool HasDeviceDependency(int id);
 
 		#endregion
 	}

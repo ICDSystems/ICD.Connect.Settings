@@ -84,6 +84,7 @@ namespace ICD.Connect.Settings
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public abstract Type OriginatorType { get; }
+        
 
 		/// <summary>
 		/// Gets the list of permissions
@@ -91,11 +92,16 @@ namespace ICD.Connect.Settings
 		[SettingsProperty(SettingsProperty.ePropertyType.Hidden)]
 		public IEnumerable<Permission> Permissions { get; set; }
 
+        /// <summary>
+        /// Returns the count from the collection of ids that the settings depends on.
+        /// </summary>
+        public virtual int DependencyCount { get { return 0; } }
+
 		#endregion
 
 		#region Methods
 
-		/// <summary>
+	    /// <summary>
 		/// Writes the settings back to XML.
 		/// </summary>
 		/// <param name="writer"></param>
@@ -148,15 +154,18 @@ namespace ICD.Connect.Settings
 			return output;
 		}
 
-		/// <summary>
-		/// Returns the collection of ids that the settings will depend on.
-		/// For example, to instantiate an IR Port from settings, the device the physical port
-		/// belongs to will need to be instantiated first.
-		/// </summary>
-		/// <returns></returns>
-		public abstract IEnumerable<int> GetDeviceDependencies();
+	    /// <summary>
+	    /// Returns true if the settings depend on a device with the given ID.
+	    /// For example, to instantiate an IR Port from settings, the device the physical port
+	    /// belongs to will need to be instantiated first.
+	    /// </summary>
+	    /// <returns></returns>
+	    public virtual bool HasDeviceDependency(int id)
+	    {
+	        return false;
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Gets the set of permissions from the xml element
 		/// </summary>
 		/// <param name="xml"></param>
