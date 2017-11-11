@@ -16,6 +16,7 @@ namespace ICD.Connect.Settings.Attributes
 			[PublicAPI] Hidden,
 			[PublicAPI] PortId,
 			[PublicAPI] DeviceId,
+			[PublicAPI] PanelId,
 			[PublicAPI] Ipid,
 			[PublicAPI] Enum
 		}
