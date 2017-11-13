@@ -34,6 +34,7 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Unique ID for the settings.
 		/// </summary>
+		[SettingsProperty(SettingsProperty.ePropertyType.Hidden)]
 		public int Id
 		{
 			get { return m_Id; }
