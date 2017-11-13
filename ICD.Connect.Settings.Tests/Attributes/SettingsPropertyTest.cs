@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Settings.Attributes;
+﻿using System;
+using ICD.Connect.Settings.Attributes;
 using NUnit.Framework;
 #if SIMPLSHARP
 using ICD.Common.Utils.Extensions;
@@ -19,6 +20,13 @@ namespace ICD.Connect.Settings.Tests.Attributes
             Assert.AreEqual(expected, property.PropertyType);
         }
 
+	    [TestCase(typeof(IOriginator))]
+		public void TypeTest(Type expected)
+	    {
+			SettingsProperty property = new SettingsProperty(SettingsProperty.ePropertyType.Id, expected);
+		    Assert.AreEqual(expected, property.Type);
+		}
+
         [Test]
         public void InheritanceTest()
         {
@@ -28,12 +36,12 @@ namespace ICD.Connect.Settings.Tests.Attributes
             SettingsProperty attribute = property.GetCustomAttribute<SettingsProperty>(true);
             Assert.NotNull(attribute, "Unable to find attribute");
 
-            Assert.AreEqual(SettingsProperty.ePropertyType.DeviceId, attribute.PropertyType, "PropertyType is incorrect");
+            Assert.AreEqual(SettingsProperty.ePropertyType.Id, attribute.PropertyType, "PropertyType is incorrect");
         }
 
         private abstract class A
         {
-            [SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+            [SettingsProperty(SettingsProperty.ePropertyType.Id)]
             public int TestProperty { get; set; }
         }
 
