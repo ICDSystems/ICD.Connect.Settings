@@ -5,7 +5,7 @@ using ICD.Common.Permissions;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
@@ -34,7 +34,7 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Unique ID for the settings.
 		/// </summary>
-		[SettingsProperty(SettingsProperty.ePropertyType.Hidden)]
+		[HiddenSettingsProperty]
 		public int Id
 		{
 			get { return m_Id; }
@@ -85,12 +85,11 @@ namespace ICD.Connect.Settings
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public abstract Type OriginatorType { get; }
-        
 
 		/// <summary>
 		/// Gets the list of permissions
 		/// </summary>
-		[SettingsProperty(SettingsProperty.ePropertyType.Hidden)]
+		[HiddenSettingsProperty]
 		public IEnumerable<Permission> Permissions { get; set; }
 
         /// <summary>

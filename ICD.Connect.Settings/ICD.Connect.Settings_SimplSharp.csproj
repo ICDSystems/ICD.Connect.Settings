@@ -70,8 +70,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractOriginatorCollection.cs" />
+    <Compile Include="Attributes\SettingsProperties\AbstractSettingsPropertyAttribute.cs" />
+    <Compile Include="Attributes\SettingsProperties\HiddenSettingsPropertyAttribute.cs" />
+    <Compile Include="Attributes\SettingsProperties\IpIdSettingsPropertyAttribute.cs" />
+    <Compile Include="Attributes\SettingsProperties\OriginatorIdSettingsPropertyAttribute.cs" />
+    <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\XmlFactoryMethodAttribute.cs" />
-    <Compile Include="Attributes\SettingsProperty.cs" />
     <Compile Include="Core\CoreOriginatorCollection.cs" />
     <Compile Include="Core\ICore.cs" />
     <Compile Include="IdUtils.cs" />
