@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Utils.EventArguments;
 using ICD.Common.Permissions;
 using ICD.Common.Properties;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Core;
 
@@ -61,10 +61,10 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		IEnumerable<Permission> Permissions { get; set; }
 
-        /// <summary>
-        /// Returns the count from the collection of ids that the settings depends on.
-        /// </summary>
-        int DependencyCount { get; }
+		/// <summary>
+		/// Returns the count from the collection of ids that the settings depends on.
+		/// </summary>
+		int DependencyCount { get; }
 
 		#endregion
 

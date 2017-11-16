@@ -112,7 +112,7 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		public void ResetPermissions()
 		{
-			var permissionsManager = ServiceProvider.TryGetService<PermissionsManager>();
+			PermissionsManager permissionsManager = ServiceProvider.TryGetService<PermissionsManager>();
 			if (permissionsManager == null)
 				return;
 

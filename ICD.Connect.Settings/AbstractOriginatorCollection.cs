@@ -14,7 +14,7 @@ namespace ICD.Connect.Settings
 	{
 		public event EventHandler OnChildrenChanged;
 
-		private readonly Dictionary<Type, IcdHashSet<TChild>> m_TypeToChildren; 
+		private readonly Dictionary<Type, IcdHashSet<TChild>> m_TypeToChildren;
 		private readonly Dictionary<int, TChild> m_Children;
 		private readonly SafeCriticalSection m_ChildrenSection;
 
@@ -173,8 +173,10 @@ namespace ICD.Connect.Settings
 				m_TypeToChildren.TryGetValue(typeof(TInstance), out children);
 
 				if (children == null || children.Count == 0)
+				{
 					throw new InvalidOperationException(string.Format("No {0} of type {1}", typeof(TChild).Name,
 					                                                  typeof(TInstance).Name));
+				}
 
 				return (TInstance)children.First();
 			}

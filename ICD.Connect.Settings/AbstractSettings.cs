@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Utils.EventArguments;
 using ICD.Common.Permissions;
 using ICD.Common.Utils;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
@@ -92,16 +92,16 @@ namespace ICD.Connect.Settings
 		[HiddenSettingsProperty]
 		public IEnumerable<Permission> Permissions { get; set; }
 
-        /// <summary>
-        /// Returns the count from the collection of ids that the settings depends on.
-        /// </summary>
-        public virtual int DependencyCount { get { return 0; } }
+		/// <summary>
+		/// Returns the count from the collection of ids that the settings depends on.
+		/// </summary>
+		public virtual int DependencyCount { get { return 0; } }
 
 		#endregion
 
 		#region Methods
 
-	    /// <summary>
+		/// <summary>
 		/// Writes the settings back to XML.
 		/// </summary>
 		/// <param name="writer"></param>
@@ -134,38 +134,43 @@ namespace ICD.Connect.Settings
 		public IOriginator ToOriginator(IDeviceFactory factory)
 		{
 			if (!OriginatorType.IsAssignableTo(typeof(IOriginator)))
-				throw new InvalidOperationException(string.Format("{0} is not assignable to {1}", OriginatorType.Name, typeof(IOriginator).Name));
+			{
+				throw new InvalidOperationException(string.Format("{0} is not assignable to {1}", OriginatorType.Name,
+				                                                  typeof(IOriginator).Name));
+			}
 
 			IOriginator output;
 
 			try
 			{
 				output = (IOriginator)ReflectionUtils.CreateInstance(OriginatorType);
-				
+
 				// This instance came from settings, so we want to store it back to settings.
 				output.Serialize = true;
 			}
 			catch (Exception e)
 			{
-				throw new InvalidOperationException(String.Format("{0} failed to create instance of {1} - Error Message: {2} Inner Message:{3}", GetType().Name, OriginatorType.Name, e.Message, e.InnerException), e);
+				throw new InvalidOperationException(
+					String.Format("{0} failed to create instance of {1} - Error Message: {2} Inner Message:{3}", GetType().Name,
+					              OriginatorType.Name, e.Message, e.InnerException), e);
 			}
 
 			output.ApplySettings(this, factory);
 			return output;
 		}
 
-	    /// <summary>
-	    /// Returns true if the settings depend on a device with the given ID.
-	    /// For example, to instantiate an IR Port from settings, the device the physical port
-	    /// belongs to will need to be instantiated first.
-	    /// </summary>
-	    /// <returns></returns>
-	    public virtual bool HasDeviceDependency(int id)
-	    {
-	        return false;
-	    }
+		/// <summary>
+		/// Returns true if the settings depend on a device with the given ID.
+		/// For example, to instantiate an IR Port from settings, the device the physical port
+		/// belongs to will need to be instantiated first.
+		/// </summary>
+		/// <returns></returns>
+		public virtual bool HasDeviceDependency(int id)
+		{
+			return false;
+		}
 
-	    /// <summary>
+		/// <summary>
 		/// Gets the set of permissions from the xml element
 		/// </summary>
 		/// <param name="xml"></param>
@@ -175,7 +180,7 @@ namespace ICD.Connect.Settings
 			string permissionsElement;
 			if (XmlUtils.TryGetChildElementAsString(xml, PERMISSIONS_ELEMENT, out permissionsElement))
 			{
-				foreach (var permission in XmlUtils.GetChildElementsAsString(permissionsElement, PERMISSION_ELEMENT))
+				foreach (string permission in XmlUtils.GetChildElementsAsString(permissionsElement, PERMISSION_ELEMENT))
 					yield return Permission.FromXml(permission);
 			}
 		}
