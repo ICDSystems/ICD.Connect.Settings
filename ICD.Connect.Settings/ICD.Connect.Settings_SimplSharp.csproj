@@ -81,7 +81,7 @@
     <Compile Include="IdUtils.cs" />
     <Compile Include="IOriginatorCollection.cs" />
     <None Include="ObfuscationSettings.cs" />
-    <Compile Include="OriginatorAction.cs" />
+    <Compile Include="OriginatorPermissable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AbstractOriginator.cs" />
     <Compile Include="AbstractSettings.cs" />
