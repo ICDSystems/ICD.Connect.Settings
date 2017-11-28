@@ -43,13 +43,19 @@ namespace ICD.Connect.Settings
 		/// Constructor.
 		/// </summary>
 		public SettingsCollection()
+			: this(Enumerable.Empty<ISettings>())
+		{
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="settings"></param>
+		public SettingsCollection(IEnumerable<ISettings> settings)
 		{
 			m_Collection = new Dictionary<int, ISettings>();
 			m_CollectionSection = new SafeCriticalSection();
-		}
 
-		public SettingsCollection(IEnumerable<ISettings> settings) : this()
-		{
 			AddRange(settings);
 		}
 
