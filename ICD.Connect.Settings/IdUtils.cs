@@ -51,7 +51,7 @@ namespace ICD.Connect.Settings
 			if (existingIds == null)
 				throw new ArgumentNullException("existingIds");
 
-			start = MathUtils.Clamp(start, 2, int.MaxValue);
+			start = MathUtils.Clamp(start, 1, int.MaxValue);
 
 			IcdHashSet<int> existing = existingIds.Where(e => e >= start).ToHashSet();
 			return Enumerable.Range(start, int.MaxValue - start)
