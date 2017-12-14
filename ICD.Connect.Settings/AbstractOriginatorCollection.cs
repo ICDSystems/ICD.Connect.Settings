@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
-using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings
@@ -14,7 +13,7 @@ namespace ICD.Connect.Settings
 	{
 		public event EventHandler OnChildrenChanged;
 
-		private readonly Dictionary<Type, IcdHashSet<TChild>> m_TypeToChildren;
+		private readonly Dictionary<Type, List<TChild>> m_TypeToChildren;
 		private readonly Dictionary<int, TChild> m_Children;
 		private readonly SafeCriticalSection m_ChildrenSection;
 
@@ -48,7 +47,7 @@ namespace ICD.Connect.Settings
 		/// <param name="children"></param>
 		protected AbstractOriginatorCollection(IEnumerable<TChild> children)
 		{
-			m_TypeToChildren = new Dictionary<Type, IcdHashSet<TChild>>();
+			m_TypeToChildren = new Dictionary<Type, List<TChild>>();
 			m_Children = new Dictionary<int, TChild>();
 			m_ChildrenSection = new SafeCriticalSection();
 
@@ -105,7 +104,7 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public IEnumerable<TChild> GetChildren()
 		{
-			return m_ChildrenSection.Execute(() => m_Children.Values.ToArray());
+			return m_ChildrenSection.Execute(() => m_Children.Values.ToArray(m_Children.Count));
 		}
 
 		/// <summary>
@@ -120,11 +119,11 @@ namespace ICD.Connect.Settings
 
 			try
 			{
-				IcdHashSet<TChild> children;
+				List<TChild> children;
 				if (!m_TypeToChildren.TryGetValue(typeof(TInstance), out children))
 					return Enumerable.Empty<TInstance>();
 
-				return children.OfType<TInstance>().ToArray();
+				return children.Cast<TInstance>().ToArray(children.Count);
 			}
 			finally
 			{
@@ -169,7 +168,7 @@ namespace ICD.Connect.Settings
 
 			try
 			{
-				IcdHashSet<TChild> children;
+				List<TChild> children;
 				m_TypeToChildren.TryGetValue(typeof(TInstance), out children);
 
 				if (children == null || children.Count == 0)
@@ -178,7 +177,7 @@ namespace ICD.Connect.Settings
 					                                                  typeof(TInstance).Name));
 				}
 
-				return (TInstance)children.First();
+				return (TInstance)children[0];
 			}
 			finally
 			{
@@ -330,8 +329,8 @@ namespace ICD.Connect.Settings
 				foreach (Type type in child.GetType().GetAllTypes())
 				{
 					if (!m_TypeToChildren.ContainsKey(type))
-						m_TypeToChildren[type] = new IcdHashSet<TChild>();
-					m_TypeToChildren[type].Add(child);
+						m_TypeToChildren[type] = new List<TChild>();
+					m_TypeToChildren[type].AddSorted(child, new ChildComparer());
 				}
 
 				m_Children.Add(child.Id, child);
@@ -396,5 +395,25 @@ namespace ICD.Connect.Settings
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Allows for sorting of children.
+		/// </summary>
+		private sealed class ChildComparer : IComparer<TChild>
+		{
+			public int Compare(TChild x, TChild y)
+			{
+// ReSharper disable once CompareNonConstrainedGenericWithNull
+				if (x == null)
+					throw new ArgumentNullException("x");
+
+// ReSharper disable once CompareNonConstrainedGenericWithNull
+				if (y == null)
+					throw new ArgumentNullException("y");
+
+				return x.Id - y.Id;
+			}
+		}
+
 	}
 }

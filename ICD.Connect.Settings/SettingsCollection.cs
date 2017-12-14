@@ -239,7 +239,7 @@ namespace ICD.Connect.Settings
 			try
 			{
 				m_Collection.OrderValuesByKey()
-				            .ToArray()
+				            .ToArray(m_Collection.Count)
 				            .CopyTo(array, arrayIndex);
 			}
 			finally
