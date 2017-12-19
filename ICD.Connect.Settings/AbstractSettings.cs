@@ -101,6 +101,19 @@ namespace ICD.Connect.Settings
 
 		#region Methods
 
+		public override string ToString()
+		{
+			ReprBuilder builder = new ReprBuilder(this);
+
+			if (Id != 0)
+				builder.AppendProperty("Id", Id);
+
+			if (!string.IsNullOrEmpty(Name) && Name != GetType().Name)
+				builder.AppendProperty("Name", Name);
+
+			return builder.ToString();
+		}
+
 		/// <summary>
 		/// Writes the settings back to XML.
 		/// </summary>
