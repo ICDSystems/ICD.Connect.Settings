@@ -53,7 +53,7 @@ namespace ICD.Connect.Settings
 
 			start = MathUtils.Clamp(start, 1, int.MaxValue);
 
-			IcdHashSet<int> existing = existingIds.Where(e => e >= start).ToHashSet();
+			IcdHashSet<int> existing = existingIds.Where(e => e >= start).ToIcdHashSet();
 			return Enumerable.Range(start, int.MaxValue - start)
 			                 .First(i => !existing.Contains(i));
 		}
@@ -89,7 +89,7 @@ namespace ICD.Connect.Settings
 			if (existingRoomIds == null)
 				throw new ArgumentNullException("existingRoomIds");
 
-			IcdHashSet<int> existing = existingRoomIds.ToHashSet();
+			IcdHashSet<int> existing = existingRoomIds.ToIcdHashSet();
 
 			return Enumerable.Range(1, int.MaxValue)
 			                 .Select(i => GetRoomId(i))
