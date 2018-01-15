@@ -70,18 +70,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractOriginatorCollection.cs" />
+    <Compile Include="Attributes\KrangPluginAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\AbstractSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\HiddenSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\IpIdSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\OriginatorIdSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\XmlFactoryMethodAttribute.cs" />
+    <Compile Include="Core\CoreDeviceFactory.cs" />
     <Compile Include="Core\CoreOriginatorCollection.cs" />
     <Compile Include="Core\ICore.cs" />
+    <Compile Include="FileOperations.cs" />
     <Compile Include="IdUtils.cs" />
     <Compile Include="IOriginatorCollection.cs" />
     <None Include="ObfuscationSettings.cs" />
+    <Compile Include="LibraryUtils.cs" />
     <Compile Include="OriginatorPermissable.cs" />
+    <Compile Include="PluginFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AbstractOriginator.cs" />
     <Compile Include="AbstractSettings.cs" />
