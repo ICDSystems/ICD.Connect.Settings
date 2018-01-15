@@ -1,5 +1,5 @@
 ﻿using System;
-using ICD.Common.Attributes;
+using ICD.Common.Utils.Attributes;
 
 namespace ICD.Connect.Settings.Attributes.SettingsProperties
 {

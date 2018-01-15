@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Properties;
-using ICD.Common.Services.Logging;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
