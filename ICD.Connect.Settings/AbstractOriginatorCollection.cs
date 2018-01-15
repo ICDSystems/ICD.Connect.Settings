@@ -334,6 +334,8 @@ namespace ICD.Connect.Settings
 				}
 
 				m_Children.Add(child.Id, child);
+
+				ChildAdded(child);
 			}
 			finally
 			{
@@ -342,6 +344,14 @@ namespace ICD.Connect.Settings
 
 			OnChildrenChanged.Raise(this);
 			return true;
+		}
+
+		/// <summary>
+		/// Called each time a child is added to the collection before any events are raised.
+		/// </summary>
+		/// <param name="child"></param>
+		protected virtual void ChildAdded(TChild child)
+		{
 		}
 
 		/// <summary>
