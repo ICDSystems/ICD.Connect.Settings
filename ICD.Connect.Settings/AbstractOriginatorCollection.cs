@@ -424,6 +424,5 @@ namespace ICD.Connect.Settings
 				return x.Id - y.Id;
 			}
 		}
-
 	}
 }

@@ -33,7 +33,6 @@ namespace ICD.Connect.Settings
 			where TSettings : ICoreSettings
 			where TCore : ICore
 		{
-
 			Logger.AddEntry(eSeverity.Notice, "Applying settings");
 
 			IDeviceFactory factory = new CoreDeviceFactory(settings);

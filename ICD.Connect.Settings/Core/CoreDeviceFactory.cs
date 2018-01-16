@@ -105,8 +105,10 @@ namespace ICD.Connect.Settings.Core
 
 			ISettings settings = m_CoreSettings.OriginatorSettings.GetById(id);
 			if (!settings.OriginatorType.IsAssignableTo(typeof(T)))
+			{
 				throw new InvalidOperationException(string.Format("{0} will not yield an originator of type {1}",
 				                                                  settings.GetType().Name, typeof(T).Name));
+			}
 
 			return (T)settings.ToOriginator(this);
 		}

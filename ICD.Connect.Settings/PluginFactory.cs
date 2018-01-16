@@ -60,8 +60,8 @@ namespace ICD.Connect.Settings
 		{
 			string child;
 			return XmlUtils.TryGetChildElementAsString(xml, elementName, out child)
-					   ? GetSettingsFromXml(child)
-					   : Enumerable.Empty<ISettings>();
+				       ? GetSettingsFromXml(child)
+				       : Enumerable.Empty<ISettings>();
 		}
 
 		/// <summary>

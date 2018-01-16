@@ -60,11 +60,11 @@ namespace ICD.Connect.Settings
 			UnzipLibAssemblies();
 
 			return GetAssemblyPaths().OrderBy<string, int>(GetDirectoryIndex)
-									 .ThenByDescending<string, Version>(GetAssemblyVersionFromPath)
-									 .Distinct(new FileNameComparer())
-									 .Select<string, Assembly>(SafeLoadAssembly)
-									 .Where(a => a != null && IsKrangPlugin(a))
-									 .OrderBy(a => a.FullName);
+			                         .ThenByDescending<string, Version>(GetAssemblyVersionFromPath)
+			                         .Distinct(new FileNameComparer())
+			                         .Select<string, Assembly>(SafeLoadAssembly)
+			                         .Where(a => a != null && IsKrangPlugin(a))
+			                         .OrderBy(a => a.FullName);
 		}
 
 		private sealed class FileNameComparer : IEqualityComparer<string>
