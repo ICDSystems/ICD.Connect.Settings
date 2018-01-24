@@ -268,6 +268,12 @@ namespace ICD.Connect.Settings
 			{
 				return null;
 			}
+#else
+			// Happens with the SQLite dll
+			catch (BadImageFormatException)
+			{
+				return null;
+			}
 #endif
 			catch (Exception e)
 			{
