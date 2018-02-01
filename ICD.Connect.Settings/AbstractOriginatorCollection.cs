@@ -299,6 +299,26 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
+		/// Returns true if at least 1 originator exists of the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		public bool HasChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild
+		{
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				return ids.Any(i => m_Children[i] is TInstanceType);
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
+		}
+
+		/// <summary>
 		/// Returns true if there is a child with the given id.
 		/// </summary>
 		/// <param name="id"></param>

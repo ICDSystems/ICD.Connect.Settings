@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ICD.Common.Properties;
+using ICD.Common.Utils.Collections;
 
 namespace ICD.Connect.Settings
 {
@@ -134,5 +135,13 @@ namespace ICD.Connect.Settings
 		/// <param name="child"></param>
 		/// <returns></returns>
 		bool TryGetChild(int id, out TChild child);
+
+		/// <summary>
+		/// Returns true if at least 1 originator exists of the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		bool HasChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild;
 	}
 }
