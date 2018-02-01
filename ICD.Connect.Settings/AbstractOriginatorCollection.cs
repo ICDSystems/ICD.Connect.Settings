@@ -248,6 +248,9 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public IEnumerable<TChild> GetChildren(IEnumerable<int> ids)
 		{
+			if (ids == null)
+				throw new ArgumentNullException("ids");
+
 			return GetChildren<TChild>(ids);
 		}
 
@@ -263,9 +266,28 @@ namespace ICD.Connect.Settings
 			if (ids == null)
 				throw new ArgumentNullException("ids");
 
+			return GetChildren<TInstanceType>(ids, i => true);
+		}
+
+		/// <summary>
+		/// Gets the children with the given ids, matching the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="ids"></param>
+		/// <param name="selector"></param>
+		/// <returns></returns>
+		public IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector) where TInstanceType : TChild
+		{
+			if (ids == null)
+				throw new ArgumentNullException("ids");
+
+			if (selector == null)
+				throw new ArgumentNullException("selector");
+
 			return ids.Select(id => GetChild(id))
-			          .OfType<TInstanceType>()
-			          .ToArray();
+					  .OfType<TInstanceType>()
+					  .Where(selector)
+					  .ToArray();
 		}
 
 		/// <summary>

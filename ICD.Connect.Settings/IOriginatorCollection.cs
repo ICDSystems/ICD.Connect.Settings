@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using ICD.Common.Properties;
-using ICD.Common.Utils.Collections;
 
 namespace ICD.Connect.Settings
 {
@@ -124,6 +123,15 @@ namespace ICD.Connect.Settings
 		/// <param name="ids"></param>
 		/// <returns></returns>
 		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild;
+
+		/// <summary>
+		/// Gets the children with the given ids, matching the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="ids"></param>
+		/// <param name="selector"></param>
+		/// <returns></returns>
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector) where TInstanceType : TChild;
 
 		IEnumerable<int> GetChildrenIds();
 
