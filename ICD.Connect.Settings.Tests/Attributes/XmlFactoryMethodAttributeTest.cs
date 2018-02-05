@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace ICD.Connect.Settings.Tests.Attributes
 {
 	[TestFixture]
-    public sealed class XmlFactoryMethodAttributeTest : AbstractIcdAttributeTest
+    public sealed class XmlFactoryMethodAttributeTest : AbstractIcdAttributeTest<XmlFactoryMethodAttribute>
     {
 		[TestCase("Test")]
 		public void FactoryNameTest(string name)
