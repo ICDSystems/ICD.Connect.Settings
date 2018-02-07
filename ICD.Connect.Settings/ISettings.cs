@@ -71,6 +71,12 @@ namespace ICD.Connect.Settings
 		#region Methods
 
 		/// <summary>
+		/// Updates the settings from xml.
+		/// </summary>
+		/// <param name="xml"></param>
+		void ParseXml(string xml);
+
+		/// <summary>
 		/// Writes the settings to xml.
 		/// </summary>
 		/// <param name="writer"></param>

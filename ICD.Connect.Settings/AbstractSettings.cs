@@ -115,6 +115,18 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
+		/// Updates the settings from xml.
+		/// </summary>
+		/// <param name="xml"></param>
+		public virtual void ParseXml(string xml)
+		{
+			Id = XmlUtils.GetAttributeAsInt(xml, ID_ATTRIBUTE);
+			Name = XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT);
+			CombineName = XmlUtils.TryReadChildElementContentAsString(xml, COMBINE_NAME_ELEMENT);
+			Permissions = GetPermissionsFromXml(xml);
+		}
+
+		/// <summary>
 		/// Writes the settings back to XML.
 		/// </summary>
 		/// <param name="writer"></param>
@@ -251,22 +263,6 @@ namespace ICD.Connect.Settings
 
 			writer.WriteElementString(NAME_ELEMENT, Name);
 			writer.WriteElementString(COMBINE_NAME_ELEMENT, CombineName);
-		}
-
-		/// <summary>
-		/// Parses the xml and applies the properties to the instance.
-		/// </summary>
-		/// <param name="instance"></param>
-		/// <param name="xml"></param>
-		protected static void ParseXml(AbstractSettings instance, string xml)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-
-			instance.Id = XmlUtils.GetAttributeAsInt(xml, ID_ATTRIBUTE);
-			instance.Name = XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT);
-			instance.CombineName = XmlUtils.TryReadChildElementContentAsString(xml, COMBINE_NAME_ELEMENT);
-			instance.Permissions = GetPermissionsFromXml(xml);
 		}
 
 		#endregion

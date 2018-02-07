@@ -2,8 +2,9 @@
 {
 	public interface ICoreSettings : ISettings
 	{
+		/// <summary>
+		/// Gets the child originator settings collection.
+		/// </summary>
 		SettingsCollection OriginatorSettings { get; }
-
-		void ParseXml(string xml);
 	}
 }
