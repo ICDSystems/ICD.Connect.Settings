@@ -77,6 +77,8 @@
     <Compile Include="Attributes\SettingsProperties\OriginatorIdSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\XmlFactoryMethodAttribute.cs" />
+    <Compile Include="Core\AbstractCore.cs" />
+    <Compile Include="Core\AbstractCoreSettings.cs" />
     <Compile Include="Core\CoreDeviceFactory.cs" />
     <Compile Include="Core\CoreOriginatorCollection.cs" />
     <Compile Include="Core\ICore.cs" />
