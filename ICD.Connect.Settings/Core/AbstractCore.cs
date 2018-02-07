@@ -1,9 +1,11 @@
-﻿namespace ICD.Connect.Settings.Core
+﻿using System.Collections.Generic;
+
+namespace ICD.Connect.Settings.Core
 {
 	public abstract class AbstractCore<TSettings> : AbstractOriginator<TSettings>, ICore
 		where TSettings : ICoreSettings, new()
 	{
-		private CoreOriginatorCollection m_Originators;
+		private readonly CoreOriginatorCollection m_Originators;
 
 		public IOriginatorCollection<IOriginator> Originators { get { return m_Originators; } }
 
