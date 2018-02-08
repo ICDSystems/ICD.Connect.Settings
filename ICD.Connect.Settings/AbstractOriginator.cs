@@ -6,10 +6,12 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Attributes;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
 {
+	[ApiClass("Originator", null)]
 	public abstract class AbstractOriginator<T> : IOriginator, IStateDisposable
 		where T : ISettings, new()
 	{
@@ -33,16 +35,19 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
+		[ApiProperty("Id", "The unique ID for this originator.")]
 		public int Id { get; set; }
 
 		/// <summary>
 		/// The name of the originator.
 		/// </summary>
+		[ApiProperty("Name", "The human readable name for this originator.")]
 		public string Name { get; set; }
 
 		/// <summary>
 		/// The name that is used for the originator while in a combine space.
 		/// </summary>
+		[ApiProperty("CombineName", "The human readable name for this originator in a combine space.")]
 		public string CombineName { get; set; }
 
 		/// <summary>
