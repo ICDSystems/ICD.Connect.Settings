@@ -71,12 +71,12 @@
   <ItemGroup>
     <Compile Include="AbstractOriginatorCollection.cs" />
     <Compile Include="Attributes\KrangPluginAttribute.cs" />
+    <Compile Include="Attributes\KrangSettingsAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\AbstractSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\HiddenSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\IpIdSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\OriginatorIdSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
-    <Compile Include="Attributes\XmlFactoryMethodAttribute.cs" />
     <Compile Include="Core\AbstractCore.cs" />
     <Compile Include="Core\AbstractCoreSettings.cs" />
     <Compile Include="Core\CoreDeviceFactory.cs" />

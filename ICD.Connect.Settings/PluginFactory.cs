@@ -18,14 +18,14 @@ namespace ICD.Connect.Settings
 	public static class PluginFactory
 	{
 		/// <summary>
-		/// Maps factory name -> factory method
+		/// Maps factory name -> settings type
 		/// </summary>
-		private static readonly Dictionary<string, MethodInfo> s_FactoryNameMethodMap;
+		private static readonly Dictionary<string, Type> s_FactoryNameTypeMap;
 
 		/// <summary>
 		/// Maps settings type -> factory name
 		/// </summary>
-		private static readonly Dictionary<Type, string> s_SettingsFactoryNameMap;
+		private static readonly Dictionary<Type, string> s_FactoryNameMapInverse;
 
 		private static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
@@ -34,8 +34,8 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		static PluginFactory()
 		{
-			s_FactoryNameMethodMap = new Dictionary<string, MethodInfo>();
-			s_SettingsFactoryNameMap = new Dictionary<Type, string>();
+			s_FactoryNameTypeMap = new Dictionary<string, Type>();
+			s_FactoryNameMapInverse = new Dictionary<Type, string>();
 
 			try
 			{
@@ -103,9 +103,9 @@ namespace ICD.Connect.Settings
 		{
 			Type type = typeof(TSettings);
 
-			if (!s_SettingsFactoryNameMap.ContainsKey(type))
+			if (!s_FactoryNameMapInverse.ContainsKey(type))
 				throw new KeyNotFoundException(string.Format("Unable to find factory name for {0}", type.Name));
-			return s_SettingsFactoryNameMap[type];
+			return s_FactoryNameMapInverse[type];
 		}
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace ICD.Connect.Settings
 		public static IEnumerable<string> GetFactoryNames<TSettings>()
 			where TSettings : ISettings
 		{
-			return s_SettingsFactoryNameMap.Where(kvp => kvp.Key.IsAssignableTo(typeof(TSettings)))
+			return s_FactoryNameMapInverse.Where(kvp => kvp.Key.IsAssignableTo(typeof(TSettings)))
 			                               .Select(kvp => kvp.Value);
 		}
 
@@ -125,7 +125,7 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public static IEnumerable<string> GetFactoryNames()
 		{
-			return s_FactoryNameMethodMap.Keys;
+			return s_FactoryNameTypeMap.Keys;
 		}
 
 		/// <summary>
@@ -134,13 +134,15 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public static IEnumerable<Assembly> GetFactoryAssemblies()
 		{
-			return s_FactoryNameMethodMap.Values
-			                             .Select(v => v.DeclaringType
-#if !SIMPLSHARP
-			                                           .GetTypeInfo()
+			return s_FactoryNameTypeMap.Values
+			                           .Select(v =>
+#if SIMPLSHARP
+			                                   ((CType)v)
+#else
+			                                   v.GetTypeInfo()
 #endif
-			                                           .Assembly)
-			                             .Distinct();
+				                                   .Assembly)
+			                           .Distinct();
 		}
 
 		/// <summary>
@@ -169,11 +171,11 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public static Type GetType(string factoryName)
 		{
-			MethodInfo methodInfo;
-			if (!s_FactoryNameMethodMap.TryGetValue(factoryName, out methodInfo))
-				throw new KeyNotFoundException(string.Format("No factory name {0}", factoryName));
+			Type type;
+			if (s_FactoryNameTypeMap.TryGetValue(factoryName, out type))
+				return type;
 
-			return methodInfo.DeclaringType;
+			throw new KeyNotFoundException(string.Format("No factory name {0}", factoryName));
 		}
 
 		#endregion
@@ -189,11 +191,13 @@ namespace ICD.Connect.Settings
 		private static TSettings Instantiate<TSettings>(string xml)
 			where TSettings : ISettings
 		{
-			MethodInfo method = GetMethodFromXml(xml);
+			string factoryName = XmlUtils.GetAttributeAsString(xml, AbstractSettings.TYPE_ATTRIBUTE);
 
 			try
 			{
-				return (TSettings)method.Invoke(null, new object[] {xml});
+				TSettings settings = InstantiateDefault<TSettings>(factoryName);
+				settings.ParseXml(xml);
+				return settings;
 			}
 			catch (TargetInvocationException e)
 			{
@@ -213,13 +217,11 @@ namespace ICD.Connect.Settings
 			if (factoryName == null)
 				throw new ArgumentNullException("factoryName");
 
-			MethodInfo method = GetMethod(factoryName);
+			Type type = GetType(factoryName);
 
 #if SIMPLSHARP
-			CType type = method.DeclaringType;
-			ConstructorInfo ctor = type.GetConstructor(new CType[0]);
+			ConstructorInfo ctor = ((CType)type).GetConstructor(new CType[0]);
 #else
-			Type type = method.DeclaringType;
 			ConstructorInfo ctor = type.GetTypeInfo().GetConstructor(new Type[0]);
 #endif
 
@@ -231,38 +233,6 @@ namespace ICD.Connect.Settings
 			{
 				throw e.GetBaseException();
 			}
-		}
-
-		/// <summary>
-		/// Gets the factory method with the given type name.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		private static MethodInfo GetMethod(string name)
-		{
-			if (name == null)
-				throw new ArgumentNullException("name");
-
-			try
-			{
-				return s_FactoryNameMethodMap[name];
-			}
-			catch (KeyNotFoundException)
-			{
-				string message = string.Format("No factory found with name {0}", name);
-				throw new KeyNotFoundException(message);
-			}
-		}
-
-		/// <summary>
-		/// Finds the "Type" child element in the xml and looks up the method.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		private static MethodInfo GetMethodFromXml(string xml)
-		{
-			string type = XmlUtils.GetAttributeAsString(xml, AbstractSettings.TYPE_ATTRIBUTE);
-			return GetMethod(type);
 		}
 
 		/// <summary>
@@ -287,16 +257,15 @@ namespace ICD.Connect.Settings
 			}
 
 			foreach (
-				XmlFactoryMethodAttribute attribute in
-					AttributeUtils.GetMethodAttributes<XmlFactoryMethodAttribute>().OrderBy(a => a.FactoryName))
+				KrangSettingsAttribute attribute in
+					AttributeUtils.GetClassAttributes<KrangSettingsAttribute>().OrderBy(a => a.FactoryName))
 			{
 				Logger.AddEntry(eSeverity.Informational, "Loaded type {0}", attribute.FactoryName);
 
-				MethodInfo method = AttributeUtils.GetMethod(attribute);
+				Type type = AttributeUtils.GetClass(attribute);
 
-				s_FactoryNameMethodMap.Add(attribute.FactoryName, method);
-
-				s_SettingsFactoryNameMap[method.DeclaringType] = attribute.FactoryName;
+				s_FactoryNameTypeMap.Add(attribute.FactoryName, type);
+				s_FactoryNameMapInverse[type] = attribute.FactoryName;
 			}
 		}
 

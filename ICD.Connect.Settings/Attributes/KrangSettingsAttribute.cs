@@ -5,8 +5,8 @@ using ICD.Common.Utils.Attributes;
 namespace ICD.Connect.Settings.Attributes
 {
 	[MeansImplicitUse]
-	[AttributeUsage(AttributeTargets.Method)]
-	public sealed class XmlFactoryMethodAttribute : AbstractIcdAttribute
+	[AttributeUsage(AttributeTargets.Class)]
+	public sealed class KrangSettingsAttribute : AbstractIcdAttribute
 	{
 		private readonly string m_FactoryName;
 
@@ -16,17 +16,13 @@ namespace ICD.Connect.Settings.Attributes
 		[PublicAPI]
 		public string FactoryName { get { return m_FactoryName; } }
 
-		#region Constructors
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="factoryName"></param>
-		public XmlFactoryMethodAttribute(string factoryName)
+		public KrangSettingsAttribute(string factoryName)
 		{
 			m_FactoryName = factoryName;
 		}
-
-		#endregion
 	}
 }
