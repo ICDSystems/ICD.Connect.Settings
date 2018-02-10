@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ICD.Connect.API.Attributes;
+﻿using ICD.Connect.API.Attributes;
 
 namespace ICD.Connect.Settings.Core
 {

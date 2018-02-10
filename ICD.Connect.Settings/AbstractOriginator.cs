@@ -11,7 +11,7 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
 {
-	[ApiClass("Originator", null)]
+	[ApiClass]
 	public abstract class AbstractOriginator<T> : IOriginator, IStateDisposable
 		where T : ISettings, new()
 	{
