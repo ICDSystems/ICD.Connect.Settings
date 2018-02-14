@@ -351,6 +351,26 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
+		/// Returns true if there is a child with the given id of the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public bool ContainsChild<TInstanceType>(int id) where TInstanceType : TChild
+		{
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				return ContainsChild(id) && GetChild(id) is TInstanceType;
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
+		}
+
+		/// <summary>
 		/// Adds the child to the core.
 		/// </summary>
 		/// <param name="child"></param>
