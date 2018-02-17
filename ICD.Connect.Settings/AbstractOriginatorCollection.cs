@@ -80,25 +80,6 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Clears and sets the children.
-		/// </summary>
-		/// <returns></returns>
-		public void SetChildren(IEnumerable<TChild> children)
-		{
-			m_ChildrenSection.Enter();
-
-			try
-			{
-				Clear();
-				children.ForEach(c => AddChild(c));
-			}
-			finally
-			{
-				m_ChildrenSection.Leave();
-			}
-		}
-
-		/// <summary>
 		/// Gets all of the children.
 		/// </summary>
 		/// <returns></returns>
@@ -169,20 +150,16 @@ namespace ICD.Connect.Settings
 			try
 			{
 				List<TChild> children;
-				m_TypeToChildren.TryGetValue(typeof(TInstance), out children);
-
-				if (children == null || children.Count == 0)
-				{
-					throw new InvalidOperationException(string.Format("No {0} of type {1}", typeof(TChild).Name,
-					                                                  typeof(TInstance).Name));
-				}
-
-				return (TInstance)children[0];
+				if (m_TypeToChildren.TryGetValue(typeof(TInstance), out children) && children.Count > 0)
+					return (TInstance)children[0];
 			}
 			finally
 			{
 				m_ChildrenSection.Leave();
 			}
+
+			throw new InvalidOperationException(string.Format("No {0} of type {1}", typeof(TChild).Name,
+															  typeof(TInstance).Name));
 		}
 
 		/// <summary>
@@ -196,7 +173,6 @@ namespace ICD.Connect.Settings
 			where TInstance : TChild
 		{
 			TChild child = GetChild(id);
-
 			if (child.GetType().IsAssignableTo(typeof(TInstance)))
 				return (TInstance)child;
 
@@ -276,7 +252,8 @@ namespace ICD.Connect.Settings
 		/// <param name="ids"></param>
 		/// <param name="selector"></param>
 		/// <returns></returns>
-		public IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector) where TInstanceType : TChild
+		public IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector)
+			where TInstanceType : TChild
 		{
 			if (ids == null)
 				throw new ArgumentNullException("ids");
@@ -296,7 +273,7 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public IEnumerable<int> GetChildrenIds()
 		{
-			return m_ChildrenSection.Execute(() => m_Children.Keys);
+			return m_ChildrenSection.Execute(() => m_Children.Keys.ToArray(m_Children.Count));
 		}
 
 		/// <summary>
@@ -326,7 +303,8 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="ids"></param>
 		/// <returns></returns>
-		public bool HasChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild
+		public bool HasChildren<TInstanceType>(IEnumerable<int> ids)
+			where TInstanceType : TChild
 		{
 			m_ChildrenSection.Enter();
 
@@ -356,7 +334,8 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public bool ContainsChild<TInstanceType>(int id) where TInstanceType : TChild
+		public bool ContainsChild<TInstanceType>(int id)
+			where TInstanceType : TChild
 		{
 			m_ChildrenSection.Enter();
 
@@ -371,13 +350,69 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
+		/// Clears and sets the children.
+		/// </summary>
+		/// <returns></returns>
+		public void SetChildren(IEnumerable<TChild> children)
+		{
+			if (children == null)
+				throw new ArgumentNullException("children");
+
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				Clear();
+				AddChildren(children);
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
+		}
+
+		private void AddChildren(IEnumerable<TChild> children)
+		{
+			if (children == null)
+				throw new ArgumentNullException("children");
+
+			bool change = false;
+
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				foreach (TChild child in children)
+					change |= AddChild(child, false);
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
+
+			if (change)
+				OnChildrenChanged.Raise(this);
+		}
+
+		/// <summary>
 		/// Adds the child to the core.
 		/// </summary>
 		/// <param name="child"></param>
 		/// <returns>False if a child with the given id already exists.</returns>
 		public bool AddChild(TChild child)
 		{
-// ReSharper disable once CompareNonConstrainedGenericWithNull
+			return AddChild(child, true);
+		}
+
+		/// <summary>
+		/// Adds the child to the core.
+		/// </summary>
+		/// <param name="child"></param>
+		/// <param name="raise"></param>
+		/// <returns>False if a child with the given id already exists.</returns>
+		private bool AddChild(TChild child, bool raise)
+		{
+			// ReSharper disable once CompareNonConstrainedGenericWithNull
 			if (child == null)
 				throw new ArgumentNullException("child");
 
@@ -392,7 +427,7 @@ namespace ICD.Connect.Settings
 				{
 					if (!m_TypeToChildren.ContainsKey(type))
 						m_TypeToChildren[type] = new List<TChild>();
-					m_TypeToChildren[type].AddSorted(child, new ChildComparer());
+					m_TypeToChildren[type].AddSorted(child, ChildComparer.Instance);
 				}
 
 				m_Children.Add(child.Id, child);
@@ -404,7 +439,9 @@ namespace ICD.Connect.Settings
 				m_ChildrenSection.Leave();
 			}
 
-			OnChildrenChanged.Raise(this);
+			if (raise)
+				OnChildrenChanged.Raise(this);
+
 			return true;
 		}
 
@@ -473,6 +510,10 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		private sealed class ChildComparer : IComparer<TChild>
 		{
+			private static ChildComparer s_Instance;
+
+			public static ChildComparer Instance { get { return s_Instance = s_Instance ?? new ChildComparer(); } }
+
 			public int Compare(TChild x, TChild y)
 			{
 // ReSharper disable once CompareNonConstrainedGenericWithNull
