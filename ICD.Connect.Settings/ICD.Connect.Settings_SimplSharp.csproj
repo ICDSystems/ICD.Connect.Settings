@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractOriginatorCollection.cs" />
+    <Compile Include="AbstractProxyOriginator.cs" />
     <Compile Include="Attributes\KrangPluginAttribute.cs" />
     <Compile Include="Attributes\KrangSettingsAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\AbstractSettingsPropertyAttribute.cs" />
@@ -86,7 +87,9 @@
     <Compile Include="IdUtils.cs" />
     <Compile Include="IOriginatorCollection.cs" />
     <None Include="ObfuscationSettings.cs" />
+    <Compile Include="IProxyOriginator.cs" />
     <Compile Include="LibraryUtils.cs" />
+    <Compile Include="NullSettings.cs" />
     <Compile Include="OriginatorPermissable.cs" />
     <Compile Include="PluginFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -99,6 +102,7 @@
     <Compile Include="Core\IDeviceFactory.cs" />
     <Compile Include="IOriginator.cs" />
     <Compile Include="ISettings.cs" />
+    <Compile Include="ProxyOriginator.cs" />
     <Compile Include="SettingsCollection.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
