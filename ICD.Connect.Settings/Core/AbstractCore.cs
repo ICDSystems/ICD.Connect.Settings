@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ICD.Connect.Settings.Core
+﻿namespace ICD.Connect.Settings.Core
 {
 	public abstract class AbstractCore<TSettings> : AbstractOriginator<TSettings>, ICore
 		where TSettings : ICoreSettings, new()
