@@ -47,7 +47,7 @@ namespace ICD.Connect.Settings
 		/// <param name="settings"></param>
 		public static void SaveSettings(ISettings settings)
 		{
-			SaveSettings(settings, false);
+			SaveSettings(settings, true);
 		}
 
 		/// <summary>
