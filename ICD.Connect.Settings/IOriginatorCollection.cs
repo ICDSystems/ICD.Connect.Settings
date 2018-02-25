@@ -117,6 +117,14 @@ namespace ICD.Connect.Settings
 		IEnumerable<TInstanceType> GetChildren<TInstanceType>() where TInstanceType : TChild;
 
 		/// <summary>
+		/// Gets the children matching the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="selector"></param>
+		/// <returns></returns>
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>(Func<TInstanceType, bool> selector) where TInstanceType : TChild;
+
+		/// <summary>
 		/// Gets the children with the given ids, matching the given type.
 		/// </summary>
 		/// <typeparam name="TInstanceType"></typeparam>

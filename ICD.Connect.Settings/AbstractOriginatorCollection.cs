@@ -115,6 +115,20 @@ namespace ICD.Connect.Settings
 		public IEnumerable<TInstance> GetChildren<TInstance>()
 			where TInstance : TChild
 		{
+			return GetChildren<TInstance>(c => true);
+		}
+
+		/// <summary>
+		/// Gets the children matching the given type.
+		/// </summary>
+		/// <typeparam name="TInstance"></typeparam>
+		/// <param name="selector"></param>
+		/// <returns></returns>
+		public IEnumerable<TInstance> GetChildren<TInstance>(Func<TInstance, bool> selector) where TInstance : TChild
+		{
+			if (selector == null)
+				throw new ArgumentNullException("selector");
+
 			m_ChildrenSection.Enter();
 
 			try
@@ -123,7 +137,9 @@ namespace ICD.Connect.Settings
 				if (!m_TypeToChildren.TryGetValue(typeof(TInstance), out children))
 					return Enumerable.Empty<TInstance>();
 
-				return children.Cast<TInstance>().ToArray(children.Count);
+				return children.Cast<TInstance>()
+				               .Where(selector)
+				               .ToArray();
 			}
 			finally
 			{
