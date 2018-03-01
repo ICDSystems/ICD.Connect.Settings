@@ -79,8 +79,10 @@
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
     <Compile Include="Core\AbstractCore.cs" />
     <Compile Include="Core\AbstractCoreSettings.cs" />
+    <Compile Include="Core\Core.cs" />
     <Compile Include="Core\CoreDeviceFactory.cs" />
     <Compile Include="Core\CoreOriginatorCollection.cs" />
+    <Compile Include="Core\CoreSettings.cs" />
     <Compile Include="Core\ICore.cs" />
     <Compile Include="FileOperations.cs" />
     <Compile Include="IdUtils.cs" />
