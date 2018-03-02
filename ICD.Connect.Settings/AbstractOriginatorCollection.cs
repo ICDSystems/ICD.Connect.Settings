@@ -13,7 +13,8 @@ namespace ICD.Connect.Settings
 	{
 		public event EventHandler OnChildrenChanged;
 
-		private readonly Dictionary<Type, List<TChild>> m_TypeToChildren;
+		private readonly Dictionary<Type, List<int>> m_TypeToChildren;
+		private readonly List<int> m_ChildrenOrdered;
 		private readonly Dictionary<int, TChild> m_Children;
 		private readonly SafeCriticalSection m_ChildrenSection;
 
@@ -47,7 +48,8 @@ namespace ICD.Connect.Settings
 		/// <param name="children"></param>
 		protected AbstractOriginatorCollection(IEnumerable<TChild> children)
 		{
-			m_TypeToChildren = new Dictionary<Type, List<TChild>>();
+			m_TypeToChildren = new Dictionary<Type, List<int>>();
+			m_ChildrenOrdered = new List<int>();
 			m_Children = new Dictionary<int, TChild>();
 			m_ChildrenSection = new SafeCriticalSection();
 
@@ -61,22 +63,7 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		public void Clear()
 		{
-			m_ChildrenSection.Enter();
-
-			try
-			{
-				if (Count == 0)
-					return;
-
-				m_TypeToChildren.Clear();
-				m_Children.Clear();
-			}
-			finally
-			{
-				m_ChildrenSection.Leave();
-			}
-
-			OnChildrenChanged.Raise(this);
+			SetChildren(Enumerable.Empty<TChild>());
 		}
 
 		/// <summary>
@@ -85,17 +72,29 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public void SetChildren(IEnumerable<TChild> children)
 		{
+			bool change;
+
 			m_ChildrenSection.Enter();
 
 			try
 			{
-				Clear();
-				children.ForEach(c => AddChild(c));
+				change = m_Children.Count > 0;
+
+				m_Children.Clear();
+				m_ChildrenOrdered.Clear();
+
+				foreach (List<int> cache in m_TypeToChildren.Values)
+					cache.Clear();
+
+				change = children.Aggregate(change, (current, item) => current | AddChildInternal(item));
 			}
 			finally
 			{
 				m_ChildrenSection.Leave();
 			}
+
+			if (change)
+				OnChildrenChanged.Raise(this);
 		}
 
 		/// <summary>
@@ -133,11 +132,12 @@ namespace ICD.Connect.Settings
 
 			try
 			{
-				List<TChild> children;
+				List<int> children;
 				if (!m_TypeToChildren.TryGetValue(typeof(TInstance), out children))
 					return Enumerable.Empty<TInstance>();
 
-				return children.Cast<TInstance>()
+				return children.Select(c => m_Children[c])
+				               .Cast<TInstance>()
 				               .Where(selector)
 				               .ToArray();
 			}
@@ -184,7 +184,7 @@ namespace ICD.Connect.Settings
 
 			try
 			{
-				List<TChild> children;
+				List<int> children;
 				m_TypeToChildren.TryGetValue(typeof(TInstance), out children);
 
 				if (children == null || children.Count == 0)
@@ -193,7 +193,9 @@ namespace ICD.Connect.Settings
 					                                                  typeof(TInstance).Name));
 				}
 
-				return (TInstance)children[0];
+				return children.Select(c => m_Children[c])
+				               .Cast<TInstance>()
+				               .First();
 			}
 			finally
 			{
@@ -312,7 +314,7 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public IEnumerable<int> GetChildrenIds()
 		{
-			return m_ChildrenSection.Execute(() => m_Children.Keys);
+			return m_ChildrenSection.Execute(() => m_Children.Keys.ToArray(m_Children.Count));
 		}
 
 		/// <summary>
@@ -342,7 +344,8 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="ids"></param>
 		/// <returns></returns>
-		public bool HasChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild
+		public bool HasChildren<TInstanceType>(IEnumerable<int> ids)
+			where TInstanceType : TChild
 		{
 			m_ChildrenSection.Enter();
 
@@ -373,7 +376,30 @@ namespace ICD.Connect.Settings
 		/// <returns>False if a child with the given id already exists.</returns>
 		public bool AddChild(TChild child)
 		{
-// ReSharper disable once CompareNonConstrainedGenericWithNull
+			bool output = AddChildInternal(child);
+			if (output)
+				OnChildrenChanged.Raise(this);
+
+			return output;
+		}
+
+		/// <summary>
+		/// Removes the child from the core.
+		/// </summary>
+		/// <param name="child"></param>
+		/// <returns>False if the core does not contain the child.</returns>
+		public bool RemoveChild(TChild child)
+		{
+			bool output = RemoveChildInternal(child);
+			if (output)
+				OnChildrenChanged.Raise(this);
+
+			return output;
+		}
+
+		private bool AddChildInternal(TChild child)
+		{
+			// ReSharper disable once CompareNonConstrainedGenericWithNull
 			if (child == null)
 				throw new ArgumentNullException("child");
 
@@ -387,11 +413,12 @@ namespace ICD.Connect.Settings
 				foreach (Type type in child.GetType().GetAllTypes())
 				{
 					if (!m_TypeToChildren.ContainsKey(type))
-						m_TypeToChildren[type] = new List<TChild>();
-					m_TypeToChildren[type].AddSorted(child, new ChildComparer());
+						m_TypeToChildren[type] = new List<int>();
+					m_TypeToChildren[type].AddSorted(child.Id, Comparer<int>.Default);
 				}
 
 				m_Children.Add(child.Id, child);
+				m_ChildrenOrdered.AddSorted(child.Id);
 
 				ChildAdded(child);
 			}
@@ -400,7 +427,38 @@ namespace ICD.Connect.Settings
 				m_ChildrenSection.Leave();
 			}
 
-			OnChildrenChanged.Raise(this);
+			return true;
+		}
+
+		private bool RemoveChildInternal(TChild child)
+		{
+			// ReSharper disable once CompareNonConstrainedGenericWithNull
+			if (child == null)
+				throw new ArgumentNullException("child");
+
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				if (!ContainsChild(child.Id))
+					return false;
+
+				foreach (Type type in child.GetType().GetAllTypes())
+				{
+					if (m_TypeToChildren.ContainsKey(type))
+						m_TypeToChildren[type].Remove(child.Id);
+				}
+
+				m_Children.Remove(child.Id);
+				m_ChildrenOrdered.Remove(child.Id);
+
+				ChildRemoved(child);
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
+
 			return true;
 		}
 
@@ -413,39 +471,11 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Removes the child from the core.
+		/// Called each time a child is removed from the collection before any events are raised.
 		/// </summary>
 		/// <param name="child"></param>
-		/// <returns>False if the core does not contain the child.</returns>
-		public bool RemoveChild(TChild child)
+		protected virtual void ChildRemoved(TChild child)
 		{
-// ReSharper disable once CompareNonConstrainedGenericWithNull
-			if (child == null)
-				throw new ArgumentNullException("child");
-
-			m_ChildrenSection.Enter();
-
-			try
-			{
-				if (!ContainsChild(child.Id))
-					return false;
-
-				if (!m_Children.Remove(child.Id))
-					return false;
-
-				foreach (Type type in child.GetType().GetAllTypes())
-				{
-					if (m_TypeToChildren.ContainsKey(type))
-						m_TypeToChildren[type].Remove(child);
-				}
-			}
-			finally
-			{
-				m_ChildrenSection.Leave();
-			}
-
-			OnChildrenChanged.Raise(this);
-			return true;
 		}
 
 		#endregion
@@ -463,24 +493,5 @@ namespace ICD.Connect.Settings
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Allows for sorting of children.
-		/// </summary>
-		private sealed class ChildComparer : IComparer<TChild>
-		{
-			public int Compare(TChild x, TChild y)
-			{
-// ReSharper disable once CompareNonConstrainedGenericWithNull
-				if (x == null)
-					throw new ArgumentNullException("x");
-
-// ReSharper disable once CompareNonConstrainedGenericWithNull
-				if (y == null)
-					throw new ArgumentNullException("y");
-
-				return x.Id - y.Id;
-			}
-		}
 	}
 }
