@@ -10,7 +10,7 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
 {
-	public abstract class AbstractOriginator<T> : IOriginator, IStateDisposable
+	public abstract class AbstractOriginator<T> : IOriginator<T>, IStateDisposable
 		where T : ISettings, new()
 	{
 		/// <summary>

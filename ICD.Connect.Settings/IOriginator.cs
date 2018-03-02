@@ -101,6 +101,29 @@ namespace ICD.Connect.Settings
 		#endregion
 	}
 
+	public interface IOriginator<TSettings> : IOriginator
+		where TSettings : ISettings
+	{
+		/// <summary>
+		/// Copies the current instance settings.
+		/// </summary>
+		/// <returns></returns>
+		new TSettings CopySettings();
+
+		/// <summary>
+		/// Copies the current instance properties to the settings instance. 
+		/// </summary>
+		/// <param name="settings"></param>
+		void CopySettings(TSettings settings);
+
+		/// <summary>
+		/// Applies the settings to the instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		void ApplySettings(TSettings settings, IDeviceFactory factory);
+	}
+
 	public static class OriginatorExtensions
 	{
 		/// <summary>
