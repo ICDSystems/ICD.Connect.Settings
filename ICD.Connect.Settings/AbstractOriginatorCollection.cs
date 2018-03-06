@@ -403,6 +403,9 @@ namespace ICD.Connect.Settings
 			if (child == null)
 				throw new ArgumentNullException("child");
 
+			if (child.Id <= 0)
+				throw new ArgumentException("Child must have an id greater than 0");
+
 			m_ChildrenSection.Enter();
 
 			try
