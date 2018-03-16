@@ -119,7 +119,7 @@ namespace ICD.Connect.Settings
 			TSettings settings = Activator.CreateInstance<TSettings>();
 
 			// Ensure the new core settings don't default to an id of 0.
-			settings.Id = 1;
+			settings.Id = IdUtils.ID_CORE;
 
 			LoadCoreSettings(core, settings);
 		}
