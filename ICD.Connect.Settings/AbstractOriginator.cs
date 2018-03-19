@@ -171,6 +171,7 @@ namespace ICD.Connect.Settings
 		{
 			settings.Id = Id;
 			settings.Name = Name;
+			settings.CombineName = CombineName;
 			settings.Permissions = (Permissions ?? Enumerable.Empty<Permission>()).ToList();
 
 			CopySettingsFinal(settings);
@@ -195,6 +196,7 @@ namespace ICD.Connect.Settings
 
 			Id = settings.Id;
 			Name = settings.Name;
+			CombineName = settings.CombineName;
 			Permissions = (settings.Permissions ?? Enumerable.Empty<Permission>()).ToList();
 
 			ResetPermissions();
@@ -222,6 +224,7 @@ namespace ICD.Connect.Settings
 
 			Id = 0;
 			Name = null;
+			CombineName = null;
 			Permissions = Enumerable.Empty<Permission>();
 
 			ResetPermissions();
