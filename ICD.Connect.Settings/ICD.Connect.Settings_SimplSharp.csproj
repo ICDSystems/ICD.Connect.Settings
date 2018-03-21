@@ -75,13 +75,16 @@
     <Compile Include="Attributes\KrangSettingsAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\AbstractSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\HiddenSettingsPropertyAttribute.cs" />
-    <Compile Include="Attributes\SettingsProperties\IpIdSettingsPropertyAttribute.cs" />
+    <Compile Include="Attributes\SettingsProperties\CrestronByteSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\OriginatorIdSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
+    <Compile Include="Comparers\OriginatorIdComparer.cs" />
     <Compile Include="Core\AbstractCore.cs" />
     <Compile Include="Core\AbstractCoreSettings.cs" />
+    <Compile Include="Core\Core.cs" />
     <Compile Include="Core\CoreDeviceFactory.cs" />
     <Compile Include="Core\CoreOriginatorCollection.cs" />
+    <Compile Include="Core\CoreSettings.cs" />
     <Compile Include="Core\ICore.cs" />
     <Compile Include="FileOperations.cs" />
     <Compile Include="IdUtils.cs" />
