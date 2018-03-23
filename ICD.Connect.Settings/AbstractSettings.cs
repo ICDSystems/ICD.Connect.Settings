@@ -4,6 +4,8 @@ using ICD.Common.Permissions;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 using ICD.Connect.Settings.Core;
@@ -19,6 +21,8 @@ namespace ICD.Connect.Settings
 		public const string TYPE_ATTRIBUTE = "type";
 		public const string NAME_ELEMENT = "Name";
 		public const string COMBINE_NAME_ELEMENT = "CombineName";
+
+		protected ILoggerService Logger {get { return ServiceProvider.TryGetService<ILoggerService>(); }}
 
 		private const string PERMISSION_ELEMENT = "Permission";
 		private const string PERMISSIONS_ELEMENT = PERMISSION_ELEMENT + "s";
