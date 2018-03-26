@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.API;
 using ICD.Connect.API.Info;
 using ICD.Connect.Settings.Core;
@@ -33,6 +34,18 @@ namespace ICD.Connect.Settings
 			OnCommand = null;
 
 			base.DisposeFinal(disposing);
+		}
+
+		/// <summary>
+		/// Raises the OnCommand event with the given command.
+		/// </summary>
+		/// <param name="command"></param>
+		protected void SendCommand(ApiClassInfo command)
+		{
+			if (command == null)
+				throw new ArgumentNullException();
+
+			OnCommand.Raise(this, new ApiClassInfoEventArgs(command));
 		}
 
 		#region Settings
