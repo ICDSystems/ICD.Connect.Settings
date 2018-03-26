@@ -5,8 +5,8 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
 {
-    public abstract class AbstractProxyOriginator : AbstractOriginator<NullSettings>, IProxyOriginator
-    {
+	public abstract class AbstractProxyOriginator : AbstractOriginator<NullSettings>, IProxyOriginator
+	{
 		/// <summary>
 		/// Raised when the proxy originator makes an API request.
 		/// </summary>
@@ -37,15 +37,15 @@ namespace ICD.Connect.Settings
 
 		#region Settings
 
-		protected sealed override void ApplySettingsFinal(NullSettings settings, IDeviceFactory factory)
+		protected override sealed void ApplySettingsFinal(NullSettings settings, IDeviceFactory factory)
 		{
 		}
 
-		protected sealed override void ClearSettingsFinal()
+		protected override sealed void ClearSettingsFinal()
 		{
 		}
 
-		protected sealed override void CopySettingsFinal(NullSettings settings)
+		protected override sealed void CopySettingsFinal(NullSettings settings)
 		{
 		}
 
