@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Attributes;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
@@ -10,6 +11,7 @@ namespace ICD.Connect.Settings
 	/// <summary>
 	/// IOriginator represents an object that has settings.
 	/// </summary>
+	[ApiClass(typeof(ProxyOriginator))]
 	public interface IOriginator
 	{
 		/// <summary>
@@ -35,19 +37,19 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
-		[PublicAPI]
+		[ApiProperty(OriginatorApi.PROPERTY_ID, OriginatorApi.HELP_PROPERTY_ID)]
 		int Id { get; set; }
 
 		/// <summary>
 		/// The name of the originator.
 		/// </summary>
-		[PublicAPI]
+		[ApiProperty(OriginatorApi.PROPERTY_NAME, OriginatorApi.HELP_PROPERTY_NAME)]
 		string Name { get; set; }
 
 		/// <summary>
 		/// The name that is used for the originator while in a combine space.
 		/// </summary>
-		[PublicAPI]
+		[ApiProperty(OriginatorApi.PROPERTY_COMBINE_NAME, OriginatorApi.HELP_PROPERTY_COMBINE_NAME)]
 		string CombineName { get; set; }
 
 		/// <summary>
