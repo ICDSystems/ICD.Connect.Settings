@@ -6,11 +6,11 @@ namespace ICD.Connect.Settings.Comparers
 	public abstract class AbstractOriginatorIdComparer<T> : IComparer<T>
 		where T : IOriginator
 	{
-		private readonly PropertyComparer<T, int> m_IdComparer;
+		private readonly PredicateComparer<T, int> m_IdComparer;
 
 		protected AbstractOriginatorIdComparer()
 		{
-			m_IdComparer = new PropertyComparer<T, int>(Comparer<int>.Default, o => o.Id);
+			m_IdComparer = new PredicateComparer<T, int>(Comparer<int>.Default, o => o.Id);
 		}
 
 		public int Compare(T x, T y)
