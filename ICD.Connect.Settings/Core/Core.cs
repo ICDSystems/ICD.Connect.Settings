@@ -189,7 +189,7 @@ namespace ICD.Connect.Settings.Core
 		{
 			PermissionsManager permissionsManager = ServiceProvider.TryGetService<PermissionsManager>();
 			if (permissionsManager != null)
-				permissionsManager.SetDefaultPermissions(Permissions);
+				permissionsManager.SetDefaultPermissions(GetPermissions());
 		}
 
 		#endregion
