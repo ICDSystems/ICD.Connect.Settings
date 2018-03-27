@@ -28,6 +28,8 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		public event EventHandler OnSettingsApplied;
 
+		private readonly List<Permission> m_Permissions;
+
 		#region Properties
 
 		/// <summary>
@@ -51,11 +53,6 @@ namespace ICD.Connect.Settings
 		public bool IsDisposed { get; private set; }
 
 		/// <summary>
-		/// Set of permissions specific to this originator
-		/// </summary>
-		public IEnumerable<Permission> Permissions { get; private set; }
-
-		/// <summary>
 		/// When true this instance is serialized to the system config.
 		/// </summary>
 		public bool Serialize { get; set; }
@@ -66,6 +63,11 @@ namespace ICD.Connect.Settings
 		public ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
 		#endregion
+
+		protected AbstractOriginator()
+		{
+			m_Permissions = new List<Permission>();
+		}
 
 		~AbstractOriginator()
 		{
@@ -107,17 +109,16 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Clears the permissions stored in the PermissionsManager for this object
-		/// and sets them to the current permissions of the object.
+		/// Set of permissions specific to this originator
 		/// </summary>
-		public void ResetPermissions()
+		public IEnumerable<Permission> GetPermissions()
 		{
-			PermissionsManager permissionsManager = ServiceProvider.TryGetService<PermissionsManager>();
-			if (permissionsManager == null)
-				return;
+			return m_Permissions.ToList();
+		}	
 
-			permissionsManager.RemoveObjectPermissions(this);
-			permissionsManager.SetObjectPermissions(this, Permissions);
+		protected PermissionsManager PermissionsManager
+		{
+			get { return ServiceProvider.TryGetService<PermissionsManager>(); }
 		}
 
 		#endregion
@@ -148,6 +149,20 @@ namespace ICD.Connect.Settings
 			ClearSettings();
 		}
 
+		/// <summary>
+		/// Set of permissions specific to this originator
+		/// </summary>
+		private void SetPermissions(IEnumerable<Permission> permissions)
+		{
+			if (permissions == null)
+				throw new ArgumentNullException("permissions");
+
+			m_Permissions.Clear();
+			m_Permissions.AddRange(permissions);
+
+			PermissionsManager.SetObjectPermissions(this, m_Permissions);
+		}
+
 		#endregion
 
 		#region Settings
@@ -172,7 +187,7 @@ namespace ICD.Connect.Settings
 			settings.Id = Id;
 			settings.Name = Name;
 			settings.CombineName = CombineName;
-			settings.Permissions = (Permissions ?? Enumerable.Empty<Permission>()).ToList();
+			settings.Permissions = (GetPermissions() ?? Enumerable.Empty<Permission>()).ToList();
 
 			CopySettingsFinal(settings);
 		}
@@ -197,9 +212,7 @@ namespace ICD.Connect.Settings
 			Id = settings.Id;
 			Name = settings.Name;
 			CombineName = settings.CombineName;
-			Permissions = (settings.Permissions ?? Enumerable.Empty<Permission>()).ToList();
-
-			ResetPermissions();
+			SetPermissions(settings.Permissions ?? Enumerable.Empty<Permission>());
 
 			ApplySettingsFinal(settings, factory);
 
@@ -222,14 +235,13 @@ namespace ICD.Connect.Settings
 		{
 			OnSettingsClearing.Raise(this);
 
+			ClearSettingsFinal();
+
 			Id = 0;
 			Name = null;
 			CombineName = null;
-			Permissions = Enumerable.Empty<Permission>();
 
-			ResetPermissions();
-
-			ClearSettingsFinal();
+			SetPermissions(Enumerable.Empty<Permission>());
 
 			OnSettingsCleared.Raise(this);
 		}

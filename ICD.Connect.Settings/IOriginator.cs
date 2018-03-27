@@ -54,7 +54,7 @@ namespace ICD.Connect.Settings
 		/// Set of permissions specific to this originator
 		/// </summary>
 		[PublicAPI]
-		IEnumerable<Permission> Permissions { get; }
+		IEnumerable<Permission> GetPermissions();
 
 		/// <summary>
 		/// When true this instance is serialized to the system config.
