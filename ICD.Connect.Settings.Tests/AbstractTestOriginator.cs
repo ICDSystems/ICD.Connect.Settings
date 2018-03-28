@@ -19,7 +19,10 @@ namespace ICD.Connect.Settings.Tests
 
 		public string CombineName { get; set; }
 
-		public IEnumerable<Permission> Permissions { get { throw new NotImplementedException(); } }
+		public IEnumerable<Permission> GetPermissions()
+		{
+			throw new NotImplementedException();
+		}
 
 		public bool Serialize { get; set; }
 
