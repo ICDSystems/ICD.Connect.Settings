@@ -48,6 +48,17 @@ namespace ICD.Connect.Settings
 			OnCommand.Raise(this, new ApiClassInfoEventArgs(command));
 		}
 
+		/// <summary>
+		/// Builds and raises a call method command.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="parameters"></param>
+		protected void CallMethod(string name, params object[] parameters)
+		{
+			ApiClassInfo command = ApiCommandBuilder.CallMethodCommand(name, parameters);
+			SendCommand(command);
+		}
+
 		#region Settings
 
 		protected override sealed void ApplySettingsFinal(NullSettings settings, IDeviceFactory factory)
