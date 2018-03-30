@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Settings
+﻿namespace ICD.Connect.Settings.Proxies
 {
 	public sealed class ProxyOriginator : AbstractProxyOriginator
 	{
