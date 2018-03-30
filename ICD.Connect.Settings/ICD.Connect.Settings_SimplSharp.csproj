@@ -93,7 +93,6 @@
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="Proxies\IProxyOriginator.cs" />
     <Compile Include="LibraryUtils.cs" />
-    <Compile Include="NullSettings.cs" />
     <Compile Include="OriginatorApi.cs" />
     <Compile Include="OriginatorPermissable.cs" />
     <Compile Include="PluginFactory.cs" />
