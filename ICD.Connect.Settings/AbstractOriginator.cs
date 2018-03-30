@@ -6,6 +6,8 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings
@@ -61,6 +63,16 @@ namespace ICD.Connect.Settings
 		/// Logger for the originator.
 		/// </summary>
 		public ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
+
+		/// <summary>
+		/// Gets the name of the node.
+		/// </summary>
+		public virtual string ConsoleName { get { return string.IsNullOrEmpty(Name) ? GetType().Name : Name; } }
+
+		/// <summary>
+		/// Gets the help information for the node.
+		/// </summary>
+		public virtual string ConsoleHelp { get { return string.Empty; } }
 
 		#endregion
 
@@ -297,6 +309,37 @@ namespace ICD.Connect.Settings
 			}
 
 			ApplySettings((T)settings, factory);
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public virtual IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			return OriginatorConsole.GetConsoleNodes(this);
+		}
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public virtual void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			OriginatorConsole.BuildConsoleStatus(this, addRow);
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public virtual IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			return OriginatorConsole.GetConsoleCommands(this);
 		}
 
 		#endregion

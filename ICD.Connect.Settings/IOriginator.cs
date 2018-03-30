@@ -4,7 +4,9 @@ using ICD.Common.Permissions;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Attributes;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Proxies;
 
 namespace ICD.Connect.Settings
 {
@@ -12,7 +14,7 @@ namespace ICD.Connect.Settings
 	/// IOriginator represents an object that has settings.
 	/// </summary>
 	[ApiClass(typeof(ProxyOriginator))]
-	public interface IOriginator
+	public interface IOriginator : IConsoleNode
 	{
 		/// <summary>
 		/// Called when the settings start clearing.
@@ -51,12 +53,6 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_COMBINE_NAME, OriginatorApi.HELP_PROPERTY_COMBINE_NAME)]
 		string CombineName { get; set; }
-
-		/// <summary>
-		/// Set of permissions specific to this originator
-		/// </summary>
-		[PublicAPI]
-		IEnumerable<Permission> GetPermissions();
 
 		/// <summary>
 		/// When true this instance is serialized to the system config.
@@ -99,6 +95,12 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		[PublicAPI]
 		void ClearSettings();
+
+		/// <summary>
+		/// Set of permissions specific to this originator
+		/// </summary>
+		[PublicAPI]
+		IEnumerable<Permission> GetPermissions();
 
 		#endregion
 	}
