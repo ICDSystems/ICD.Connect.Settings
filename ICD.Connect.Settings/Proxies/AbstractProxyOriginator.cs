@@ -122,7 +122,7 @@ namespace ICD.Connect.Settings.Proxies
 		/// Gets the child console nodes.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		public virtual IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
 			return OriginatorConsole.GetConsoleNodes(this);
 		}
@@ -131,7 +131,7 @@ namespace ICD.Connect.Settings.Proxies
 		/// Calls the delegate for each console status item.
 		/// </summary>
 		/// <param name="addRow"></param>
-		public void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		public virtual void BuildConsoleStatus(AddStatusRowDelegate addRow)
 		{
 			OriginatorConsole.BuildConsoleStatus(this, addRow);
 		}
@@ -140,7 +140,7 @@ namespace ICD.Connect.Settings.Proxies
 		/// Gets the child console commands.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<IConsoleCommand> GetConsoleCommands()
+		public virtual IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
 			return OriginatorConsole.GetConsoleCommands(this);
 		}
