@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API;
 using ICD.Connect.API.Commands;
+using ICD.Connect.API.Info;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.API.Proxies;
 using ICD.Connect.Settings.Core;
@@ -115,6 +117,20 @@ namespace ICD.Connect.Settings.Proxies
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Override to build initialization commands on top of the current class info.
+		/// </summary>
+		/// <param name="command"></param>
+		protected override void Initialize(ApiClassInfo command)
+		{
+			base.Initialize(command);
+
+			ApiCommandBuilder.UpdateCommand(command)
+			                 .GetProperty(OriginatorApi.PROPERTY_NAME)
+			                 .GetProperty(OriginatorApi.PROPERTY_COMBINE_NAME)
+			                 .Complete();
+		}
 
 		#region Console
 
