@@ -67,6 +67,10 @@ namespace ICD.Connect.Settings.Proxies
 			yield break;
 		}
 
+		#endregion
+
+		#region Settings
+
 		/// <summary>
 		/// Copies the current instance settings.
 		/// </summary>
@@ -103,6 +107,10 @@ namespace ICD.Connect.Settings.Proxies
 			throw new NotSupportedException();
 		}
 
+		#endregion
+
+		#region Private Methods
+
 		/// <summary>
 		/// Override to release resources.
 		/// </summary>
@@ -115,8 +123,6 @@ namespace ICD.Connect.Settings.Proxies
 
 			base.DisposeFinal(disposing);
 		}
-
-		#endregion
 
 		/// <summary>
 		/// Override to build initialization commands on top of the current class info.
@@ -131,6 +137,29 @@ namespace ICD.Connect.Settings.Proxies
 			                 .GetProperty(OriginatorApi.PROPERTY_COMBINE_NAME)
 			                 .Complete();
 		}
+
+		/// <summary>
+		/// Updates the proxy with a property result.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="result"></param>
+		protected override void ParseProperty(string name, ApiResult result)
+		{
+			base.ParseProperty(name, result);
+
+			switch (name)
+			{
+				case OriginatorApi.PROPERTY_NAME:
+					Name = result.GetValue<string>();
+					break;
+
+				case OriginatorApi.PROPERTY_COMBINE_NAME:
+					CombineName = result.GetValue<string>();
+					break;
+			}
+		}
+
+		#endregion
 
 		#region Console
 
