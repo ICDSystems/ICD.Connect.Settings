@@ -51,10 +51,15 @@ namespace ICD.Connect.Settings
 		string CombineName { get; set; }
 
 		/// <summary>
-		/// Set of permissions specific to this originator
+		/// Human readable text describing the originator.
 		/// </summary>
-		[PublicAPI]
-		IEnumerable<Permission> GetPermissions();
+		string Description { get; set; }
+
+		/// <summary>
+		/// Controls the visibility of the originator to the end user.
+		/// Useful for hiding logical switchers, duplicate sources, etc.
+		/// </summary>
+		bool Hide { get; set; }
 
 		/// <summary>
 		/// When true this instance is serialized to the system config.
@@ -69,6 +74,12 @@ namespace ICD.Connect.Settings
 		#endregion
 
 		#region Methods
+
+		/// <summary>
+		/// Set of permissions specific to this originator
+		/// </summary>
+		[PublicAPI]
+		IEnumerable<Permission> GetPermissions();
 
 		/// <summary>
 		/// Copies the current instance settings.
