@@ -47,6 +47,17 @@ namespace ICD.Connect.Settings
 		string CombineName { get; set; }
 
 		/// <summary>
+		/// Human readable text describing the originator.
+		/// </summary>
+		string Description { get; set; }
+
+		/// <summary>
+		/// Controls the visibility of the originator to the end user.
+		/// Useful for hiding logical switchers, duplicate sources, etc.
+		/// </summary>
+		bool Hide { get; set; }
+
+		/// <summary>
 		/// The lookup name for the settings (typically the name of the originator).
 		/// </summary>
 		string FactoryName { get; }

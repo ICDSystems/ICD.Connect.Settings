@@ -21,6 +21,8 @@ namespace ICD.Connect.Settings
 		public const string TYPE_ATTRIBUTE = "type";
 		public const string NAME_ELEMENT = "Name";
 		public const string COMBINE_NAME_ELEMENT = "CombineName";
+		private const string HIDE_ELEMENT = "Hide";
+		private const string DESCRIPTION_ELEMENT = "Description";
 
 		protected ILoggerService Logger {get { return ServiceProvider.TryGetService<ILoggerService>(); }}
 
@@ -76,6 +78,17 @@ namespace ICD.Connect.Settings
 		public string CombineName { get; set; }
 
 		/// <summary>
+		/// Human readable text describing the originator.
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Controls the visibility of the originator to the end user.
+		/// Useful for hiding logical switchers, duplicate sources, etc.
+		/// </summary>
+		public bool Hide { get; set; }
+
+		/// <summary>
 		/// Gets the xml element.
 		/// </summary>
 		protected abstract string Element { get; }
@@ -127,6 +140,8 @@ namespace ICD.Connect.Settings
 			Id = XmlUtils.GetAttributeAsInt(xml, ID_ATTRIBUTE);
 			Name = XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT);
 			CombineName = XmlUtils.TryReadChildElementContentAsString(xml, COMBINE_NAME_ELEMENT);
+			Description = XmlUtils.TryReadChildElementContentAsString(xml, DESCRIPTION_ELEMENT);
+			Hide = XmlUtils.TryReadChildElementContentAsBoolean(xml, HIDE_ELEMENT) ?? false;
 			Permissions = XmlUtils.ReadListFromXml(xml, PERMISSIONS_ELEMENT, PERMISSION_ELEMENT, e => Permission.FromXml(e));
 		}
 
@@ -139,10 +154,17 @@ namespace ICD.Connect.Settings
 			if (writer == null)
 				throw new ArgumentNullException("writer");
 
-			WriteStartElement(writer);
+			writer.WriteStartElement(Element);
+			writer.WriteAttributeString(ID_ATTRIBUTE, Id.ToString());
+			writer.WriteAttributeString(TYPE_ATTRIBUTE, FactoryName);
 			{
-				WriteNameElement(writer);
+				writer.WriteElementString(NAME_ELEMENT, Name);
+				writer.WriteElementString(COMBINE_NAME_ELEMENT, CombineName);
+				writer.WriteElementString(DESCRIPTION_ELEMENT, Description);
+				
 				WriteElements(writer);
+
+				writer.WriteElementString(HIDE_ELEMENT, IcdXmlConvert.ToString(Hide));
 			}
 			writer.WriteEndElement();
 		}
@@ -197,61 +219,6 @@ namespace ICD.Connect.Settings
 		public virtual bool HasDeviceDependency(int id)
 		{
 			return false;
-		}
-
-		#endregion
-
-		#region Protected Methods
-
-		/// <summary>
-		/// Writes the start element to xml.
-		/// </summary>
-		/// <param name="writer"></param>
-		private void WriteStartElement(IcdXmlTextWriter writer)
-		{
-			if (writer == null)
-				throw new ArgumentNullException("writer");
-
-			writer.WriteStartElement(Element);
-			WriteIdAttribute(writer);
-			WriteTypeAttribute(writer);
-		}
-
-		/// <summary>
-		/// Writes the id attribute to xml.
-		/// </summary>
-		/// <param name="writer"></param>
-		private void WriteIdAttribute(IcdXmlTextWriter writer)
-		{
-			if (writer == null)
-				throw new ArgumentNullException("writer");
-
-			writer.WriteAttributeString(ID_ATTRIBUTE, Id.ToString());
-		}
-
-		/// <summary>
-		/// Writes the type element to xml.
-		/// </summary>
-		/// <param name="writer"></param>
-		private void WriteTypeAttribute(IcdXmlTextWriter writer)
-		{
-			if (writer == null)
-				throw new ArgumentNullException("writer");
-
-			writer.WriteAttributeString(TYPE_ATTRIBUTE, FactoryName);
-		}
-
-		/// <summary>
-		/// Writes the name element to xml.
-		/// </summary>
-		/// <param name="writer"></param>
-		private void WriteNameElement(IcdXmlTextWriter writer)
-		{
-			if (writer == null)
-				throw new ArgumentNullException("writer");
-
-			writer.WriteElementString(NAME_ELEMENT, Name);
-			writer.WriteElementString(COMBINE_NAME_ELEMENT, CombineName);
 		}
 
 		#endregion
