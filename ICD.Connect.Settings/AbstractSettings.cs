@@ -127,7 +127,7 @@ namespace ICD.Connect.Settings
 			Id = XmlUtils.GetAttributeAsInt(xml, ID_ATTRIBUTE);
 			Name = XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT);
 			CombineName = XmlUtils.TryReadChildElementContentAsString(xml, COMBINE_NAME_ELEMENT);
-			Permissions = GetPermissionsFromXml(xml);
+			Permissions = XmlUtils.ReadListFromXml(xml, PERMISSIONS_ELEMENT, PERMISSION_ELEMENT, e => Permission.FromXml(e));
 		}
 
 		/// <summary>
@@ -197,21 +197,6 @@ namespace ICD.Connect.Settings
 		public virtual bool HasDeviceDependency(int id)
 		{
 			return false;
-		}
-
-		/// <summary>
-		/// Gets the set of permissions from the xml element
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		private static IEnumerable<Permission> GetPermissionsFromXml(string xml)
-		{
-			string permissionsElement;
-			if (XmlUtils.TryGetChildElementAsString(xml, PERMISSIONS_ELEMENT, out permissionsElement))
-			{
-				foreach (string permission in XmlUtils.GetChildElementsAsString(permissionsElement, PERMISSION_ELEMENT))
-					yield return Permission.FromXml(permission);
-			}
 		}
 
 		#endregion

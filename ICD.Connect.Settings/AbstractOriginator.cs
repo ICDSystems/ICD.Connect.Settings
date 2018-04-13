@@ -62,6 +62,11 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		public ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
+		protected PermissionsManager PermissionsManager
+		{
+			get { return ServiceProvider.TryGetService<PermissionsManager>(); }
+		}
+
 		#endregion
 
 		protected AbstractOriginator()
@@ -114,11 +119,6 @@ namespace ICD.Connect.Settings
 		public IEnumerable<Permission> GetPermissions()
 		{
 			return m_Permissions.ToList();
-		}	
-
-		protected PermissionsManager PermissionsManager
-		{
-			get { return ServiceProvider.TryGetService<PermissionsManager>(); }
 		}
 
 		#endregion
