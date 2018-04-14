@@ -113,12 +113,6 @@ namespace ICD.Connect.Settings
 		[PublicAPI]
 		void ClearSettings();
 
-		/// <summary>
-		/// Set of permissions specific to this originator
-		/// </summary>
-		[PublicAPI]
-		IEnumerable<Permission> GetPermissions();
-
 		#endregion
 	}
 
