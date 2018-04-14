@@ -21,6 +21,17 @@ namespace ICD.Connect.Settings.Tests
 
 		public string CombineName { get; set; }
 
+		/// <summary>
+		/// Human readable text describing the originator.
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Controls the visibility of the originator to the end user.
+		/// Useful for hiding logical switchers, duplicate sources, etc.
+		/// </summary>
+		public bool Hide { get; set; }
+
 		public IEnumerable<Permission> GetPermissions()
 		{
 			throw new NotImplementedException();

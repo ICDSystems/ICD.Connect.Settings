@@ -50,6 +50,17 @@ namespace ICD.Connect.Settings
 		public string CombineName { get; set; }
 
 		/// <summary>
+		/// Human readable text describing the originator.
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Controls the visibility of the originator to the end user.
+		/// Useful for hiding logical switchers, duplicate sources, etc.
+		/// </summary>
+		public bool Hide { get; set; }
+
+		/// <summary>
 		/// Returns true if this instance has been disposed.
 		/// </summary>
 		public bool IsDisposed { get; private set; }
@@ -73,6 +84,11 @@ namespace ICD.Connect.Settings
 		/// Gets the help information for the node.
 		/// </summary>
 		public virtual string ConsoleHelp { get { return string.Empty; } }
+
+		protected PermissionsManager PermissionsManager
+		{
+			get { return ServiceProvider.TryGetService<PermissionsManager>(); }
+		}
 
 		#endregion
 
@@ -126,11 +142,6 @@ namespace ICD.Connect.Settings
 		public IEnumerable<Permission> GetPermissions()
 		{
 			return m_Permissions.ToList();
-		}	
-
-		protected PermissionsManager PermissionsManager
-		{
-			get { return ServiceProvider.TryGetService<PermissionsManager>(); }
 		}
 
 		#endregion
@@ -199,6 +210,8 @@ namespace ICD.Connect.Settings
 			settings.Id = Id;
 			settings.Name = Name;
 			settings.CombineName = CombineName;
+			settings.Description = Description;
+			settings.Hide = Hide;
 			settings.Permissions = (GetPermissions() ?? Enumerable.Empty<Permission>()).ToList();
 
 			CopySettingsFinal(settings);
@@ -224,6 +237,9 @@ namespace ICD.Connect.Settings
 			Id = settings.Id;
 			Name = settings.Name;
 			CombineName = settings.CombineName;
+			Description = settings.Description;
+			Hide = settings.Hide;
+
 			SetPermissions(settings.Permissions ?? Enumerable.Empty<Permission>());
 
 			ApplySettingsFinal(settings, factory);
@@ -252,6 +268,8 @@ namespace ICD.Connect.Settings
 			Id = 0;
 			Name = null;
 			CombineName = null;
+			Description = null;
+			Hide = false;
 
 			SetPermissions(Enumerable.Empty<Permission>());
 
