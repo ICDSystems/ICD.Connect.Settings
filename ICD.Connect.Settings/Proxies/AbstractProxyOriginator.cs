@@ -36,6 +36,17 @@ namespace ICD.Connect.Settings.Proxies
 		public string CombineName { get; set; }
 
 		/// <summary>
+		/// Human readable text describing the originator.
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Controls the visibility of the originator to the end user.
+		/// Useful for hiding logical switchers, duplicate sources, etc.
+		/// </summary>
+		public bool Hide { get; set; }
+
+		/// <summary>
 		/// When true this instance is serialized to the system config.
 		/// </summary>
 		public bool Serialize { get { return false; } set { throw new NotSupportedException(); } }
@@ -135,6 +146,8 @@ namespace ICD.Connect.Settings.Proxies
 			ApiCommandBuilder.UpdateCommand(command)
 			                 .GetProperty(OriginatorApi.PROPERTY_NAME)
 			                 .GetProperty(OriginatorApi.PROPERTY_COMBINE_NAME)
+							 .GetProperty(OriginatorApi.PROPERTY_DESCRIPTION)
+							 .GetProperty(OriginatorApi.PROPERTY_HIDE)
 			                 .Complete();
 		}
 
@@ -155,6 +168,14 @@ namespace ICD.Connect.Settings.Proxies
 
 				case OriginatorApi.PROPERTY_COMBINE_NAME:
 					CombineName = result.GetValue<string>();
+					break;
+
+				case OriginatorApi.PROPERTY_DESCRIPTION:
+					Description = result.GetValue<string>();
+					break;
+
+				case OriginatorApi.PROPERTY_HIDE:
+					Hide = result.GetValue<bool>();
 					break;
 			}
 		}

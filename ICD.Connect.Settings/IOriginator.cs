@@ -57,12 +57,14 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Human readable text describing the originator.
 		/// </summary>
+		[ApiProperty(OriginatorApi.PROPERTY_DESCRIPTION, OriginatorApi.HELP_PROPERTY_DESCRIPTION)]
 		string Description { get; set; }
 
 		/// <summary>
 		/// Controls the visibility of the originator to the end user.
 		/// Useful for hiding logical switchers, duplicate sources, etc.
 		/// </summary>
+		[ApiProperty(OriginatorApi.PROPERTY_HIDE, OriginatorApi.HELP_PROPERTY_HIDE)]
 		bool Hide { get; set; }
 
 		/// <summary>
