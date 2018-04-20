@@ -108,6 +108,8 @@
     <Compile Include="ISettings.cs" />
     <Compile Include="Proxies\ProxyOriginator.cs" />
     <Compile Include="SettingsCollection.cs" />
+    <Compile Include="Simpl\ISimplOriginator.cs" />
+    <Compile Include="SPlusInterfaces\AbstractSPlusOriginatorInterface.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>
