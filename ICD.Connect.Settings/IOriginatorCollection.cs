@@ -54,6 +54,14 @@ namespace ICD.Connect.Settings
 		bool ContainsChild(int id);
 
 		/// <summary>
+		/// Returns true if there is a child with the given id of the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		bool ContainsChild<TInstanceType>(int id) where TInstanceType : TChild;
+
+		/// <summary>
 		/// Gets the child with the given id.
 		/// </summary>
 		/// <param name="id"></param>

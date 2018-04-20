@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Attributes;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Proxies;
 
 namespace ICD.Connect.Settings
 {
 	/// <summary>
 	/// IOriginator represents an object that has settings.
 	/// </summary>
-	public interface IOriginator
+	[ApiClass(typeof(ProxyOriginator))]
+	public interface IOriginator : IConsoleNode
 	{
 		/// <summary>
 		/// Called when the settings start clearing.
@@ -35,30 +39,32 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
-		[PublicAPI]
+		[ApiProperty(OriginatorApi.PROPERTY_ID, OriginatorApi.HELP_PROPERTY_ID)]
 		int Id { get; set; }
 
 		/// <summary>
 		/// The name of the originator.
 		/// </summary>
-		[PublicAPI]
+		[ApiProperty(OriginatorApi.PROPERTY_NAME, OriginatorApi.HELP_PROPERTY_NAME)]
 		string Name { get; set; }
 
 		/// <summary>
 		/// The name that is used for the originator while in a combine space.
 		/// </summary>
-		[PublicAPI]
+		[ApiProperty(OriginatorApi.PROPERTY_COMBINE_NAME, OriginatorApi.HELP_PROPERTY_COMBINE_NAME)]
 		string CombineName { get; set; }
 
 		/// <summary>
 		/// Human readable text describing the originator.
 		/// </summary>
+		[ApiProperty(OriginatorApi.PROPERTY_DESCRIPTION, OriginatorApi.HELP_PROPERTY_DESCRIPTION)]
 		string Description { get; set; }
 
 		/// <summary>
 		/// Controls the visibility of the originator to the end user.
 		/// Useful for hiding logical switchers, duplicate sources, etc.
 		/// </summary>
+		[ApiProperty(OriginatorApi.PROPERTY_HIDE, OriginatorApi.HELP_PROPERTY_HIDE)]
 		bool Hide { get; set; }
 
 		/// <summary>

@@ -1,5 +1,8 @@
-﻿namespace ICD.Connect.Settings.Core
+﻿using ICD.Connect.API.Attributes;
+
+namespace ICD.Connect.Settings.Core
 {
+	[ApiClass("Core", "Contains the devices, panels, rooms etc for a control system.")]
 	public interface ICore : IOriginator
 	{
 		#region Properties

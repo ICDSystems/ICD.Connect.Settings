@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings.Tests
@@ -70,6 +72,43 @@ namespace ICD.Connect.Settings.Tests
 		}
 
 		public void ClearSettings()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Gets the name of the node.
+		/// </summary>
+		public string ConsoleName { get { throw new NotImplementedException(); } }
+
+		/// <summary>
+		/// Gets the help information for the node.
+		/// </summary>
+		public string ConsoleHelp { get { throw new NotImplementedException(); } }
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
 			throw new NotImplementedException();
 		}
