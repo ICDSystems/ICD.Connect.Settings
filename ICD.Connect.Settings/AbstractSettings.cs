@@ -7,6 +7,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 using ICD.Connect.Settings.Core;
 
@@ -96,12 +97,32 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Gets the originator factory name.
 		/// </summary>
-		public abstract string FactoryName { get; }
+		public virtual string FactoryName
+		{
+			get
+			{
+				KrangSettingsAttribute attribute = AttributeUtils.GetClassAttribute<KrangSettingsAttribute>(GetType());
+				if (attribute == null)
+					throw new InvalidOperationException(string.Format("{0} has no FactoryName", GetType().Name));
+
+				return attribute.FactoryName;
+			}
+		}
 
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-		public abstract Type OriginatorType { get; }
+		public virtual Type OriginatorType
+		{
+			get
+			{
+				KrangSettingsAttribute attribute = AttributeUtils.GetClassAttribute<KrangSettingsAttribute>(GetType());
+				if (attribute == null)
+					throw new InvalidOperationException(string.Format("{0} has no OriginatorType", GetType().Name));
+
+				return attribute.OriginatorType;
+			}
+		}
 
 		/// <summary>
 		/// Gets the list of permissions
