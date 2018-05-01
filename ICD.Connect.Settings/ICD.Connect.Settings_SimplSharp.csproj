@@ -79,6 +79,7 @@
     <Compile Include="Attributes\SettingsProperties\CrestronByteSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\OriginatorIdSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
+    <Compile Include="Attributes\SettingsProperties\IpAddressSettingsPropertyAttribute.cs" />
     <Compile Include="Comparers\OriginatorIdComparer.cs" />
     <Compile Include="Core\AbstractCore.cs" />
     <Compile Include="Core\AbstractCoreSettings.cs" />
