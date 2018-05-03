@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [4.1.0] - 2018-05-03
+### Added
+ - Added ip attribute to settings
+
 ## [4.0.0] - 2018-04-27
 ### Changed
  - KrangSettings factory name and originator type now inferred via reflection
