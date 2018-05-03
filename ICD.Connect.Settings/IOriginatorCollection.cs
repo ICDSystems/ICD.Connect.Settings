@@ -82,6 +82,7 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="id"></param>
 		/// <returns></returns>
+		[NotNull]
 		TInstanceType GetChild<TInstanceType>(int id) where TInstanceType : TChild;
 
 		/// <summary>
