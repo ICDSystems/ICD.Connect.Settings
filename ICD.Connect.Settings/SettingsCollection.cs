@@ -68,7 +68,8 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		/// <param name="writer"></param>
 		/// <param name="element"></param>
-		public void ToXml(IcdXmlTextWriter writer, string element)
+		/// <param name="childElement"></param>
+		public void ToXml(IcdXmlTextWriter writer, string element, string childElement)
 		{
 			m_CollectionSection.Enter();
 
@@ -77,7 +78,7 @@ namespace ICD.Connect.Settings
 				writer.WriteStartElement(element);
 				{
 					foreach (ISettings item in m_Collection.OrderValuesByKey())
-						item.ToXml(writer);
+						item.ToXml(writer, childElement);
 				}
 				writer.WriteEndElement();
 			}

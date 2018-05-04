@@ -20,6 +20,8 @@ namespace ICD.Connect.Settings
 	/// </summary>
 	public static class FileOperations
 	{
+		private const string ROOT_ELEMENT = "IcdConfig";
+
 		private const string CONFIG_LOCAL_PATH = "RoomConfig-Base.xml";
 		private const string LICENSE_LOCAL_PATH = "license";
 
@@ -47,7 +49,7 @@ namespace ICD.Connect.Settings
 		/// Serializes the settings to disk.
 		/// </summary>
 		/// <param name="settings"></param>
-		public static void SaveSettings(ISettings settings)
+		public static void SaveSettings(ICoreSettings settings)
 		{
 			SaveSettings(settings, true);
 		}
@@ -57,7 +59,7 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		/// <param name="settings"></param>
 		/// <param name="backup"></param>
-		public static void SaveSettings(ISettings settings, bool backup)
+		public static void SaveSettings(ICoreSettings settings, bool backup)
 		{
 			if (backup)
 				BackupSettings();
@@ -73,7 +75,7 @@ namespace ICD.Connect.Settings
 				using (IcdXmlTextWriter writer = new IcdXmlTextWriter(stream, new UTF8Encoding(false)))
 				{
 					WriteSettingsWarning(writer);
-					settings.ToXml(writer);
+					settings.ToXml(writer, ROOT_ELEMENT);
 				}
 			}
 
