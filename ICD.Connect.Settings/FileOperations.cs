@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using ICD.Common.Utils;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services;
@@ -7,9 +8,8 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronIO;
-using Crestron.SimplSharp.Reflection;
+using Activator = Crestron.SimplSharp.Reflection.Activator;
 #else
-using System;
 using System.IO;
 #endif
 
@@ -35,6 +35,12 @@ namespace ICD.Connect.Settings
 			where TSettings : ICoreSettings
 			where TCore : ICore
 		{
+			if (core == null)
+				throw new ArgumentNullException("core");
+
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
 			Logger.AddEntry(eSeverity.Notice, "Applying settings");
 
 			IDeviceFactory factory = new CoreDeviceFactory(settings);
@@ -49,6 +55,9 @@ namespace ICD.Connect.Settings
 		/// <param name="settings"></param>
 		public static void SaveSettings(ISettings settings)
 		{
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
 			SaveSettings(settings, true);
 		}
 
@@ -59,6 +68,9 @@ namespace ICD.Connect.Settings
 		/// <param name="backup"></param>
 		public static void SaveSettings(ISettings settings, bool backup)
 		{
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
 			if (backup)
 				BackupSettings();
 
@@ -111,6 +123,9 @@ namespace ICD.Connect.Settings
 		/// <param name="writer"></param>
 		private static void WriteSettingsWarning(IcdXmlTextWriter writer)
 		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+
 			writer.WriteComment("\nThis configuration is generated automatically.\n" +
 			                    "Only change this file if you know what you are doing.\n" +
 			                    "Any invalid data, whitespace, and comments will be deleted the next time this is generated.\n");
@@ -123,6 +138,9 @@ namespace ICD.Connect.Settings
 			where TSettings : ICoreSettings, new()
 			where TCore : ICore
 		{
+			if (core == null)
+				throw new ArgumentNullException("core");
+
 			TSettings settings = Activator.CreateInstance<TSettings>();
 
 			// Ensure the new core settings don't default to an id of 0.
@@ -138,6 +156,12 @@ namespace ICD.Connect.Settings
 			where TSettings : ICoreSettings
 			where TCore : ICore
 		{
+			if (core == null)
+				throw new ArgumentNullException("core");
+
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
 			string path = IcdConfigPath;
 
 			Logger.AddEntry(eSeverity.Notice, "Loading settings from {0}", path);
