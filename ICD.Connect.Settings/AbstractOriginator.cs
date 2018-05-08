@@ -73,6 +73,7 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Logger for the originator.
 		/// </summary>
+		[Obsolete]
 		public ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
 		/// <summary>
@@ -142,6 +143,17 @@ namespace ICD.Connect.Settings
 		public IEnumerable<Permission> GetPermissions()
 		{
 			return m_Permissions.ToList();
+		}
+
+		public void Log(eSeverity severity, string message)
+		{
+			Logger.AddEntry(severity, "{0} - {1}", this, message);
+		}
+
+		public void Log(eSeverity severity, string message, params object[] args)
+		{
+			message = string.Format(message, args);
+			Log(severity, message);
 		}
 
 		#endregion
