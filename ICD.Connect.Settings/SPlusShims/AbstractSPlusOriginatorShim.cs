@@ -4,9 +4,9 @@ using ICD.Common.Utils.Services;
 using ICD.Connect.Settings.Core;
 using ICD.Connect.Settings.Simpl;
 
-namespace ICD.Connect.Settings.SPlusInterfaces
+namespace ICD.Connect.Settings.SPlusShims
 {
-	public abstract class AbstractSPlusOriginatorInterface<TOriginator> : IDisposable
+	public abstract class AbstractSPlusOriginatorShim<TOriginator> : IDisposable
 		where TOriginator : ISimplOriginator
 	{
 		private TOriginator m_Originator;
