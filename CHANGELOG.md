@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
  - Begin standardizing originator log format
+ - Backup configs are saved with date in UTC ISO 8601 format
 
 ## [4.1.0] - 2018-05-03
 ### Added

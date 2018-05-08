@@ -89,7 +89,12 @@ namespace ICD.Connect.Settings
 				return;
 
 			string name = IcdPath.GetFileNameWithoutExtension(IcdConfigPath);
-			string date = IcdEnvironment.GetLocalTime().ToString("MM-dd-yyyy_HH-mm");
+
+			string date = IcdEnvironment.GetLocalTime()
+			                            .ToUniversalTime()
+			                            .ToString("s")
+			                            .Replace(':', '-') + 'Z';
+
 			string newName = string.Format("{0}_Backup_{1}", name, date);
 			string newPath = PathUtils.ChangeFilenameWithoutExt(IcdConfigPath, newName);
 
