@@ -169,7 +169,10 @@ namespace ICD.Connect.Settings
 			// Load XML config into string
 			string configXml = null;
 			if (IcdFile.Exists(path))
-				configXml = IcdFile.ReadToEnd(path, Encoding.UTF8);
+			{
+				configXml = IcdFile.ReadToEnd(path, new UTF8Encoding(false));
+				configXml = EncodingUtils.StripUtf8Bom(configXml);
+			}
 
 			bool save = false;
 
