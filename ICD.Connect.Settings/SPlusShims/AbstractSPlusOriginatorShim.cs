@@ -1,6 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Services;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings.Core;
 using ICD.Connect.Settings.Simpl;
 
@@ -11,7 +12,9 @@ namespace ICD.Connect.Settings.SPlusShims
 		where TOriginator : ISimplOriginator
 	{
 		private TOriginator m_Originator;
-		private ushort m_OriginatorId;
+		private int m_OriginatorId;
+
+		protected static ILoggerService Logger{get { return ServiceProvider.GetService<ILoggerService>(); }}
 
 		/// <summary>
 		/// Gets the wrapped originator.
@@ -32,7 +35,10 @@ namespace ICD.Connect.Settings.SPlusShims
 		protected AbstractSPlusOriginatorShim()
 		{
 			SPlusShimCore.ShimManager.RegisterShim((ISPlusOriginatorShim<ISimplOriginator>)this);
-		} 
+			ServiceProvider.GetService<ICore>().OnSettingsApplied += CoreLoaded;
+		}
+
+		
 
 		#region Methods
 
@@ -41,7 +47,8 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		public void Dispose()
 		{
-			SetOriginator(0);
+			SetOriginator(default(TOriginator));
+			ServiceProvider.GetService<ICore>().OnSettingsApplied -= CoreLoaded;
 		}
 
 		/// <summary>
@@ -49,12 +56,19 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		/// <param name="id"></param>
 		[PublicAPI("SPlus")]
-		public void SetOriginator(ushort id)
+		public void SetOriginator(int id)
 		{
-			m_OriginatorId = id;
+			TOriginator originator = GetOriginator(id);
+			SetOriginator(originator);
+		}
+
+		private void SetOriginator(TOriginator originator)
+		{
+			// ReSharper disable once CompareNonConstrainedGenericWithNull
+			m_OriginatorId = originator == null ? 0 : originator.Id;
 
 			Unsubscribe(m_Originator);
-			m_Originator = GetOriginator(id);
+			m_Originator = originator;
 			Subscribe(m_Originator);
 		}
 
@@ -71,6 +85,11 @@ namespace ICD.Connect.Settings.SPlusShims
 		{
 		}
 
+		private void CoreLoaded(object sender, EventArgs eventArgs)
+		{
+			SetOriginator(m_Originator);
+		}
+
 		#endregion
 
 		/// <summary>
@@ -78,10 +97,28 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		/// <returns></returns>
 		[CanBeNull]
-		private static TOriginator GetOriginator(ushort id)
+		private static TOriginator GetOriginator(int id)
 		{
 			IOriginator output;
-			ServiceProvider.GetService<ICore>().Originators.TryGetChild(id, out output);
+			bool childExists = ServiceProvider.GetService<ICore>().Originators.TryGetChild(id, out output);
+
+			if (!childExists)
+			{
+				Logger.AddEntry(eSeverity.Error,
+								"No Originator with id {0}",
+								id);
+			}
+
+			if (!(output is TOriginator))
+			{
+				Logger.AddEntry(eSeverity.Error,
+				                "Originator at id {0} is not of type {1}.",
+				                id,
+				                typeof(TOriginator).FullName);
+
+				return default(TOriginator);
+			}
+
 			return (TOriginator)output;
 		}
 	}
