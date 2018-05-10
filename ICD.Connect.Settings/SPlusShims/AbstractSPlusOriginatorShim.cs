@@ -8,13 +8,13 @@ using ICD.Connect.Settings.Simpl;
 namespace ICD.Connect.Settings.SPlusShims
 {
 	public abstract class AbstractSPlusOriginatorShim<TOriginator> : IDisposable,
-		ISPlusOriginatorShim<TOriginator> 
+		ISPlusOriginatorShim<TOriginator>
 		where TOriginator : ISimplOriginator
 	{
 		private TOriginator m_Originator;
 		private int m_OriginatorId;
 
-		protected static ILoggerService Logger{get { return ServiceProvider.GetService<ILoggerService>(); }}
+		private static ILoggerService Logger { get { return ServiceProvider.GetService<ILoggerService>(); } }
 
 		/// <summary>
 		/// Gets the wrapped originator.
@@ -36,9 +36,10 @@ namespace ICD.Connect.Settings.SPlusShims
 		{
 			SPlusShimCore.ShimManager.RegisterShim((ISPlusOriginatorShim<ISimplOriginator>)this);
 			ServiceProvider.GetService<ICore>().OnSettingsApplied += CoreLoaded;
+			ServiceProvider.GetService<ICore>().OnSettingsCleared += CoreUnloaded;
 		}
 
-		
+
 
 		#region Methods
 
@@ -49,6 +50,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		{
 			SetOriginator(default(TOriginator));
 			ServiceProvider.GetService<ICore>().OnSettingsApplied -= CoreLoaded;
+			ServiceProvider.GetService<ICore>().OnSettingsCleared -= CoreUnloaded;
 		}
 
 		/// <summary>
@@ -90,6 +92,22 @@ namespace ICD.Connect.Settings.SPlusShims
 			SetOriginator(m_Originator);
 		}
 
+		private void CoreUnloaded(object sender, EventArgs eventArgs)
+		{
+			SetOriginator(default(TOriginator));
+		}
+
+		protected void Log(eSeverity severity, string message)
+		{
+			Logger.AddEntry(severity, "{0} - {1}", this, message);
+		}
+
+		protected void Log(eSeverity severity, string message, params object[] args)
+		{
+			message = string.Format(message, args);
+			Log(severity, message);
+		}
+
 		#endregion
 
 		/// <summary>
@@ -97,24 +115,24 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		/// <returns></returns>
 		[CanBeNull]
-		private static TOriginator GetOriginator(int id)
+		private TOriginator GetOriginator(int id)
 		{
 			IOriginator output;
 			bool childExists = ServiceProvider.GetService<ICore>().Originators.TryGetChild(id, out output);
 
 			if (!childExists)
 			{
-				Logger.AddEntry(eSeverity.Error,
+				Log(eSeverity.Error,
 								"No Originator with id {0}",
 								id);
 			}
 
 			if (!(output is TOriginator))
 			{
-				Logger.AddEntry(eSeverity.Error,
-				                "Originator at id {0} is not of type {1}.",
-				                id,
-				                typeof(TOriginator).FullName);
+				Log(eSeverity.Error,
+								"Originator at id {0} is not of type {1}.",
+								id,
+								typeof(TOriginator).FullName);
 
 				return default(TOriginator);
 			}
