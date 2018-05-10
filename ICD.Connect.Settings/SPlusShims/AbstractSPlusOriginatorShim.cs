@@ -6,7 +6,8 @@ using ICD.Connect.Settings.Simpl;
 
 namespace ICD.Connect.Settings.SPlusShims
 {
-	public abstract class AbstractSPlusOriginatorShim<TOriginator> : IDisposable
+	public abstract class AbstractSPlusOriginatorShim<TOriginator> : IDisposable,
+		ISPlusOriginatorShim<TOriginator> 
 		where TOriginator : ISimplOriginator
 	{
 		private TOriginator m_Originator;
@@ -15,7 +16,23 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// <summary>
 		/// Gets the wrapped originator.
 		/// </summary>
-		protected TOriginator Originator { get { return m_Originator; } }
+		public TOriginator Originator { get { return m_Originator; } }
+
+		/// <summary>
+		/// Gets the wrapped originator.
+		/// </summary>
+		ISimplOriginator ISPlusOriginatorShim.Originator { get { return Originator; } }
+
+		/// <summary>
+		/// The Simpl Windows Location, set by S+
+		/// </summary>
+		[PublicAPI("S+")]
+		public string Location { get; set; }
+
+		protected AbstractSPlusOriginatorShim()
+		{
+			SPlusShimCore.ShimManager.RegisterShim((ISPlusOriginatorShim<ISimplOriginator>)this);
+		} 
 
 		#region Methods
 
