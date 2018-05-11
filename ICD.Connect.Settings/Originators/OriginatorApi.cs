@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Settings
+﻿namespace ICD.Connect.Settings.Originators
 {
 	public static class OriginatorApi
 	{

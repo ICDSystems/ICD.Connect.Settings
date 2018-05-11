@@ -8,9 +8,9 @@ using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Cores;
 
-namespace ICD.Connect.Settings
+namespace ICD.Connect.Settings.Originators
 {
 	public abstract class AbstractOriginator<T> : IOriginator<T>, IStateDisposable
 		where T : ISettings, new()

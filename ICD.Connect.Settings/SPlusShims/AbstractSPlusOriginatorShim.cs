@@ -1,8 +1,9 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Services;
-using ICD.Connect.Settings.Core;
-using ICD.Connect.Settings.Simpl;
+using ICD.Connect.Settings.Cores;
+using ICD.Connect.Settings.Originators;
+using ICD.Connect.Settings.Originators.Simpl;
 
 namespace ICD.Connect.Settings.SPlusShims
 {

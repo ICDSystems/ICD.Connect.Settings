@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Settings.Originators;
 
-namespace ICD.Connect.Settings.Core
+namespace ICD.Connect.Settings
 {
 	public delegate void OriginatorLoadedCallback(IOriginator originator);
 

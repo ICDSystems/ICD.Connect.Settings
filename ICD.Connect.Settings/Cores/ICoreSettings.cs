@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Settings.Core
+﻿namespace ICD.Connect.Settings.Cores
 {
 	public interface ICoreSettings : ISettings
 	{

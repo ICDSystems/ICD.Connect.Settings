@@ -5,10 +5,10 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Proxies;
 
-namespace ICD.Connect.Settings
+namespace ICD.Connect.Settings.Originators
 {
 	/// <summary>
 	/// IOriginator represents an object that has settings.

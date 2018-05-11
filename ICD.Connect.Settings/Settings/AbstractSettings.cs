@@ -9,7 +9,7 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings
 {

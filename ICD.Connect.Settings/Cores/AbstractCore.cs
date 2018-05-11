@@ -1,4 +1,6 @@
-﻿namespace ICD.Connect.Settings.Core
+﻿using ICD.Connect.Settings.Originators;
+
+namespace ICD.Connect.Settings.Cores
 {
 	public abstract class AbstractCore<TSettings> : AbstractOriginator<TSettings>, ICore
 		where TSettings : ICoreSettings, new()

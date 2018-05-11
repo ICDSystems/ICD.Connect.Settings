@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 
-namespace ICD.Connect.Settings
+namespace ICD.Connect.Settings.Originators
 {
 	public static class OriginatorConsole
 	{

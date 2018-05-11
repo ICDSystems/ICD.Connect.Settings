@@ -5,7 +5,7 @@ using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Cores;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronIO;
 using Activator = Crestron.SimplSharp.Reflection.Activator;

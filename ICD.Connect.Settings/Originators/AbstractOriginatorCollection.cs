@@ -6,7 +6,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 
-namespace ICD.Connect.Settings
+namespace ICD.Connect.Settings.Originators
 {
 	public abstract class AbstractOriginatorCollection<TChild> : IOriginatorCollection<TChild>
 		where TChild : IOriginator
