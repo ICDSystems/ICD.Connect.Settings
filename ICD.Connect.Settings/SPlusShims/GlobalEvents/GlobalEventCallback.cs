@@ -7,14 +7,14 @@ namespace ICD.Connect.Settings.SPlusShims.GlobalEvents
 	{
 		private readonly Action<T> m_Callback;
 
+		public Action<T> Callback { get { return m_Callback; } }
+
+		object IGlobalEventCallback.Callback { get { return Callback; } }
+
 		public GlobalEventCallback(Action<T> del)
 		{
 			m_Callback = del;
 		}
-
-		public Action<T> Callback { get { return m_Callback; } }
-
-		object IGlobalEventCallback.Callback { get { return Callback; } }
 
 		void IGlobalEventCallback.Raise(ISPlusEventInfo eventInfo)
 		{

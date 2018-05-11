@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Common.Properties;
+﻿using ICD.Common.Properties;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings.Core;
@@ -75,12 +74,14 @@ namespace ICD.Connect.Settings.SPlusShims
 		protected override void EnvironmentLoaded(EnvironmentLoadedEventInfo environmentLoadedEventInfo)
 		{
 			base.EnvironmentLoaded(environmentLoadedEventInfo);
+
 			SetOriginator(m_Originator);
 		}
 
-		protected override void EnvironmentUnloadedAction(EnvironmentUnloadedEventInfo environmentUnloadedEventInfo)
+		protected override void EnvironmentUnloaded(EnvironmentUnloadedEventInfo environmentUnloadedEventInfo)
 		{
-			base.EnvironmentUnloadedAction(environmentUnloadedEventInfo);
+			base.EnvironmentUnloaded(environmentUnloadedEventInfo);
+
 			SetOriginator(default(TOriginator));
 		}
 

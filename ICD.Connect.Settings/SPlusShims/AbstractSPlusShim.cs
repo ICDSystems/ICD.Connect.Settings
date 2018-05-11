@@ -1,5 +1,5 @@
-﻿using System;
-using ICD.Common.Properties;
+﻿using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings.SPlusShims.GlobalEvents;
@@ -11,9 +11,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		#region Private Members
 
 		private static ILoggerService Logger { get { return ServiceProvider.GetService<ILoggerService>(); } }
-		private readonly Action<EnvironmentLoadedEventInfo> m_EnvironmentLoadedAction;
-		private readonly Action<EnvironmentUnloadedEventInfo> m_EnvironmentUnloadedAction;
-		
+
 		#endregion
 
 		#region Public Properties
@@ -26,29 +24,27 @@ namespace ICD.Connect.Settings.SPlusShims
 
 		#endregion
 
-		[PublicAPI("S+")]
-		public AbstractSPlusShim()
+		protected AbstractSPlusShim()
 		{
-			m_EnvironmentLoadedAction = EnvironmentLoaded;
-			m_EnvironmentUnloadedAction = EnvironmentUnloadedAction;
-			SPlusGlobalEvents.RegisterCallback(m_EnvironmentLoadedAction);
-			SPlusGlobalEvents.RegisterCallback(m_EnvironmentLoadedAction);
+			SPlusGlobalEvents.RegisterCallback<EnvironmentLoadedEventInfo>(EnvironmentLoaded);
+			SPlusGlobalEvents.RegisterCallback<EnvironmentUnloadedEventInfo>(EnvironmentUnloaded);
+
 			SPlusShimCore.ShimManager.RegisterShim(this);
 		}
 
 		protected virtual void EnvironmentLoaded(EnvironmentLoadedEventInfo environmentLoadedEventInfo)
 		{
-			
 		}
 
-		protected virtual void EnvironmentUnloadedAction(EnvironmentUnloadedEventInfo environmentUnloadedEventInfo)
+		protected virtual void EnvironmentUnloaded(EnvironmentUnloadedEventInfo environmentUnloadedEventInfo)
 		{
-			
 		}
 
 		public virtual void Dispose()
 		{
-			SPlusGlobalEvents.UnregisterCallback(m_EnvironmentLoadedAction);
+			SPlusGlobalEvents.UnregisterCallback<EnvironmentLoadedEventInfo>(EnvironmentLoaded);
+			SPlusGlobalEvents.UnregisterCallback<EnvironmentUnloadedEventInfo>(EnvironmentUnloaded);
+
             SPlusShimCore.ShimManager.UnregisterShim(this);
 		}
 
@@ -63,6 +59,16 @@ namespace ICD.Connect.Settings.SPlusShims
 		{
 			message = string.Format(message, args);
 			Log(severity, message);
+		}
+
+		public override string ToString()
+		{
+			ReprBuilder builder = new ReprBuilder(this);
+
+			if (!string.IsNullOrEmpty(Location))
+				builder.AppendProperty("Location", Location);
+
+			return builder.ToString();
 		}
 
 		#endregion

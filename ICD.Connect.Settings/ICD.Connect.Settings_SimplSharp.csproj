@@ -114,6 +114,7 @@
     <Compile Include="SPlusShims\AbstractSPlusShim.cs" />
     <Compile Include="SPlusShims\GlobalEvents\AbstractSPlusEventInfo.cs" />
     <Compile Include="SPlusShims\GlobalEvents\EnvironmentLoadedEventInfo.cs" />
+    <Compile Include="SPlusShims\GlobalEvents\EnvironmentUnloadedEventInfo.cs" />
     <Compile Include="SPlusShims\GlobalEvents\GlobalEventCallback.cs" />
     <Compile Include="SPlusShims\GlobalEvents\IGlobalEventCallback.cs" />
     <Compile Include="SPlusShims\GlobalEvents\ISPlusEventInfo.cs" />
