@@ -102,11 +102,20 @@ namespace ICD.Connect.Settings.SPlusShims
 				{
 					var shim = m_Shims[index];
 
-					builder.AddRow(index,
-								   shim.Location,
-								   shim.Originator != null ? shim.Originator.GetType().ToString() : "",
-								   shim.Originator != null ? shim.Originator.Name : "",
-								   shim.Originator != null ? shim.Originator.Id.ToString() : "");
+					ISPlusOriginatorShim originatorShim = shim as ISPlusOriginatorShim;
+					if (originatorShim != null)
+					{
+						builder.AddRow(index,
+						               originatorShim.Location,
+						               originatorShim.Originator != null ? originatorShim.Originator.GetType().ToString() : "",
+						               originatorShim.Originator != null ? originatorShim.Originator.Name : "",
+						               originatorShim.Originator != null ? originatorShim.Originator.Id.ToString() : "");
+					}
+					else
+					{
+						builder.AddRow(index, shim.Location, "", "", "");
+					}
+					
 				}
 			}
 			finally
