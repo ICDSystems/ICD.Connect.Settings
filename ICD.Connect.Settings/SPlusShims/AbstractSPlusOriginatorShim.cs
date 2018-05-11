@@ -4,6 +4,7 @@ using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings.Core;
 using ICD.Connect.Settings.Simpl;
+using ICD.Connect.Settings.SPlusShims.GlobalEvents;
 
 namespace ICD.Connect.Settings.SPlusShims
 {
@@ -24,12 +25,6 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		ISimplOriginator ISPlusOriginatorShim.Originator { get { return Originator; } }
 
-		public AbstractSPlusOriginatorShim()
-		{
-			ServiceProvider.GetService<ICore>().OnSettingsApplied += CoreLoaded;
-			ServiceProvider.GetService<ICore>().OnSettingsCleared += CoreUnloaded;
-		}
-
 		/// <summary>
 		/// Release resources.
 		/// </summary>
@@ -38,8 +33,6 @@ namespace ICD.Connect.Settings.SPlusShims
 			base.Dispose();
 
 			SetOriginator(default(TOriginator));
-			ServiceProvider.GetService<ICore>().OnSettingsApplied -= CoreLoaded;
-			ServiceProvider.GetService<ICore>().OnSettingsCleared -= CoreUnloaded;
 		}
 
 
@@ -79,17 +72,17 @@ namespace ICD.Connect.Settings.SPlusShims
 		{
 		}
 
-		private void CoreLoaded(object sender, EventArgs eventArgs)
+		protected override void EnvironmentLoaded(EnvironmentLoadedEventInfo environmentLoadedEventInfo)
 		{
+			base.EnvironmentLoaded(environmentLoadedEventInfo);
 			SetOriginator(m_Originator);
 		}
 
-		private void CoreUnloaded(object sender, EventArgs eventArgs)
+		protected override void EnvironmentUnloadedAction(EnvironmentUnloadedEventInfo environmentUnloadedEventInfo)
 		{
+			base.EnvironmentUnloadedAction(environmentUnloadedEventInfo);
 			SetOriginator(default(TOriginator));
 		}
-
-		
 
 		#endregion
 
