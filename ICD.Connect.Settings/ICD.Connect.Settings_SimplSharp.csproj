@@ -111,9 +111,17 @@
     <Compile Include="SettingsCollection.cs" />
     <Compile Include="Simpl\ISimplOriginator.cs" />
     <Compile Include="SPlusShims\AbstractSPlusOriginatorShim.cs" />
+    <Compile Include="SPlusShims\AbstractSPlusShim.cs" />
+    <Compile Include="SPlusShims\GlobalEvents\AbstractSPlusEventInfo.cs" />
+    <Compile Include="SPlusShims\GlobalEvents\EnvironmentLoadedEventInfo.cs" />
+    <Compile Include="SPlusShims\GlobalEvents\GlobalEventCallback.cs" />
+    <Compile Include="SPlusShims\GlobalEvents\IGlobalEventCallback.cs" />
+    <Compile Include="SPlusShims\GlobalEvents\ISPlusEventInfo.cs" />
     <Compile Include="SPlusShims\ISPlusOriginatorShim.cs" />
+    <Compile Include="SPlusShims\ISplusShim.cs" />
     <Compile Include="SPlusShims\SPlusShimCore.cs" />
     <Compile Include="SPlusShims\SPlusShimManager.cs" />
+    <Compile Include="SPlusShims\GlobalEvents\SPlusGlobalEvents.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>

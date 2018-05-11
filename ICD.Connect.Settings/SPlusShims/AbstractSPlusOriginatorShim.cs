@@ -7,14 +7,12 @@ using ICD.Connect.Settings.Simpl;
 
 namespace ICD.Connect.Settings.SPlusShims
 {
-	public abstract class AbstractSPlusOriginatorShim<TOriginator> : IDisposable,
+	public abstract class AbstractSPlusOriginatorShim<TOriginator> : AbstractSPlusShim,
 		ISPlusOriginatorShim<TOriginator>
 		where TOriginator : ISimplOriginator
 	{
 		private TOriginator m_Originator;
 		private int m_OriginatorId;
-
-		private static ILoggerService Logger { get { return ServiceProvider.GetService<ILoggerService>(); } }
 
 		/// <summary>
 		/// Gets the wrapped originator.
@@ -26,32 +24,26 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		ISimplOriginator ISPlusOriginatorShim.Originator { get { return Originator; } }
 
-		/// <summary>
-		/// The Simpl Windows Location, set by S+
-		/// </summary>
-		[PublicAPI("S+")]
-		public string Location { get; set; }
-
-		protected AbstractSPlusOriginatorShim()
+		public AbstractSPlusOriginatorShim()
 		{
-			SPlusShimCore.ShimManager.RegisterShim((ISPlusOriginatorShim<ISimplOriginator>)this);
 			ServiceProvider.GetService<ICore>().OnSettingsApplied += CoreLoaded;
 			ServiceProvider.GetService<ICore>().OnSettingsCleared += CoreUnloaded;
 		}
 
-
-
-		#region Methods
-
 		/// <summary>
 		/// Release resources.
 		/// </summary>
-		public void Dispose()
+		public override void Dispose()
 		{
+			base.Dispose();
+
 			SetOriginator(default(TOriginator));
 			ServiceProvider.GetService<ICore>().OnSettingsApplied -= CoreLoaded;
 			ServiceProvider.GetService<ICore>().OnSettingsCleared -= CoreUnloaded;
 		}
+
+
+		#region Methods
 
 		/// <summary>
 		/// Sets the wrapped originator.
@@ -97,16 +89,7 @@ namespace ICD.Connect.Settings.SPlusShims
 			SetOriginator(default(TOriginator));
 		}
 
-		protected void Log(eSeverity severity, string message)
-		{
-			Logger.AddEntry(severity, "{0} - {1}", this, message);
-		}
-
-		protected void Log(eSeverity severity, string message, params object[] args)
-		{
-			message = string.Format(message, args);
-			Log(severity, message);
-		}
+		
 
 		#endregion
 

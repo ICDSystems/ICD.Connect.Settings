@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
@@ -9,17 +8,17 @@ namespace ICD.Connect.Settings.SPlusShims
 {
 	public sealed class SPlusShimManager : IConsoleNode
 	{
-		private readonly List<ISPlusOriginatorShim> m_Shims;
+		private readonly List<ISPlusShim> m_Shims;
 
 		private readonly SafeCriticalSection m_ShimSafeCriticalSection;
 
 		internal SPlusShimManager()
 		{
-			m_Shims = new List<ISPlusOriginatorShim>();
+			m_Shims = new List<ISPlusShim>();
 			m_ShimSafeCriticalSection = new SafeCriticalSection();
 		}
 
-		public void RegisterShim(ISPlusOriginatorShim shim)
+		public void RegisterShim(ISPlusShim shim)
 		{
 			m_ShimSafeCriticalSection.Enter();
 			try
@@ -33,7 +32,22 @@ namespace ICD.Connect.Settings.SPlusShims
 			{
 				m_ShimSafeCriticalSection.Leave();
 			}
+		}
 
+		public void UnregisterShim(ISPlusShim shim)
+		{
+			m_ShimSafeCriticalSection.Enter();
+			try
+			{
+				if (!m_Shims.Contains(shim))
+					return;
+
+				m_Shims.Remove(shim);
+			}
+			finally
+			{
+				m_ShimSafeCriticalSection.Leave();
+			}
 		}
 
 		#region Console
