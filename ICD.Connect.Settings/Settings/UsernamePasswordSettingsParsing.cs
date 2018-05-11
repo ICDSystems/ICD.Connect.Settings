@@ -21,7 +21,7 @@ namespace ICD.Connect.Settings
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 
-			writer.WriteElementString(USERNAME_ELEMENT, instance.UserName);
+			writer.WriteElementString(USERNAME_ELEMENT, instance.Username);
 			writer.WriteElementString(PASSWORD_ELEMENT, instance.Password);
 		}
 
@@ -35,7 +35,7 @@ namespace ICD.Connect.Settings
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 
-			instance.UserName = XmlUtils.TryReadChildElementContentAsString(xml, USERNAME_ELEMENT);
+			instance.Username = XmlUtils.TryReadChildElementContentAsString(xml, USERNAME_ELEMENT);
 			instance.Password = XmlUtils.TryReadChildElementContentAsString(xml, PASSWORD_ELEMENT);
 		}
 	}
