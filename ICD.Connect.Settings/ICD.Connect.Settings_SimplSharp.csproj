@@ -110,6 +110,7 @@
     <Compile Include="Proxies\ProxyOriginator.cs" />
     <Compile Include="SettingsCollection.cs" />
     <Compile Include="Originators\Simpl\ISimplOriginator.cs" />
+    <Compile Include="Settings\IUsernamePasswordSettings.cs" />
     <Compile Include="SPlusShims\AbstractSPlusOriginatorShim.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
