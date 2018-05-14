@@ -3,18 +3,12 @@ using ICD.Connect.Settings.Simpl;
 
 namespace ICD.Connect.Settings.SPlusShims
 {
-	public interface ISPlusOriginatorShim
+	public interface ISPlusOriginatorShim : ISPlusShim
 	{
 		/// <summary>
 		/// Gets the wrapped originator.
 		/// </summary>
 		ISimplOriginator Originator { get; }
-
-		/// <summary>
-		/// The Simpl Windows Location, set by S+
-		/// </summary>
-		[PublicAPI("S+")]
-		string Location { get; set; }
 	}
 
 	public interface ISPlusOriginatorShim<TOriginator> : ISPlusOriginatorShim
