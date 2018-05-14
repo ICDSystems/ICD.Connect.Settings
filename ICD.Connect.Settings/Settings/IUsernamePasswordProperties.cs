@@ -1,6 +1,6 @@
 ﻿namespace ICD.Connect.Settings
 {
-	public interface IUsernamePasswordSettings : ISettings
+	public interface IUsernamePasswordProperties
 	{
 		/// <summary>
 		/// Gets/sets the configurable username.
