@@ -106,13 +106,10 @@
     <Compile Include="Cores\ICoreSettings.cs" />
     <Compile Include="IDeviceFactory.cs" />
     <Compile Include="Originators\IOriginator.cs" />
-    <Compile Include="Settings\AbstractUsernamePasswordProperties.cs" />
     <Compile Include="Settings\ISettings.cs" />
     <Compile Include="Proxies\ProxyOriginator.cs" />
     <Compile Include="SettingsCollection.cs" />
     <Compile Include="Originators\Simpl\ISimplOriginator.cs" />
-    <Compile Include="Settings\IUsernamePasswordProperties.cs" />
-    <Compile Include="Settings\UsernamePasswordProperties.cs" />
     <Compile Include="SPlusShims\AbstractSPlusOriginatorShim.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
