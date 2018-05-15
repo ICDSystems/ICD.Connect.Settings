@@ -30,6 +30,7 @@ namespace ICD.Connect.Settings.Originators
 
 		/// <summary>
 		/// Called when settings have been applied to the originator.
+		/// This means the originator has finished loading.
 		/// </summary>
 		[PublicAPI]
 		event EventHandler OnSettingsApplied;
