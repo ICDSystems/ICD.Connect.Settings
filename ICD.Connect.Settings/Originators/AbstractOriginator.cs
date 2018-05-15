@@ -8,7 +8,6 @@ using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Settings.Cores;
 
 namespace ICD.Connect.Settings.Originators
 {
@@ -147,6 +146,7 @@ namespace ICD.Connect.Settings.Originators
 
 		public void Log(eSeverity severity, string message)
 		{
+// ReSharper disable once CSharpWarnings::CS0612
 			Logger.AddEntry(severity, "{0} - {1}", this, message);
 		}
 
@@ -154,6 +154,18 @@ namespace ICD.Connect.Settings.Originators
 		{
 			message = string.Format(message, args);
 			Log(severity, message);
+		}
+
+		public void Log(eSeverity severity, Exception e, string message)
+		{
+			// ReSharper disable once CSharpWarnings::CS0612
+			Logger.AddEntry(severity, e, "{0} - {1}", this, message);
+		}
+
+		public void Log(eSeverity severity, Exception e, string message, params object[] args)
+		{
+			message = string.Format(message, args);
+			Log(severity, e, message);
 		}
 
 		#endregion
