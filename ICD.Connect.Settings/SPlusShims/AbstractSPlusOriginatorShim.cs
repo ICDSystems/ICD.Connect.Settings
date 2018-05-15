@@ -35,7 +35,6 @@ namespace ICD.Connect.Settings.SPlusShims
 			SetOriginator(default(TOriginator));
 		}
 
-
 		#region Methods
 
 		/// <summary>
@@ -67,7 +66,6 @@ namespace ICD.Connect.Settings.SPlusShims
 		{
 		}
 
-
 		protected virtual void Unsubscribe(TOriginator originator)
 		{
 		}
@@ -76,7 +74,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		{
 			base.EnvironmentLoaded(environmentLoadedEventInfo);
 
-			SetOriginator(m_Originator);
+			SetOriginator(m_OriginatorId);
 		}
 
 		protected override void EnvironmentUnloaded(EnvironmentUnloadedEventInfo environmentUnloadedEventInfo)
@@ -99,23 +97,15 @@ namespace ICD.Connect.Settings.SPlusShims
 			bool childExists = ServiceProvider.GetService<ICore>().Originators.TryGetChild(id, out output);
 
 			if (!childExists)
-			{
-				Log(eSeverity.Error,
-								"No Originator with id {0}",
-								id);
-			}
+				Log(eSeverity.Error, "No Originator with id {0}", id);
 
-			if (!(output is TOriginator))
-			{
-				Log(eSeverity.Error,
-								"Originator at id {0} is not of type {1}.",
-								id,
-								typeof(TOriginator).FullName);
+			if (output is TOriginator)
+				return (TOriginator)output;
 
-				return default(TOriginator);
-			}
+			Log(eSeverity.Error, "Originator at id {0} is not of type {1}.",
+			    id, typeof(TOriginator).FullName);
 
-			return (TOriginator)output;
+			return default(TOriginator);
 		}
 	}
 }
