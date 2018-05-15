@@ -73,7 +73,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		{
 			base.EnvironmentLoaded(environmentLoadedEventInfo);
 
-			SetOriginator(m_Originator);
+			SetOriginator(m_OriginatorId);
 		}
 
 		protected override void EnvironmentUnloaded(EnvironmentUnloadedEventInfo environmentUnloadedEventInfo)
