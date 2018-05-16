@@ -43,7 +43,12 @@ namespace ICD.Connect.Settings.Tests
 		    throw new NotImplementedException();
 	    }
 
-	    public void ToXml(IcdXmlTextWriter writer)
+	    /// <summary>
+	    /// Writes the settings to xml.
+	    /// </summary>
+	    /// <param name="writer"></param>
+	    /// <param name="element"></param>
+	    public void ToXml(IcdXmlTextWriter writer, string element)
 	    {
 		    throw new NotImplementedException();
 	    }
