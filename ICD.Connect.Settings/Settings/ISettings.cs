@@ -91,7 +91,8 @@ namespace ICD.Connect.Settings
 		/// Writes the settings to xml.
 		/// </summary>
 		/// <param name="writer"></param>
-		void ToXml(IcdXmlTextWriter writer);
+		/// <param name="element"></param>
+		void ToXml(IcdXmlTextWriter writer, string element);
 
 		/// <summary>
 		/// Creates a new originator instance from the settings.
