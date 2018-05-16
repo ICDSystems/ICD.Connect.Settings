@@ -5,7 +5,6 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Proxies;
 
 namespace ICD.Connect.Settings.Originators
