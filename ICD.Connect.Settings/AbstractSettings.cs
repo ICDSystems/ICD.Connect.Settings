@@ -90,11 +90,6 @@ namespace ICD.Connect.Settings
 		public bool Hide { get; set; }
 
 		/// <summary>
-		/// Gets the xml element.
-		/// </summary>
-		protected abstract string Element { get; }
-
-		/// <summary>
 		/// Gets the originator factory name.
 		/// </summary>
 		public virtual string FactoryName
@@ -170,12 +165,13 @@ namespace ICD.Connect.Settings
 		/// Writes the settings back to XML.
 		/// </summary>
 		/// <param name="writer"></param>
-		public void ToXml(IcdXmlTextWriter writer)
+		/// <param name="element"></param>
+		public void ToXml(IcdXmlTextWriter writer, string element)
 		{
 			if (writer == null)
 				throw new ArgumentNullException("writer");
 
-			writer.WriteStartElement(Element);
+			writer.WriteStartElement(element);
 			writer.WriteAttributeString(ID_ATTRIBUTE, Id.ToString());
 			writer.WriteAttributeString(TYPE_ATTRIBUTE, FactoryName);
 			{
