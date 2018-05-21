@@ -1,4 +1,6 @@
-﻿using ICD.Common.Properties;
+﻿using System;
+using ICD.Common.Properties;
+using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings.Core;
@@ -9,8 +11,18 @@ namespace ICD.Connect.Settings.SPlusShims
 {
 	public abstract class AbstractSPlusOriginatorShim<TOriginator> : AbstractSPlusShim,
 		ISPlusOriginatorShim<TOriginator>
-		where TOriginator : ISimplOriginator
+		where TOriginator : class, ISimplOriginator
 	{
+		#region Events
+
+		[PublicAPI("S+")]
+		public event EventHandler OnSettingsApplied;
+
+		[PublicAPI("S+")]
+		public event EventHandler OnSettingsCleared;
+
+		#endregion
+
 		private TOriginator m_Originator;
 		private int m_OriginatorId;
 
@@ -41,7 +53,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		/// <param name="id"></param>
 		[PublicAPI("SPlus")]
-		public void SetOriginator(int id)
+		public virtual void SetOriginator(int id)
 		{
 			TOriginator originator = GetOriginator(id);
 			SetOriginator(originator);
@@ -63,10 +75,28 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// <param name="originator"></param>
 		protected virtual void Subscribe(TOriginator originator)
 		{
+			if(Originator == null)
+				return;
+			Originator.OnSettingsApplied += OriginatorOnSettingsApplied;
+			Originator.OnSettingsCleared += OriginatorOnSettingsCleared;
 		}
 
 		protected virtual void Unsubscribe(TOriginator originator)
 		{
+			if (Originator == null)
+				return;
+			Originator.OnSettingsApplied -= OriginatorOnSettingsApplied;
+			Originator.OnSettingsCleared -= OriginatorOnSettingsCleared;
+		}
+
+		private void OriginatorOnSettingsApplied(object sender, EventArgs eventArgs)
+		{
+			OnSettingsApplied.Raise(this);
+		}
+
+		private void OriginatorOnSettingsCleared(object sender, EventArgs eventArgs)
+		{
+			OnSettingsCleared.Raise(this);
 		}
 
 		protected override void EnvironmentLoaded(EnvironmentLoadedEventInfo environmentLoadedEventInfo)
@@ -90,7 +120,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		/// <returns></returns>
 		[CanBeNull]
-		private TOriginator GetOriginator(int id)
+		protected TOriginator GetOriginator(int id)
 		{
 			IOriginator output;
 			bool childExists = ServiceProvider.GetService<ICore>().Originators.TryGetChild(id, out output);
