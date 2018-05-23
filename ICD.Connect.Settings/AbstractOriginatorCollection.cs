@@ -71,29 +71,153 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public void SetChildren(IEnumerable<TChild> children)
 		{
-			bool change;
+			if (children == null)
+				throw new ArgumentNullException("children");
 
 			m_ChildrenSection.Enter();
 
 			try
 			{
-				change = m_Children.Count > 0;
+				IEnumerable<TChild> oldChildren = GetChildren();
+				RemoveChildren(oldChildren);
+				AddChildren(children);
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
+		}
 
-				m_Children.Clear();
-				m_ChildrenOrdered.Clear();
+		/// <summary>
+		/// Removes the given children from the collection.
+		/// </summary>
+		/// <param name="children"></param>
+		public void RemoveChildren(IEnumerable<TChild> children)
+		{
+			if (children == null)
+				throw new ArgumentNullException("children");
 
-				foreach (List<int> cache in m_TypeToChildren.Values)
-					cache.Clear();
+			List<TChild> removed = new List<TChild>();
 
-				change = children.Aggregate(change, (current, item) => current | AddChildInternal(item));
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				foreach (TChild child in children)
+				{
+					if (child == null)
+						throw new InvalidOperationException("Child is null");
+
+					if (!ContainsChild(child.Id))
+						continue;
+
+					foreach (Type type in child.GetType().GetAllTypes())
+					{
+						if (m_TypeToChildren.ContainsKey(type))
+							m_TypeToChildren[type].Remove(child.Id);
+					}
+
+					m_Children.Remove(child.Id);
+					removed.Add(child);
+				}
 			}
 			finally
 			{
 				m_ChildrenSection.Leave();
 			}
 
-			if (change)
-				OnChildrenChanged.Raise(this);
+			if (removed.Count == 0)
+				return;
+
+			ChildrenRemoved(removed);
+
+			OnChildrenChanged.Raise(this);
+		}
+
+		/// <summary>
+		/// Removes the child from the core.
+		/// </summary>
+		/// <param name="child"></param>
+		/// <returns>False if the core does not contain the child.</returns>
+		public bool RemoveChild(TChild child)
+		{
+			if (child == null)
+				throw new ArgumentNullException("child");
+
+			if (!ContainsChild(child))
+				return false;
+
+			RemoveChildren(new[] {child});
+
+			return true;
+		}
+
+		/// <summary>
+		/// Adds the given children to the collection.
+		/// </summary>
+		/// <param name="children"></param>
+		public void AddChildren(IEnumerable<TChild> children)
+		{
+			if (children == null)
+				throw new ArgumentNullException("children");
+
+			List<TChild> added = new List<TChild>();
+
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				foreach (TChild child in children)
+				{
+					if (child == null)
+						throw new InvalidOperationException("child");
+
+					if (child.Id <= 0)
+						throw new InvalidOperationException(string.Format("Child {0} must have an id greater than 0", child));
+
+					if (ContainsChild(child.Id))
+						continue;
+
+					foreach (Type type in child.GetType().GetAllTypes())
+					{
+						if (!m_TypeToChildren.ContainsKey(type))
+							m_TypeToChildren[type] = new List<int>();
+						m_TypeToChildren[type].AddSorted(child.Id, Comparer<int>.Default);
+					}
+
+					m_Children.Add(child.Id, child);
+					added.Add(child);
+				}
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
+
+			if (added.Count == 0)
+				return;
+
+			ChildrenAdded(added);
+
+			OnChildrenChanged.Raise(this);
+		}
+
+		/// <summary>
+		/// Adds the child to the core.
+		/// </summary>
+		/// <param name="child"></param>
+		/// <returns>False if a child with the given id already exists.</returns>
+		public bool AddChild(TChild child)
+		{
+			if (child == null)
+				throw new ArgumentNullException("child");
+
+			if (ContainsChild(child))
+				return false;
+
+			AddChildren(new[] {child});
+
+			return true;
 		}
 
 		/// <summary>
@@ -122,7 +246,8 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstance"></typeparam>
 		/// <param name="selector"></param>
 		/// <returns></returns>
-		public IEnumerable<TInstance> GetChildren<TInstance>(Func<TInstance, bool> selector) where TInstance : TChild
+		public IEnumerable<TInstance> GetChildren<TInstance>(Func<TInstance, bool> selector)
+			where TInstance : TChild
 		{
 			if (selector == null)
 				throw new ArgumentNullException("selector");
@@ -139,31 +264,6 @@ namespace ICD.Connect.Settings
 				               .Cast<TInstance>()
 				               .Where(selector)
 				               .ToArray();
-			}
-			finally
-			{
-				m_ChildrenSection.Leave();
-			}
-		}
-
-		/// <summary>
-		/// Returns true if there is a child with the given id of the given type.
-		/// </summary>
-		/// <typeparam name="TInstanceType"></typeparam>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		public bool ContainsChild<TInstanceType>(int id)
-			where TInstanceType : TChild
-		{
-			m_ChildrenSection.Enter();
-
-			try
-			{
-				TChild child;
-				if (!m_Children.TryGetValue(id, out child))
-					return false;
-
-				return child is TInstanceType;
 			}
 			finally
 			{
@@ -192,7 +292,7 @@ namespace ICD.Connect.Settings
 				m_ChildrenSection.Leave();
 			}
 
-			string message = string.Format("{0} no child found with id {1}", GetType().Name, id);
+			string message = string.Format("No child found with id {0}", id);
 			throw new KeyNotFoundException(message);
 		}
 
@@ -209,17 +309,15 @@ namespace ICD.Connect.Settings
 			try
 			{
 				List<int> children;
-				m_TypeToChildren.TryGetValue(typeof(TInstance), out children);
+				if (!m_TypeToChildren.TryGetValue(typeof(TInstance), out children))
+					throw new InvalidOperationException(string.Format("No {0} of type {1}", typeof(TChild).Name, typeof(TInstance).Name));
 
-				if (children == null || children.Count == 0)
-				{
-					throw new InvalidOperationException(string.Format("No {0} of type {1}", typeof(TChild).Name,
-					                                                  typeof(TInstance).Name));
-				}
+				TInstance output;
+				if (!children.Select(c => m_Children[c]).Cast<TInstance>().TryFirst(out output))
+					throw new InvalidOperationException(string.Format("No {0} of type {1}", typeof(TChild).Name, typeof(TInstance).Name));
 
-				return children.Select(c => m_Children[c])
-				               .Cast<TInstance>()
-				               .First();
+				return output;
+
 			}
 			finally
 			{
@@ -318,7 +416,8 @@ namespace ICD.Connect.Settings
 		/// <param name="ids"></param>
 		/// <param name="selector"></param>
 		/// <returns></returns>
-		public IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector) where TInstanceType : TChild
+		public IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector)
+			where TInstanceType : TChild
 		{
 			if (ids == null)
 				throw new ArgumentNullException("ids");
@@ -363,19 +462,45 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Returns true if at least 1 originator exists of the given type.
+		/// Returns true if there is a child with the given id of the given type.
 		/// </summary>
 		/// <typeparam name="TInstanceType"></typeparam>
-		/// <param name="ids"></param>
+		/// <param name="id"></param>
 		/// <returns></returns>
-		public bool HasChildren<TInstanceType>(IEnumerable<int> ids)
+		public bool ContainsChild<TInstanceType>(int id)
 			where TInstanceType : TChild
 		{
 			m_ChildrenSection.Enter();
 
 			try
 			{
-				return ids.Any(i => m_Children[i] is TInstanceType);
+				TChild child;
+				if (!m_Children.TryGetValue(id, out child))
+					return false;
+
+				return child is TInstanceType;
+			}
+			finally
+			{
+				m_ChildrenSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Returns true if at least 1 originator exists of the given type with the given id.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		public bool ContainsChildAny<TInstanceType>(IEnumerable<int> ids)
+			where TInstanceType : TChild
+		{
+			m_ChildrenSection.Enter();
+
+			try
+			{
+				return ids.Where(ContainsChild)
+				          .Any(i => m_Children[i] is TInstanceType);
 			}
 			finally
 			{
@@ -394,112 +519,35 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Adds the child to the core.
+		/// Returns true if there is a child with the given id.
 		/// </summary>
 		/// <param name="child"></param>
-		/// <returns>False if a child with the given id already exists.</returns>
-		public bool AddChild(TChild child)
+		/// <returns></returns>
+		public bool ContainsChild(TChild child)
 		{
-			bool output = AddChildInternal(child);
-			if (output)
-				OnChildrenChanged.Raise(this);
-
-			return output;
-		}
-
-		/// <summary>
-		/// Removes the child from the core.
-		/// </summary>
-		/// <param name="child"></param>
-		/// <returns>False if the core does not contain the child.</returns>
-		public bool RemoveChild(TChild child)
-		{
-			bool output = RemoveChildInternal(child);
-			if (output)
-				OnChildrenChanged.Raise(this);
-
-			return output;
-		}
-
-		private bool AddChildInternal(TChild child)
-		{
-			// ReSharper disable once CompareNonConstrainedGenericWithNull
 			if (child == null)
 				throw new ArgumentNullException("child");
 
-			if (child.Id <= 0)
-				throw new ArgumentException(string.Format("Child {0} must have an id greater than 0", child));
-
-			m_ChildrenSection.Enter();
-
-			try
-			{
-				if (ContainsChild(child.Id))
-					return false;
-
-				foreach (Type type in child.GetType().GetAllTypes())
-				{
-					if (!m_TypeToChildren.ContainsKey(type))
-						m_TypeToChildren[type] = new List<int>();
-					m_TypeToChildren[type].AddSorted(child.Id, Comparer<int>.Default);
-				}
-
-				m_Children.Add(child.Id, child);
-
-				ChildAdded(child);
-			}
-			finally
-			{
-				m_ChildrenSection.Leave();
-			}
-
-			return true;
+			return ContainsChild(child.Id);
 		}
 
-		private bool RemoveChildInternal(TChild child)
-		{
-			// ReSharper disable once CompareNonConstrainedGenericWithNull
-			if (child == null)
-				throw new ArgumentNullException("child");
+		#endregion
 
-			m_ChildrenSection.Enter();
-
-			try
-			{
-				if (!ContainsChild(child.Id))
-					return false;
-
-				foreach (Type type in child.GetType().GetAllTypes())
-				{
-					if (m_TypeToChildren.ContainsKey(type))
-						m_TypeToChildren[type].Remove(child.Id);
-				}
-
-				m_Children.Remove(child.Id);
-
-				ChildRemoved(child);
-			}
-			finally
-			{
-				m_ChildrenSection.Leave();
-			}
-
-			return true;
-		}
+		#region Private Methods
 
 		/// <summary>
-		/// Called each time a child is added to the collection before any events are raised.
+		/// Called when children are added to the collection before any events are raised.
 		/// </summary>
-		/// <param name="child"></param>
-		protected virtual void ChildAdded(TChild child)
+		/// <param name="children"></param>
+		protected virtual void ChildrenAdded(IEnumerable<TChild> children)
 		{
 		}
 
 		/// <summary>
-		/// Called each time a child is removed from the collection before any events are raised.
+		/// Called when children are removed from the collection before any events are raised.
 		/// </summary>
-		/// <param name="child"></param>
-		protected virtual void ChildRemoved(TChild child)
+		/// <param name="children"></param>
+		protected virtual void ChildrenRemoved(IEnumerable<TChild> children)
 		{
 		}
 
