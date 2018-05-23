@@ -40,12 +40,6 @@ namespace ICD.Connect.Settings.Core
 			DisposeOriginators();
 		}
 
-		private void SetOriginators(IEnumerable<IOriginator> originators)
-		{
-			DisposeOriginators();
-			Originators.SetChildren(originators);
-		}
-
 		/// <summary>
 		/// Adds the given originator to the cor.
 		/// </summary>
@@ -129,7 +123,7 @@ namespace ICD.Connect.Settings.Core
 		{
 			base.ClearSettingsFinal();
 
-			SetOriginators(Enumerable.Empty<IOriginator>());
+			DisposeOriginators();
 
 			ResetDefaultPermissions();
 		}
