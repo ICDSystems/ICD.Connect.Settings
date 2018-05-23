@@ -89,7 +89,7 @@ namespace ICD.Connect.Settings.Core
 			}
 			catch (Exception e)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} failed to dispose {1} - {2}", this, originator, e.Message);
+				Log(eSeverity.Error, "Failed to dispose {0} - {1}", originator, e.Message);
 			}
 		}
 
@@ -163,8 +163,7 @@ namespace ICD.Connect.Settings.Core
 				}
 				catch (Exception e)
 				{
-					Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate {1} with id {2} - {3}", this,
-									typeof(IOriginator).Name, id, e.Message);
+					Log(eSeverity.Error, "Failed to instantiate {0} with id {1} - {2}", typeof(IOriginator).Name, id, e.Message);
 				}
 			}
 		}
