@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings
@@ -14,8 +15,7 @@ namespace ICD.Connect.Settings
 		public event EventHandler OnChildrenChanged;
 
 		private readonly Dictionary<Type, List<int>> m_TypeToChildren;
-		private readonly List<int> m_ChildrenOrdered;
-		private readonly Dictionary<int, TChild> m_Children;
+		private readonly IcdOrderedDictionary<int, TChild> m_Children;
 		private readonly SafeCriticalSection m_ChildrenSection;
 
 		#region Properties
@@ -49,8 +49,7 @@ namespace ICD.Connect.Settings
 		protected AbstractOriginatorCollection(IEnumerable<TChild> children)
 		{
 			m_TypeToChildren = new Dictionary<Type, List<int>>();
-			m_ChildrenOrdered = new List<int>();
-			m_Children = new Dictionary<int, TChild>();
+			m_Children = new IcdOrderedDictionary<int, TChild>();
 			m_ChildrenSection = new SafeCriticalSection();
 
 			SetChildren(children);
@@ -446,7 +445,6 @@ namespace ICD.Connect.Settings
 				}
 
 				m_Children.Add(child.Id, child);
-				m_ChildrenOrdered.AddSorted(child.Id);
 
 				ChildAdded(child);
 			}
@@ -478,7 +476,6 @@ namespace ICD.Connect.Settings
 				}
 
 				m_Children.Remove(child.Id);
-				m_ChildrenOrdered.Remove(child.Id);
 
 				ChildRemoved(child);
 			}
