@@ -5,9 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [6.0.0] - 2018-05-24
 ### Added
  - Added SPlusGlobalEvents framework, for initializing from s+ and future s+ eventing.
  - Added OnSettingsApplied and OnSettingsCleared events to AbstractSPlusOriginatorShim
+
+### Removed
+ - Removed element property from settings
 
 ## [5.0.0] - 2018-05-09
 ### Changed
