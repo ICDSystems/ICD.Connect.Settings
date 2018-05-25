@@ -109,7 +109,9 @@
     <Compile Include="ISettings.cs" />
     <Compile Include="Proxies\ProxyOriginator.cs" />
     <Compile Include="SettingsCollection.cs" />
+    <Compile Include="Simpl\AbstractSimplOriginator.cs" />
     <Compile Include="Simpl\ISimplOriginator.cs" />
+    <Compile Include="Simpl\ISimplOriginatorSettings.cs" />
     <Compile Include="SPlusShims\AbstractSPlusOriginatorShim.cs" />
     <Compile Include="SPlusShims\AbstractSPlusShim.cs" />
     <Compile Include="SPlusShims\GlobalEvents\AbstractSPlusEventInfo.cs" />
