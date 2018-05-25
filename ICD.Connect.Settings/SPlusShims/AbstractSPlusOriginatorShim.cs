@@ -67,7 +67,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// Sets the wrapped originator.
 		/// </summary>
 		/// <param name="id"></param>
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public void SetOriginator(int id)
 		{
 			m_OriginatorId = id;
