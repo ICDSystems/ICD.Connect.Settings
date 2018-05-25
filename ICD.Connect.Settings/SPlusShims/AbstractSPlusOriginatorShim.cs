@@ -15,9 +15,15 @@ namespace ICD.Connect.Settings.SPlusShims
 	{
 		#region Events
 
+		/// <summary>
+		/// Raised when wrapped originator settings are applied.
+		/// </summary>
 		[PublicAPI("S+")]
 		public event EventHandler OnSettingsApplied;
 
+		/// <summary>
+		/// Raised when wrapped originator settings are cleared.
+		/// </summary>
 		[PublicAPI("S+")]
 		public event EventHandler OnSettingsCleared;
 
@@ -25,6 +31,8 @@ namespace ICD.Connect.Settings.SPlusShims
 
 		private TOriginator m_Originator;
 		private int m_OriginatorId;
+
+		#region Properties
 
 		/// <summary>
 		/// Gets the wrapped originator.
@@ -35,6 +43,8 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// Gets the wrapped originator.
 		/// </summary>
 		ISimplOriginator ISPlusOriginatorShim.Originator { get { return Originator; } }
+
+		#endregion
 
 		/// <summary>
 		/// Release resources.
