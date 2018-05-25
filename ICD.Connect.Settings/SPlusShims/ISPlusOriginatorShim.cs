@@ -1,5 +1,4 @@
-﻿using ICD.Common.Properties;
-using ICD.Connect.Settings.Simpl;
+﻿using ICD.Connect.Settings.Simpl;
 
 namespace ICD.Connect.Settings.SPlusShims
 {
