@@ -9,8 +9,7 @@ using ICD.Connect.Settings.SPlusShims.GlobalEvents;
 
 namespace ICD.Connect.Settings.SPlusShims
 {
-	public abstract class AbstractSPlusOriginatorShim<TOriginator> : AbstractSPlusShim,
-		ISPlusOriginatorShim<TOriginator>
+	public abstract class AbstractSPlusOriginatorShim<TOriginator> : AbstractSPlusShim, ISPlusOriginatorShim<TOriginator>
 		where TOriginator : class, ISimplOriginator
 	{
 		#region Events
