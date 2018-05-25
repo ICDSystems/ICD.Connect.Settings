@@ -26,6 +26,18 @@ namespace ICD.Connect.Settings.SPlusShims
 		[PublicAPI("S+")]
 		public event EventHandler OnSettingsCleared;
 
+		/// <summary>
+		/// Raised when the wrapped originator changes.
+		/// </summary>
+		[PublicAPI("S+")]
+		public event EventHandler OnOriginatorChanged;
+
+		/// <summary>
+		/// Raised when the shim starts/stops wrapping an originator.
+		/// </summary>
+		[PublicAPI("S+")]
+		public event EventHandler OnHasOriginatorChanged;
+
 		#endregion
 
 		private TOriginator m_Originator;
@@ -56,6 +68,11 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		public override void Dispose()
 		{
+			OnSettingsApplied = null;
+			OnSettingsCleared = null;
+			OnOriginatorChanged = null;
+			OnHasOriginatorChanged = null;
+
 			base.Dispose();
 
 			SetOriginator(default(TOriginator));
@@ -100,9 +117,18 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// <param name="originator"></param>
 		private void SetOriginator(TOriginator originator)
 		{
+			TOriginator old = m_Originator;
+			if (originator == old)
+				return;
+
 			Unsubscribe(m_Originator);
 			m_Originator = originator;
 			Subscribe(m_Originator);
+
+			OnOriginatorChanged.Raise(this);
+
+			if (old == null || m_Originator == null)
+				OnHasOriginatorChanged.Raise(this);
 		}
 
 		/// <summary>
