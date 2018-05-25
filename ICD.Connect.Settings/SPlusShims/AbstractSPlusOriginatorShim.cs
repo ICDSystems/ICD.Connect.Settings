@@ -44,6 +44,12 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		ISimplOriginator ISPlusOriginatorShim.Originator { get { return Originator; } }
 
+		/// <summary>
+		/// Returns true if the shim is currently wrapping an originator.
+		/// </summary>
+		[PublicAPI("S+")]
+		public ushort HasOriginator { get { return (m_Originator != null).ToUShort(); } }
+
 		#endregion
 
 		/// <summary>
