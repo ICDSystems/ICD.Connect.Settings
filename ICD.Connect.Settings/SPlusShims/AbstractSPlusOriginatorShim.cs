@@ -61,6 +61,12 @@ namespace ICD.Connect.Settings.SPlusShims
 		[PublicAPI("S+")]
 		public ushort HasOriginator { get { return (m_Originator != null).ToUShort(); } }
 
+		/// <summary>
+		/// Gets the ID of the current wrapped originator, or 0 if no originator is wrapped
+		/// </summary>
+		[PublicAPI("S+")]
+		public int OriginatorId { get { return m_Originator != null ? m_Originator.Id : 0; } }
+
 		#endregion
 
 		/// <summary>
