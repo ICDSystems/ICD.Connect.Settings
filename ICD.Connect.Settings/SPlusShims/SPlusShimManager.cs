@@ -67,7 +67,19 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// <returns></returns>
 		public IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
-			yield break;
+			m_ShimSafeCriticalSection.Enter();
+			List<ISPlusShim> shims;
+			try
+			{
+				shims = m_Shims.ToList(m_Shims.Count);
+			}
+			finally
+			{
+				m_ShimSafeCriticalSection.Leave();
+			}
+
+			yield return ConsoleNodeGroup.IndexNodeMap("Shims", shims);
+
 		}
 
 		/// <summary>

@@ -1,7 +1,10 @@
-﻿using ICD.Common.Properties;
+﻿using System.Collections.Generic;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.SPlusShims.GlobalEvents;
 
 namespace ICD.Connect.Settings.SPlusShims
@@ -72,5 +75,46 @@ namespace ICD.Connect.Settings.SPlusShims
 		}
 
 		#endregion
+
+		#region Console
+		/// <summary>
+		/// Gets the name of the node.
+		/// </summary>
+		public virtual string ConsoleName { get { return "SPlusShim:" + Location; } }
+
+		/// <summary>
+		/// Gets the help information for the node.
+		/// </summary>
+		public virtual string ConsoleHelp { get { return "Shim for interfacing with S+ Code"; } }
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public virtual IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			yield break;
+		}
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public virtual void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			addRow("Location", Location);
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public virtual IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			yield break;
+		}
+
+		#endregion
+
 	}
 }
