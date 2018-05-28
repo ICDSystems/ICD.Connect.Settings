@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services;
@@ -20,15 +21,22 @@ namespace ICD.Connect.Settings.SPlusShims
 		#region Public Properties
 
 		/// <summary>
-		/// The Simpl Windows Location, set by S+
+		/// Location in the SimplWindows program of the S+ Module
+		/// Used to aid debugging
 		/// </summary>
-		[PublicAPI("S+")]
 		public string Location { get; set; }
+
+		/// <summary>
+		/// Programmer specified name of the module
+		/// Used to aid debugging
+		/// </summary>
+		public string Name { get; set; }
 
 		#endregion
 
 		protected AbstractSPlusShim()
 		{
+			Name = "SPlusShim";
 			SPlusGlobalEvents.RegisterCallback<EnvironmentLoadedEventInfo>(EnvironmentLoaded);
 			SPlusGlobalEvents.RegisterCallback<EnvironmentUnloadedEventInfo>(EnvironmentUnloaded);
 
@@ -80,7 +88,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// <summary>
 		/// Gets the name of the node.
 		/// </summary>
-		public virtual string ConsoleName { get { return "SPlusShim:" + Location; } }
+		public virtual string ConsoleName { get { return String.Format("{0}:{1}", Name, Location); } }
 
 		/// <summary>
 		/// Gets the help information for the node.
@@ -103,6 +111,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		public virtual void BuildConsoleStatus(AddStatusRowDelegate addRow)
 		{
 			addRow("Location", Location);
+			addRow("Name", Name);
 		}
 
 		/// <summary>

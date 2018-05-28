@@ -104,7 +104,7 @@ namespace ICD.Connect.Settings.SPlusShims
 
 		private void PrintShims()
 		{
-			TableBuilder builder = new TableBuilder("Index", "Simpl Location", "Originator Type", "Originator Name", "Originator Id");
+			TableBuilder builder = new TableBuilder("Index", "Simpl Location", "Simpl Name", "Originator Type", "Originator Name", "Originator Id");
 
 			m_ShimSafeCriticalSection.Enter();
 
@@ -119,13 +119,14 @@ namespace ICD.Connect.Settings.SPlusShims
 					{
 						builder.AddRow(index,
 						               originatorShim.Location,
+									   originatorShim.Name,
 						               originatorShim.Originator != null ? originatorShim.Originator.GetType().ToString() : "",
 						               originatorShim.Originator != null ? originatorShim.Originator.Name : "",
 						               originatorShim.Originator != null ? originatorShim.Originator.Id.ToString() : "");
 					}
 					else
 					{
-						builder.AddRow(index, shim.Location, "", "", "");
+						builder.AddRow(index, shim.Location, shim.Name, "", "", "");
 					}
 					
 				}
