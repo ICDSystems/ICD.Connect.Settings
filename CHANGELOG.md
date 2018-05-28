@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
  - Added abstraction and interface for SimplOriginator
+ - Made SPlusShims console nodes
 
 ## [6.0.0] - 2018-05-24
 ### Added
