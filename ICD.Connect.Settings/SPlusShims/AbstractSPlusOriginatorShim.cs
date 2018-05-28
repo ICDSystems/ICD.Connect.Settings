@@ -238,7 +238,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
 		{
 			base.BuildConsoleStatus(addRow);
-			addRow("Originator Id", OriginatorId);
+			addRow("Originator Id", m_OriginatorId);
 			addRow("Has Originator", Originator != null);
 		}
 
