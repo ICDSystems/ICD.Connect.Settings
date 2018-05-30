@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
@@ -32,6 +32,12 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		public string Name { get; set; }
 
+		/// <summary>
+		/// This callback is raised when the shim wants the S+ class to re-send incoming data to the shim
+		/// This is for syncronizing, for example, when an originator is attached.
+		/// </summary>
+		public event EventHandler OnResyncRequested;
+
 		#endregion
 
 		protected AbstractSPlusShim()
@@ -60,6 +66,13 @@ namespace ICD.Connect.Settings.SPlusShims
 		}
 
 		#region Private/Protected Helpers
+
+		protected void RequestResync()
+		{
+			var handler = OnResyncRequested;
+			if (handler != null)
+				handler.Raise(this);
+		}
 
 		protected void Log(eSeverity severity, string message)
 		{
