@@ -118,7 +118,16 @@ namespace ICD.Connect.Settings.SPlusShims
 
 		#endregion
 
-		#region Private Methods
+		#region Private/Protected Methods
+
+		/// <summary>
+		/// Called when the originator is attached.
+		/// Do any actions needed to syncronize
+		/// </summary>
+		protected virtual void OriginatorAttached()
+		{
+			RequestResync();
+		}
 
 		/// <summary>
 		/// Sets the wrapped originator.
@@ -135,6 +144,9 @@ namespace ICD.Connect.Settings.SPlusShims
 			Subscribe(m_Originator);
 
 			OnOriginatorChanged.Raise(this);
+
+			if (m_Originator != null)
+				OriginatorAttached();
 
 			if (old == null || m_Originator == null)
 				OnHasOriginatorChanged.Raise(this);
