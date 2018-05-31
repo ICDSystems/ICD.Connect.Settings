@@ -124,9 +124,18 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// Called when the originator is attached.
 		/// Do any actions needed to syncronize
 		/// </summary>
-		protected virtual void OriginatorAttached()
+		protected virtual void InstantiateOriginator()
 		{
 			RequestResync();
+		}
+
+		/// <summary>
+		/// Called when the originator is detached
+		/// Do any actions needed to desyncronize
+		/// </summary>
+		protected virtual void DeinstantiateOriginator()
+		{
+			
 		}
 
 		/// <summary>
@@ -140,13 +149,16 @@ namespace ICD.Connect.Settings.SPlusShims
 				return;
 
 			Unsubscribe(m_Originator);
+			if (m_Originator != null)
+				DeinstantiateOriginator();
+
 			m_Originator = originator;
 			Subscribe(m_Originator);
 
 			OnOriginatorChanged.Raise(this);
 
 			if (m_Originator != null)
-				OriginatorAttached();
+				InstantiateOriginator();
 
 			if (old == null || m_Originator == null)
 				OnHasOriginatorChanged.Raise(this);
