@@ -114,16 +114,16 @@ namespace ICD.Connect.Settings
 				string message;
 				bool result = Unzip(path, out message);
 
-				// Delete the archive so we don't waste time extracting on next load
-				if (result)
-				{
-					IcdFile.Delete(path);
-					Logger.AddEntry(eSeverity.Informational, "Extracted archive {0}", path);
-				}
-				else
+				if (!result)
 				{
 					Logger.AddEntry(eSeverity.Warning, "Failed to extract archive {0} - {1}", path, message);
+					continue;
 				}
+
+				Logger.AddEntry(eSeverity.Informational, "Extracted archive {0}", path);
+
+				// Delete the archive so we don't waste time extracting on next load
+				IcdFile.Delete(path);
 			}
 		}
 
