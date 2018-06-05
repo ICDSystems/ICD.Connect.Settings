@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
@@ -23,7 +22,6 @@ namespace ICD.Connect.Settings
 	public static class LibraryUtils
 	{
 		private const string DLL_EXT = ".dll";
-		private const string VERSION_MATCH = @"-[v|V]([\d+.?]+\d)$";
 
 		private static readonly string[] s_ArchiveExtensions =
 		{
@@ -60,7 +58,6 @@ namespace ICD.Connect.Settings
 			UnzipLibAssemblies();
 
 			return GetAssemblyPaths().OrderBy<string, int>(GetDirectoryIndex)
-			                         .ThenByDescending<string, Version>(GetAssemblyVersionFromPath)
 			                         .Distinct(new FileNameComparer())
 			                         .Select<string, Assembly>(SafeLoadAssembly)
 			                         .Where(a => a != null && IsKrangPlugin(a))
@@ -282,23 +279,6 @@ namespace ICD.Connect.Settings
 			}
 		}
 
-		/// <summary>
-		/// Gets the version from the path.
-		/// e.g. ICD.SimplSharp.Common returns 0.0.0.0
-		///	     ICD.SimplSharp.Common-V1.0 returns 1.0.0.0
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
-		private static Version GetAssemblyVersionFromPath(string path)
-		{
-			string filename = IcdPath.GetFileNameWithoutExtension(path);
-
-			Regex regex = new Regex(VERSION_MATCH);
-			Match match = regex.Match(filename);
-
-			return match.Success ? new Version(match.Groups[1].Value) : new Version(0, 0);
-		}
-
-#endregion
+		#endregion
 	}
 }
