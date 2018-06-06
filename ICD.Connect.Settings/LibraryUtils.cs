@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
@@ -66,6 +67,46 @@ namespace ICD.Connect.Settings
 			                         .OrderBy(a => a.FullName);
 		}
 
+		/// <summary>
+		/// Given a sequence of paths to plugin archives, returns the minimal
+		/// sequence of plugin paths to provide all plugins.
+		/// 
+		/// E.g. skip over ICD.Common.Utils.clz because it is already available via ICD.Connect.Core.cpz
+		/// </summary>
+		/// <param name="paths"></param>
+		/// <returns></returns>
+		public static IEnumerable<string> FilterPluginPaths(IEnumerable<string> paths)
+		{
+			if (paths == null)
+				throw new ArgumentNullException("paths");
+
+			Dictionary<string, IcdHashSet<string>> pluginDlls =
+				paths.Distinct()
+				     .ToDictionary(p => p, p => GetPluginDllContents(p).ToIcdHashSet());
+
+			Dictionary<string, string> pluginParents =
+				pluginDlls.ToDictionary(kvp => kvp.Key,
+				                        kvp => pluginDlls.FirstOrDefault(kvpInner => kvpInner.Value.IsProperSupersetOf(kvp.Value)).Key);
+
+			return pluginParents.Where(kvp => kvp.Value == null)
+			                    .Select(kvp => kvp.Key);
+		}
+
+		/// <summary>
+		/// Given a path to a plugin archive yields the names of the contained dll files.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		private static IEnumerable<string> GetPluginDllContents(string path)
+		{
+			if (!IcdFile.Exists(path) || !IsArchive(path))
+				throw new ArgumentException("path", "Path is not an archive");
+
+			return
+				IcdZip.GetFileNames(path)
+				      .Where(f => IcdPath.GetExtension(f).Equals(DLL_EXT, StringComparison.OrdinalIgnoreCase));
+		}
+
 		#endregion
 
 		#region Private Methods
@@ -74,27 +115,27 @@ namespace ICD.Connect.Settings
 		/// Unzips the archive at the given path.
 		/// </summary>
 		/// <param name="path"></param>
-		/// <param name="message"></param>
-		private static bool Unzip(string path, out string message)
+		private static void Unzip(string path)
 		{
 			string outputDir = PathUtils.GetPathWithoutExtension(path);
 
-			// Delete the previous output dir, sometimes the unzip operation doesn't seem to overwrite
-			if (IcdDirectory.Exists(outputDir))
-			{
-				try
-				{
-					IcdDirectory.Delete(outputDir, true);
-					Logger.AddEntry(eSeverity.Informational, "Removed old archive {0}", outputDir);
-				}
-				catch (Exception e)
-				{
-					message = string.Format("Failed to remove old archive {0} - {1}", outputDir, e.Message);
-					return false;
-				}
-			}
+			if (IcdDirectory.Exists(path))
+				RemoveOldPlugin(path);
 
-			return IcdZip.Unzip(path, outputDir, out message);
+			IcdZip.Unzip(path, outputDir);
+		}
+
+		private static void RemoveOldPlugin(string path)
+		{
+			try
+			{
+				IcdDirectory.Delete(path, true);
+				Logger.AddEntry(eSeverity.Informational, "Removed old plugin {0}", path);
+			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException(string.Format("Failed to remove old plugin {0} - {1}", path, e.Message));
+			}
 		}
 
 		/// <summary>
@@ -102,18 +143,33 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		private static void UnzipLibAssemblies()
 		{
-			foreach (string path in GetArchivePaths().Where(p => !IsProgramCpz(p)))
+			IcdHashSet<string> pluginPaths = GetArchivePaths().ToIcdHashSet();
+			IcdHashSet<string> filtered = FilterPluginPaths(pluginPaths).ToIcdHashSet();
+
+			foreach (string path in pluginPaths.Order().Where(p => !IsProgramCpz(p)))
 			{
-				string message;
-				bool result = Unzip(path, out message);
-
-				if (!result)
+				if (filtered.Contains(path))
 				{
-					Logger.AddEntry(eSeverity.Warning, "Failed to extract archive {0} - {1}", path, message);
-					continue;
-				}
+					try
+					{
+						Unzip(path);
+					}
+					catch (Exception e)
+					{
+						Logger.AddEntry(eSeverity.Warning, "Failed to extract archive {0} - {1}", path, e.Message);
+						continue;
+					}
 
-				Logger.AddEntry(eSeverity.Informational, "Extracted archive {0}", path);
+					Logger.AddEntry(eSeverity.Informational, "Extracted archive {0}", path);
+				}
+				else
+				{
+					string outputDir = PathUtils.GetPathWithoutExtension(path);
+					if (IcdDirectory.Exists(outputDir))
+						RemoveOldPlugin(outputDir);
+
+					Logger.AddEntry(eSeverity.Warning, "Skipping extracting archive {0} - Already contained in another plugin", path);
+				}
 
 				// Delete the archive so we don't waste time extracting on next load
 				IcdFile.Delete(path);
