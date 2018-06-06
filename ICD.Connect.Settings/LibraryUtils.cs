@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.IO.Compression;
@@ -59,31 +60,22 @@ namespace ICD.Connect.Settings
 			UnzipLibAssemblies();
 
 			return GetAssemblyPaths().OrderBy<string, int>(GetDirectoryIndex)
-			                         .Distinct(new FileNameComparer())
+			                         .Distinct(FileNameEqualityComparer.Instance)
 			                         .Select<string, Assembly>(SafeLoadAssembly)
 			                         .Where(a => a != null && IsKrangPlugin(a))
 			                         .OrderBy(a => a.FullName);
 		}
 
-		private sealed class FileNameComparer : IEqualityComparer<string>
-		{
-			public bool Equals(string x, string y)
-			{
-				return GetHashCode(x) == GetHashCode(y);
-			}
+		#endregion
 
-			public int GetHashCode(string obj)
-			{
-				return obj == null ? 0 : IcdPath.GetFileName(obj).GetHashCode();
-			}
-		}
+		#region Private Methods
 
 		/// <summary>
 		/// Unzips the archive at the given path.
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="message"></param>
-		public static bool Unzip(string path, out string message)
+		private static bool Unzip(string path, out string message)
 		{
 			string outputDir = PathUtils.GetPathWithoutExtension(path);
 
@@ -108,7 +100,7 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Loops over the archives in the lib directories and unzips them.
 		/// </summary>
-		public static void UnzipLibAssemblies()
+		private static void UnzipLibAssemblies()
 		{
 			foreach (string path in GetArchivePaths().Where(p => !IsProgramCpz(p)))
 			{
@@ -127,10 +119,6 @@ namespace ICD.Connect.Settings
 				IcdFile.Delete(path);
 			}
 		}
-
-		#endregion
-
-		#region Private Methods
 
 		private static bool IsKrangPlugin(Assembly assembly)
 		{
