@@ -105,6 +105,7 @@ namespace ICD.Connect.Settings
 
 			if (!s_FactoryNameMapInverse.ContainsKey(type))
 				throw new KeyNotFoundException(string.Format("Unable to find factory name for {0}", type.Name));
+
 			return s_FactoryNameMapInverse[type];
 		}
 
@@ -116,7 +117,7 @@ namespace ICD.Connect.Settings
 			where TSettings : ISettings
 		{
 			return s_FactoryNameMapInverse.Where(kvp => kvp.Key.IsAssignableTo(typeof(TSettings)))
-			                               .Select(kvp => kvp.Value);
+										  .Select(kvp => kvp.Value);
 		}
 
 		/// <summary>
@@ -135,13 +136,7 @@ namespace ICD.Connect.Settings
 		public static IEnumerable<Assembly> GetFactoryAssemblies()
 		{
 			return s_FactoryNameTypeMap.Values
-			                           .Select(v =>
-#if SIMPLSHARP
-			                                   ((CType)v)
-#else
-			                                   v.GetTypeInfo()
-#endif
-				                                   .Assembly)
+			                           .Select(v => v.GetAssembly())
 			                           .Distinct();
 		}
 
