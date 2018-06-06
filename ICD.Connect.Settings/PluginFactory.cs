@@ -201,7 +201,7 @@ namespace ICD.Connect.Settings
 			}
 			catch (TargetInvocationException e)
 			{
-				throw e.InnerException;
+				throw e.InnerException ?? e;
 			}
 		}
 
@@ -219,20 +219,7 @@ namespace ICD.Connect.Settings
 
 			Type type = GetType(factoryName);
 
-#if SIMPLSHARP
-			ConstructorInfo ctor = ((CType)type).GetConstructor(new CType[0]);
-#else
-			ConstructorInfo ctor = type.GetTypeInfo().GetConstructor(new Type[0]);
-#endif
-
-			try
-			{
-				return (TSettings)ctor.Invoke(new object[0]);
-			}
-			catch (TargetInvocationException e)
-			{
-				throw e.GetBaseException();
-			}
+			return (TSettings)ReflectionUtils.CreateInstance(type);
 		}
 
 		/// <summary>
