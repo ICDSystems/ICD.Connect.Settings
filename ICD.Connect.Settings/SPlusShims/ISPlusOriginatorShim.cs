@@ -7,11 +7,11 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// <summary>
 		/// Gets the wrapped originator.
 		/// </summary>
-		ISimplOriginator Originator { get; }
+		IOriginator Originator { get; }
 	}
 
 	public interface ISPlusOriginatorShim<TOriginator> : ISPlusOriginatorShim
-		where TOriginator : ISimplOriginator
+		where TOriginator : IOriginator
 	{
 		/// <summary>
 		/// Gets the wrapped originator.
