@@ -7,7 +7,6 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
-using ICD.Connect.Settings.Simpl;
 using ICD.Connect.Settings.SPlusShims.GlobalEvents;
 
 namespace ICD.Connect.Settings.SPlusShims
