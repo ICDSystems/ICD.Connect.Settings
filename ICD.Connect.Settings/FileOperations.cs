@@ -148,22 +148,6 @@ namespace ICD.Connect.Settings
 			// Ensure the new core settings don't default to an id of 0.
 			settings.Id = IdUtils.ID_CORE;
 
-			LoadCoreSettings(core, settings);
-		}
-
-		/// <summary>
-		/// Loads the settings from disk to the core.
-		/// </summary>
-		public static void LoadCoreSettings<TCore, TSettings>(TCore core, TSettings settings)
-			where TSettings : ICoreSettings
-			where TCore : ICore
-		{
-			if (core == null)
-				throw new ArgumentNullException("core");
-
-			if (settings == null)
-				throw new ArgumentNullException("settings");
-
 			string path = IcdConfigPath;
 
 			Logger.AddEntry(eSeverity.Notice, "Loading settings from {0}", path);
