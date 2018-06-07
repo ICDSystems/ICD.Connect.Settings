@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
  - Skip extracting plugins that are contained within another plugin
+ - Warn when loading core without an available xml config
 
 ## [6.1.0] - 2018-06-04
 ### Added
