@@ -337,7 +337,7 @@ namespace ICD.Connect.Settings
 		{
 			TChild child = GetChild(id);
 
-			if (child.GetType().IsAssignableTo(typeof(TInstance)))
+			if (child is TInstance)
 				return (TInstance)child;
 
 			string message = string.Format("{0} id {1} is not of type {2}", child.GetType().Name,

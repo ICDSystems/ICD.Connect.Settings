@@ -148,37 +148,23 @@ namespace ICD.Connect.Settings
 			// Ensure the new core settings don't default to an id of 0.
 			settings.Id = IdUtils.ID_CORE;
 
-			LoadCoreSettings(core, settings);
-		}
-
-		/// <summary>
-		/// Loads the settings from disk to the core.
-		/// </summary>
-		public static void LoadCoreSettings<TCore, TSettings>(TCore core, TSettings settings)
-			where TSettings : ICoreSettings
-			where TCore : ICore
-		{
-			if (core == null)
-				throw new ArgumentNullException("core");
-
-			if (settings == null)
-				throw new ArgumentNullException("settings");
-
-			string path = IcdConfigPath;
-
-			Logger.AddEntry(eSeverity.Notice, "Loading settings from {0}", path);
-
 			// Load XML config into string
 			string configXml = null;
-			if (IcdFile.Exists(path))
+			if (IcdFile.Exists(IcdConfigPath))
 			{
-				configXml = IcdFile.ReadToEnd(path, new UTF8Encoding(false));
+				Logger.AddEntry(eSeverity.Notice, "Loading settings from {0}", IcdConfigPath);
+
+				configXml = IcdFile.ReadToEnd(IcdConfigPath, new UTF8Encoding(false));
 				configXml = EncodingUtils.StripUtf8Bom(configXml);
+
+				Logger.AddEntry(eSeverity.Notice, "Finished loading settings");
+			}
+			else
+			{
+				Logger.AddEntry(eSeverity.Warning, "Failed to find settings at {0}", IcdConfigPath);
 			}
 
 			bool save = false;
-
-			Logger.AddEntry(eSeverity.Notice, "Finished loading settings");
 
 			// Save a stub xml file if one doesn't already exist
 			if (string.IsNullOrEmpty(configXml))
