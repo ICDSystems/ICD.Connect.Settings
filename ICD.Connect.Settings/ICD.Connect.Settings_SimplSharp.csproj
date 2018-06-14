@@ -117,7 +117,7 @@
     <Compile Include="SPlusShims\EventArguments\SPlusBoolEventArgs.cs" />
     <Compile Include="SPlusShims\EventArguments\SPlusIntEventArgs.cs" />
     <Compile Include="SPlusShims\EventArguments\SPlusStringEventArgs.cs" />
-    <Compile Include="SPlusShims\EventArguments\SPlusUshortEventArgs.cs" />
+    <Compile Include="SPlusShims\EventArguments\SPlusUShortEventArgs.cs" />
     <Compile Include="SPlusShims\GlobalEvents\AbstractSPlusEventInfo.cs" />
     <Compile Include="SPlusShims\GlobalEvents\EnvironmentLoadedEventInfo.cs" />
     <Compile Include="SPlusShims\GlobalEvents\EnvironmentUnloadedEventInfo.cs" />
