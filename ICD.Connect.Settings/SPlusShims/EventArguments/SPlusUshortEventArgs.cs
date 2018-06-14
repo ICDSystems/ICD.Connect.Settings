@@ -3,15 +3,15 @@ using ICD.Common.Properties;
 
 namespace ICD.Connect.Settings.SPlusShims.EventArguments
 {
-	public sealed class SPlusUshortEventArgs : EventArgs
+	public sealed class SPlusUShortEventArgs : EventArgs
 	{
 		[PublicAPI("S+")]
 		public ushort Data { get; set; }
 
 		[PublicAPI("S+")]
-		public SPlusUshortEventArgs(){}
+		public SPlusUShortEventArgs(){}
 
-		public SPlusUshortEventArgs(ushort data)
+		public SPlusUShortEventArgs(ushort data)
 		{
 			Data = data;
 		}
