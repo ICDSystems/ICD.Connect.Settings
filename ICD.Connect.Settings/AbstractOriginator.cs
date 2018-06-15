@@ -277,7 +277,6 @@ namespace ICD.Connect.Settings
 
 			ClearSettingsFinal();
 
-			Id = 0;
 			Name = null;
 			CombineName = null;
 			Description = null;
