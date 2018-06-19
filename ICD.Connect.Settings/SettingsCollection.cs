@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 
@@ -16,7 +17,7 @@ namespace ICD.Connect.Settings
 		public event EventHandler OnItemAdded;
 		public event EventHandler OnItemRemoved;
 
-		private readonly Dictionary<int, ISettings> m_Collection;
+		private readonly IcdOrderedDictionary<int, ISettings> m_Collection;
 		private readonly SafeCriticalSection m_CollectionSection;
 
 		#region Properties
@@ -53,7 +54,7 @@ namespace ICD.Connect.Settings
 		/// <param name="settings"></param>
 		public SettingsCollection(IEnumerable<ISettings> settings)
 		{
-			m_Collection = new Dictionary<int, ISettings>();
+			m_Collection = new IcdOrderedDictionary<int, ISettings>();
 			m_CollectionSection = new SafeCriticalSection();
 
 			AddRange(settings);
@@ -77,7 +78,7 @@ namespace ICD.Connect.Settings
 			{
 				writer.WriteStartElement(element);
 				{
-					foreach (ISettings item in m_Collection.OrderValuesByKey())
+					foreach (ISettings item in m_Collection.Values)
 						item.ToXml(writer, childElement);
 				}
 				writer.WriteEndElement();
@@ -94,7 +95,7 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public IEnumerator<ISettings> GetEnumerator()
 		{
-			return m_CollectionSection.Execute(() => m_Collection.OrderValuesByKey().ToList()).GetEnumerator();
+			return m_CollectionSection.Execute(() => m_Collection.Values.ToList()).GetEnumerator();
 		}
 
 		/// <summary>
@@ -239,7 +240,7 @@ namespace ICD.Connect.Settings
 
 			try
 			{
-				m_Collection.OrderValuesByKey()
+				m_Collection.Values
 				            .ToArray(m_Collection.Count)
 				            .CopyTo(array, arrayIndex);
 			}
