@@ -1,10 +1,15 @@
-﻿namespace ICD.Connect.Settings.Core
+﻿using System;
+
+namespace ICD.Connect.Settings.Core
 {
 	public abstract class AbstractCore<TSettings> : AbstractOriginator<TSettings>, ICore
 		where TSettings : ICoreSettings, new()
 	{
 		private readonly CoreOriginatorCollection m_Originators;
 
+		/// <summary>
+		/// Gets the originators contained in the core.
+		/// </summary>
 		public IOriginatorCollection<IOriginator> Originators { get { return m_Originators; } }
 
 		/// <summary>
@@ -41,6 +46,9 @@
 		/// <param name="settings"></param>
 		void ICore.ApplySettings(ICoreSettings settings)
 		{
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
 			IDeviceFactory factory = new CoreDeviceFactory(settings);
 			ApplySettings((TSettings)settings, factory);
 		}
