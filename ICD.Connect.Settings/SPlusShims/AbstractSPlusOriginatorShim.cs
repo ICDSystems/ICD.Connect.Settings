@@ -7,12 +7,13 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Simpl;
 using ICD.Connect.Settings.SPlusShims.GlobalEvents;
 
 namespace ICD.Connect.Settings.SPlusShims
 {
 	public abstract class AbstractSPlusOriginatorShim<TOriginator> : AbstractSPlusShim, ISPlusOriginatorShim<TOriginator>
-		where TOriginator : class, IOriginator
+		where TOriginator : class, ISimplOriginator
 	{
 		#region Events
 
@@ -55,7 +56,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// <summary>
 		/// Gets the wrapped originator.
 		/// </summary>
-		IOriginator ISPlusOriginatorShim.Originator { get { return Originator; } }
+		ISimplOriginator ISPlusOriginatorShim.Originator { get { return Originator; } }
 
 		/// <summary>
 		/// Returns true if the shim is currently wrapping an originator.
