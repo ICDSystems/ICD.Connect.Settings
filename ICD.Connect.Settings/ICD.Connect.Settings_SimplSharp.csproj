@@ -114,6 +114,10 @@
     <Compile Include="Simpl\ISimplOriginatorSettings.cs" />
     <Compile Include="SPlusShims\AbstractSPlusOriginatorShim.cs" />
     <Compile Include="SPlusShims\AbstractSPlusShim.cs" />
+    <Compile Include="SPlusShims\EventArguments\SPlusBoolEventArgs.cs" />
+    <Compile Include="SPlusShims\EventArguments\SPlusIntEventArgs.cs" />
+    <Compile Include="SPlusShims\EventArguments\SPlusStringEventArgs.cs" />
+    <Compile Include="SPlusShims\EventArguments\SPlusUShortEventArgs.cs" />
     <Compile Include="SPlusShims\GlobalEvents\AbstractSPlusEventInfo.cs" />
     <Compile Include="SPlusShims\GlobalEvents\EnvironmentLoadedEventInfo.cs" />
     <Compile Include="SPlusShims\GlobalEvents\EnvironmentUnloadedEventInfo.cs" />
