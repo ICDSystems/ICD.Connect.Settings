@@ -230,7 +230,15 @@ namespace ICD.Connect.Settings
 				if (foundSln)
 					return PathUtils.RecurseFilePaths(path)
 					                .Where(p => p.Contains("bin"))
-					                .Where(IsAssembly);
+					                .Where(IsAssembly)
+					                .Where(p =>
+					                       {
+						                       // Avoid loading any SimplSharp assemblies
+						                       string dir = IcdPath.GetDirectoryName(p);
+						                       string[] files = IcdDirectory.GetFiles(dir);
+
+						                       return files.All(f => !f.EndsWith("SimplSharpData.dat"));
+					                       });
 			}
 #endif
 
