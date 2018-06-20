@@ -100,7 +100,7 @@ namespace ICD.Connect.Settings
 		private static IEnumerable<string> GetPluginDllContents(string path)
 		{
 			if (!IcdFile.Exists(path) || !IsArchive(path))
-				throw new ArgumentException("path", "Path is not an archive");
+				throw new ArgumentException("Path is not an archive", "path");
 
 			return
 				IcdZip.GetFileNames(path)
@@ -217,13 +217,8 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		private static IEnumerable<string> GetBuildAssemblyPaths()
 		{
-			string path = typeof(LibraryUtils)
-#if SIMPLSHARP
-				.GetCType()
-#else
-				.GetTypeInfo()
-#endif
-				.Assembly.GetPath();
+#if !SIMPLSHARP
+			string path = typeof(LibraryUtils).GetAssembly().GetPath();
 
 			// Find the .sln
 			while (path != null)
@@ -237,6 +232,7 @@ namespace ICD.Connect.Settings
 					                .Where(p => p.Contains("bin"))
 					                .Where(IsAssembly);
 			}
+#endif
 
 			return Enumerable.Empty<string>();
 		}
