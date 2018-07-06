@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Permissions;
+using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API;
@@ -59,7 +60,7 @@ namespace ICD.Connect.Settings.Proxies
 		/// <summary>
 		/// Gets the name of the node.
 		/// </summary>
-		public virtual string ConsoleName { get { return string.IsNullOrEmpty(Name) ? GetType().Name : Name; } }
+		public virtual string ConsoleName { get { return string.IsNullOrEmpty(Name) ? GetType().GetNameWithoutGenericArity() : Name; } }
 
 		/// <summary>
 		/// Gets the help information for the node.
