@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
  - Avoid loading SimplSharp assemblies from build directory in Net Standard
+ - Removed try catch for accurate stack trace
 
 ## [6.2.0] - 2018-06-19
 ### Added
