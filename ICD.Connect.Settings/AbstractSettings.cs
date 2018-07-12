@@ -209,19 +209,10 @@ namespace ICD.Connect.Settings
 
 			IOriginator output;
 
-			try
-			{
-				output = (IOriginator)ReflectionUtils.CreateInstance(OriginatorType);
+		    output = (IOriginator)ReflectionUtils.CreateInstance(OriginatorType);
 
-				// This instance came from settings, so we want to store it back to settings.
-				output.Serialize = true;
-			}
-			catch (Exception e)
-			{
-				throw new InvalidOperationException(
-					string.Format("{0} failed to create instance of {1} - Error Message: {2} Inner Message:{3}", GetType().Name,
-					              OriginatorType.Name, e.Message, e.InnerException), e);
-			}
+		    // This instance came from settings, so we want to store it back to settings.
+		    output.Serialize = true;
 
 			output.ApplySettings(this, factory);
 			return output;
