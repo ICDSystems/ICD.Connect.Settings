@@ -32,6 +32,9 @@ namespace ICD.Connect.Settings
 
 		private readonly List<Permission> m_Permissions;
 
+		private ILoggerService m_CachedLogger;
+		private PermissionsManager m_CachedPermissionsManager;
+
 		#region Properties
 
 		/// <summary>
@@ -74,7 +77,10 @@ namespace ICD.Connect.Settings
 		/// Logger for the originator.
 		/// </summary>
 		[Obsolete]
-		public ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
+		public ILoggerService Logger
+		{
+			get { return m_CachedLogger = m_CachedLogger ?? ServiceProvider.TryGetService<ILoggerService>(); }
+		}
 
 		/// <summary>
 		/// Gets the name of the node.
@@ -88,7 +94,11 @@ namespace ICD.Connect.Settings
 
 		protected PermissionsManager PermissionsManager
 		{
-			get { return ServiceProvider.TryGetService<PermissionsManager>(); }
+			get
+			{
+				return m_CachedPermissionsManager =
+					       m_CachedPermissionsManager ?? ServiceProvider.TryGetService<PermissionsManager>();
+			}
 		}
 
 		#endregion
