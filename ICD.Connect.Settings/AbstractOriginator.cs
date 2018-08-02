@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Permissions;
@@ -205,7 +205,8 @@ namespace ICD.Connect.Settings
 			m_Permissions.Clear();
 			m_Permissions.AddRange(permissions);
 
-			PermissionsManager.SetObjectPermissions(this, m_Permissions);
+		    if (PermissionsManager != null)
+		        PermissionsManager.SetObjectPermissions(this, m_Permissions);
 		}
 
 		#endregion
