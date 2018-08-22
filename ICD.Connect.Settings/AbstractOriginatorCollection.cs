@@ -10,7 +10,7 @@ using ICD.Common.Utils.Extensions;
 namespace ICD.Connect.Settings
 {
 	public abstract class AbstractOriginatorCollection<TChild> : IOriginatorCollection<TChild>
-		where TChild : IOriginator
+		where TChild : class, IOriginator
 	{
 		public event EventHandler OnChildrenChanged;
 
