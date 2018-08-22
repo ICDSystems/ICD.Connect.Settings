@@ -12,6 +12,9 @@ namespace ICD.Connect.Settings
 	public abstract class AbstractOriginatorCollection<TChild> : IOriginatorCollection<TChild>
 		where TChild : class, IOriginator
 	{
+		/// <summary>
+		/// Raised when children are added/removed to/from the collection.
+		/// </summary>
 		public event EventHandler OnChildrenChanged;
 
 		private readonly Dictionary<Type, List<int>> m_TypeToChildren;

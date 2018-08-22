@@ -7,6 +7,9 @@ namespace ICD.Connect.Settings
 	public interface IOriginatorCollection<TChild> : IEnumerable<TChild>
 		where TChild : IOriginator
 	{
+		/// <summary>
+		/// Raised when children are added/removed to/from the collection.
+		/// </summary>
 		event EventHandler OnChildrenChanged;
 
 		/// <summary>
