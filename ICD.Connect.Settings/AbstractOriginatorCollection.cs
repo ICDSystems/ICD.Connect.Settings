@@ -5,6 +5,7 @@ using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings
@@ -17,9 +18,10 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		public event EventHandler OnChildrenChanged;
 
-		private readonly Dictionary<Type, List<int>> m_TypeToChildren;
+		private readonly Dictionary<Type, List<TChild>> m_TypeToChildren;
 		private readonly IcdOrderedDictionary<int, TChild> m_Children;
 		private readonly SafeCriticalSection m_ChildrenSection;
+		private readonly PredicateComparer<TChild, int> m_ChildIdComparer;
 
 		#region Properties
 
@@ -51,9 +53,10 @@ namespace ICD.Connect.Settings
 		/// <param name="children"></param>
 		protected AbstractOriginatorCollection(IEnumerable<TChild> children)
 		{
-			m_TypeToChildren = new Dictionary<Type, List<int>>();
+			m_TypeToChildren = new Dictionary<Type, List<TChild>>();
 			m_Children = new IcdOrderedDictionary<int, TChild>();
 			m_ChildrenSection = new SafeCriticalSection();
+			m_ChildIdComparer = new PredicateComparer<TChild, int>(c => c.Id);
 
 			SetChildren(children);
 		}
@@ -117,7 +120,7 @@ namespace ICD.Connect.Settings
 					foreach (Type type in child.GetType().GetAllTypes())
 					{
 						if (m_TypeToChildren.ContainsKey(type))
-							m_TypeToChildren[type].Remove(child.Id);
+							m_TypeToChildren[type].Remove(child);
 					}
 
 					m_Children.Remove(child.Id);
@@ -184,8 +187,8 @@ namespace ICD.Connect.Settings
 					foreach (Type type in child.GetType().GetAllTypes())
 					{
 						if (!m_TypeToChildren.ContainsKey(type))
-							m_TypeToChildren[type] = new List<int>();
-						m_TypeToChildren[type].AddSorted(child.Id, Comparer<int>.Default);
+							m_TypeToChildren[type] = new List<TChild>();
+						m_TypeToChildren[type].AddSorted(child, m_ChildIdComparer);
 					}
 
 					m_Children.Add(child.Id, child);
@@ -259,12 +262,11 @@ namespace ICD.Connect.Settings
 
 			try
 			{
-				List<int> children;
+				List<TChild> children;
 				if (!m_TypeToChildren.TryGetValue(typeof(TInstance), out children))
 					return Enumerable.Empty<TInstance>();
 
-				return children.Select(c => m_Children[c])
-				               .Cast<TInstance>()
+				return children.Cast<TInstance>()
 				               .Where(selector)
 				               .ToArray();
 			}
@@ -311,12 +313,12 @@ namespace ICD.Connect.Settings
 
 			try
 			{
-				List<int> children;
+				List<TChild> children;
 				if (!m_TypeToChildren.TryGetValue(typeof(TInstance), out children))
 					throw new InvalidOperationException(string.Format("No {0} of type {1}", typeof(TChild).Name, typeof(TInstance).Name));
 
 				TInstance output;
-				if (!children.Select(c => m_Children[c]).Cast<TInstance>().TryFirst(out output))
+				if (!children.Cast<TInstance>().TryFirst(out output))
 					throw new InvalidOperationException(string.Format("No {0} of type {1}", typeof(TChild).Name, typeof(TInstance).Name));
 
 				return output;
