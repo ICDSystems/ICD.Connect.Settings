@@ -241,7 +241,7 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstance"></typeparam>
 		/// <returns></returns>
 		public IEnumerable<TInstance> GetChildren<TInstance>()
-			where TInstance : TChild
+			where TInstance : class, TChild
 		{
 			return GetChildren<TInstance>(c => true);
 		}
@@ -253,7 +253,7 @@ namespace ICD.Connect.Settings
 		/// <param name="selector"></param>
 		/// <returns></returns>
 		public IEnumerable<TInstance> GetChildren<TInstance>(Func<TInstance, bool> selector)
-			where TInstance : TChild
+			where TInstance : class, TChild
 		{
 			if (selector == null)
 				throw new ArgumentNullException("selector");
@@ -307,7 +307,7 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstance"></typeparam>
 		/// <returns></returns>
 		public TInstance GetChild<TInstance>()
-			where TInstance : TChild
+			where TInstance : class, TChild
 		{
 			m_ChildrenSection.Enter();
 
@@ -338,12 +338,13 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		[NotNull]
 		public TInstance GetChild<TInstance>(int id)
-			where TInstance : TChild
+			where TInstance : class, TChild
 		{
 			TChild child = GetChild(id);
 
-			if (child is TInstance)
-				return (TInstance)child;
+			TInstance instance = child as TInstance;
+			if (instance != null)
+				return instance;
 
 			string message = string.Format("{0} id {1} is not of type {2}", child.GetType().Name,
 			                               id, typeof(TInstance).Name);
@@ -357,7 +358,7 @@ namespace ICD.Connect.Settings
 		/// <param name="ids"></param>
 		/// <returns></returns>
 		public TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids)
-			where TInstanceType : TChild
+			where TInstanceType : class, TChild
 		{
 			if (ids == null)
 				throw new ArgumentNullException("ids");
@@ -373,7 +374,7 @@ namespace ICD.Connect.Settings
 		/// <param name="selector"></param>
 		/// <returns></returns>
 		public TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector)
-			where TInstanceType : TChild
+			where TInstanceType : class, TChild
 		{
 			if (ids == null)
 				throw new ArgumentNullException("ids");
@@ -406,7 +407,7 @@ namespace ICD.Connect.Settings
 		/// <param name="ids"></param>
 		/// <returns></returns>
 		public IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids)
-			where TInstanceType : TChild
+			where TInstanceType : class, TChild
 		{
 			if (ids == null)
 				throw new ArgumentNullException("ids");
@@ -422,7 +423,7 @@ namespace ICD.Connect.Settings
 		/// <param name="selector"></param>
 		/// <returns></returns>
 		public IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector)
-			where TInstanceType : TChild
+			where TInstanceType : class, TChild
 		{
 			if (ids == null)
 				throw new ArgumentNullException("ids");
@@ -473,7 +474,7 @@ namespace ICD.Connect.Settings
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public bool ContainsChild<TInstanceType>(int id)
-			where TInstanceType : TChild
+			where TInstanceType : class, TChild
 		{
 			m_ChildrenSection.Enter();
 
@@ -498,7 +499,7 @@ namespace ICD.Connect.Settings
 		/// <param name="ids"></param>
 		/// <returns></returns>
 		public bool ContainsChildAny<TInstanceType>(IEnumerable<int> ids)
-			where TInstanceType : TChild
+			where TInstanceType : class, TChild
 		{
 			m_ChildrenSection.Enter();
 

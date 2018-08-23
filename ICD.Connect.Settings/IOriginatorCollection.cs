@@ -5,7 +5,7 @@ using ICD.Common.Properties;
 namespace ICD.Connect.Settings
 {
 	public interface IOriginatorCollection<TChild> : IEnumerable<TChild>
-		where TChild : IOriginator
+		where TChild : class, IOriginator
 	{
 		/// <summary>
 		/// Raised when children are added/removed to/from the collection.
@@ -74,7 +74,7 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		bool ContainsChild<TInstanceType>(int id) where TInstanceType : TChild;
+		bool ContainsChild<TInstanceType>(int id) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Returns true if there is a child with the given id.
@@ -89,7 +89,7 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="ids"></param>
 		/// <returns></returns>
-		bool ContainsChildAny<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild;
+		bool ContainsChildAny<TInstanceType>(IEnumerable<int> ids) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets the child with the given id.
@@ -104,7 +104,7 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <returns></returns>
 		[NotNull]
-		TInstanceType GetChild<TInstanceType>() where TInstanceType : TChild;
+		TInstanceType GetChild<TInstanceType>() where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets the child with the given id.
@@ -113,7 +113,7 @@ namespace ICD.Connect.Settings
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[NotNull]
-		TInstanceType GetChild<TInstanceType>(int id) where TInstanceType : TChild;
+		TInstanceType GetChild<TInstanceType>(int id) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Returns the first instance of the given type from the given instance ids.
@@ -122,7 +122,7 @@ namespace ICD.Connect.Settings
 		/// <param name="ids"></param>
 		/// <returns></returns>
 		[CanBeNull]
-		TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild;
+		TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Returns the first instance of the given type from the given instance ids.
@@ -133,7 +133,7 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		[CanBeNull]
 		TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector)
-			where TInstanceType : TChild;
+			where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets all of the children.
@@ -153,7 +153,7 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <returns></returns>
-		IEnumerable<TInstanceType> GetChildren<TInstanceType>() where TInstanceType : TChild;
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>() where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets the children matching the given type.
@@ -161,7 +161,7 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="selector"></param>
 		/// <returns></returns>
-		IEnumerable<TInstanceType> GetChildren<TInstanceType>(Func<TInstanceType, bool> selector) where TInstanceType : TChild;
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>(Func<TInstanceType, bool> selector) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets the children with the given ids, matching the given type.
@@ -169,7 +169,7 @@ namespace ICD.Connect.Settings
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="ids"></param>
 		/// <returns></returns>
-		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild;
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets the children with the given ids, matching the given type.
@@ -178,7 +178,7 @@ namespace ICD.Connect.Settings
 		/// <param name="ids"></param>
 		/// <param name="selector"></param>
 		/// <returns></returns>
-		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector) where TInstanceType : TChild;
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector) where TInstanceType : class, TChild;
 
 		IEnumerable<int> GetChildrenIds();
 
