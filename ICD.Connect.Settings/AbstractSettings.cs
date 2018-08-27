@@ -207,9 +207,7 @@ namespace ICD.Connect.Settings
 				                                                  typeof(IOriginator).Name));
 			}
 
-			IOriginator output;
-
-		    output = (IOriginator)ReflectionUtils.CreateInstance(OriginatorType);
+			IOriginator output = (IOriginator)ReflectionUtils.CreateInstance(OriginatorType);
 
 		    // This instance came from settings, so we want to store it back to settings.
 		    output.Serialize = true;
