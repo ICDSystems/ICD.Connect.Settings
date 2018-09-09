@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
@@ -178,7 +179,14 @@ namespace ICD.Connect.Settings
 
 		private static bool IsKrangPlugin(Assembly assembly)
 		{
-			return ReflectionUtils.GetCustomAttributes<KrangPluginAttribute>(assembly).Any();
+			try
+			{
+				return assembly.GetCustomAttributes<KrangPluginAttribute>().Any();
+			}
+			catch (FileNotFoundException)
+			{
+				return false;
+			}
 		}
 
 		/// <summary>
