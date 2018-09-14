@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.0.0] - 2018-09-14
+### Changed
+ - Originator constrained to class types
+ - Performance improvements
+
 ## [6.2.1] - 2018-07-19
 ### Changed
  - Avoid loading SimplSharp assemblies from build directory in Net Standard
