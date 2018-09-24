@@ -1,6 +1,9 @@
-﻿namespace ICD.Connect.Settings.Attributes.SettingsProperties
+﻿using ICD.Common.Properties;
+
+namespace ICD.Connect.Settings.Attributes.SettingsProperties
 {
-    public sealed class IpAddressSettingsPropertyAttribute : AbstractSettingsPropertyAttribute
-    {
-    }
+	[MeansImplicitUse]
+	public sealed class IpAddressSettingsPropertyAttribute : AbstractSettingsPropertyAttribute
+	{
+	}
 }

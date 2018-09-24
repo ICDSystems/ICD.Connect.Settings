@@ -1,5 +1,8 @@
-﻿namespace ICD.Connect.Settings.Attributes.SettingsProperties
+﻿using ICD.Common.Properties;
+
+namespace ICD.Connect.Settings.Attributes.SettingsProperties
 {
+	[MeansImplicitUse]
 	public sealed class CrestronByteSettingsPropertyAttribute : AbstractSettingsPropertyAttribute
 	{
 	}
