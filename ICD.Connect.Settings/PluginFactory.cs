@@ -244,6 +244,14 @@ namespace ICD.Connect.Settings
 				string name = attribute.FactoryName;
 				Type type = AttributeUtils.GetClass(attribute);
 
+				Type existingType;
+				if (s_FactoryNameTypeMap.TryGetValue(name, out existingType))
+				{
+					Logger.AddEntry(eSeverity.Error, "Failed to cache type {0} - Shares duplicate factory name {1} with type {2}",
+					                type.AssemblyQualifiedName, StringUtils.ToRepresentation(name), existingType.AssemblyQualifiedName);
+					continue;
+				}
+
 				s_FactoryNameTypeMap.Add(name, type);
 			}
 		}
