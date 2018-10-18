@@ -27,6 +27,16 @@ namespace ICD.Connect.Settings.Attributes
 		/// Constructor.
 		/// </summary>
 		/// <param name="factoryName"></param>
+		[Obsolete("Provide originator type to constructor")]
+		public KrangSettingsAttribute(string factoryName)
+			: this(factoryName, null)
+		{
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="factoryName"></param>
 		/// <param name="originatorType"></param>
 		public KrangSettingsAttribute(string factoryName, Type originatorType)
 		{
