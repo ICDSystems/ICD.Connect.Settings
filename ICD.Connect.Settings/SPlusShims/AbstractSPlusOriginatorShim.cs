@@ -247,7 +247,7 @@ namespace ICD.Connect.Settings.SPlusShims
 			foreach (IConsoleCommand c in GetBaseConsoleCommands())
 				yield return c;
 
-			yield return new GenericConsoleCommand<int>("SetOriginatorId", "Sets the Originator ID for the Shim", (i) => SetOriginator(i));
+			yield return new GenericConsoleCommand<int>("SetOriginatorId", "Sets the Originator ID for the Shim", i => SetOriginator(i));
 		}
 
 		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
