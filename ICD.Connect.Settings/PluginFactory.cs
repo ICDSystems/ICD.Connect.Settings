@@ -196,7 +196,9 @@ namespace ICD.Connect.Settings
 			}
 			catch (TargetInvocationException e)
 			{
-				throw e.InnerException ?? e;
+				if (e.InnerException != null)
+					throw e.InnerException;
+				throw;
 			}
 		}
 
