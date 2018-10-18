@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Common.Utils.Collections;
+#if SIMPLSHARP
 using Crestron.SimplSharp.Reflection;
 #else
 using System.Reflection;
@@ -20,12 +21,7 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Maps factory name -> settings type
 		/// </summary>
-		private static readonly Dictionary<string, Type> s_FactoryNameTypeMap;
-
-		/// <summary>
-		/// Maps settings type -> factory name
-		/// </summary>
-		private static readonly Dictionary<Type, string> s_FactoryNameMapInverse;
+		private static readonly BiDictionary<string, Type> s_FactoryNameTypeMap;
 
 		private static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
@@ -34,8 +30,7 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		static PluginFactory()
 		{
-			s_FactoryNameTypeMap = new Dictionary<string, Type>();
-			s_FactoryNameMapInverse = new Dictionary<Type, string>();
+			s_FactoryNameTypeMap = new BiDictionary<string, Type>();
 
 			try
 			{
@@ -103,10 +98,11 @@ namespace ICD.Connect.Settings
 		{
 			Type type = typeof(TSettings);
 
-			if (!s_FactoryNameMapInverse.ContainsKey(type))
+			string name;
+			if (!s_FactoryNameTypeMap.TryGetKey(type, out name))
 				throw new KeyNotFoundException(string.Format("Unable to find factory name for {0}", type.Name));
 
-			return s_FactoryNameMapInverse[type];
+			return name;
 		}
 
 		/// <summary>
@@ -116,8 +112,8 @@ namespace ICD.Connect.Settings
 		public static IEnumerable<string> GetFactoryNames<TSettings>()
 			where TSettings : ISettings
 		{
-			return s_FactoryNameMapInverse.Where(kvp => kvp.Key.IsAssignableTo(typeof(TSettings)))
-										  .Select(kvp => kvp.Value);
+			return s_FactoryNameTypeMap.Where(kvp => kvp.Value.IsAssignableTo(typeof(TSettings)))
+			                           .Select(kvp => kvp.Key);
 		}
 
 		/// <summary>
@@ -240,16 +236,15 @@ namespace ICD.Connect.Settings
 				}
 			}
 
-			foreach (
-				KrangSettingsAttribute attribute in
+			foreach (KrangSettingsAttribute attribute in
 					AttributeUtils.GetClassAttributes<KrangSettingsAttribute>().OrderBy(a => a.FactoryName))
 			{
 				Logger.AddEntry(eSeverity.Informational, "Loaded type {0}", attribute.FactoryName);
 
+				string name = attribute.FactoryName;
 				Type type = AttributeUtils.GetClass(attribute);
 
-				s_FactoryNameTypeMap.Add(attribute.FactoryName, type);
-				s_FactoryNameMapInverse[type] = attribute.FactoryName;
+				s_FactoryNameTypeMap.Add(name, type);
 			}
 		}
 
