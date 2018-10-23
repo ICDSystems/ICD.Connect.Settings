@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractOriginatorCollection.cs" />
+    <Compile Include="Attributes\SettingsProperties\ControlPortParentSettingsPropertyAttribute.cs" />
     <Compile Include="OriginatorConsole.cs" />
     <Compile Include="Proxies\AbstractProxyOriginator.cs" />
     <Compile Include="Attributes\KrangPluginAttribute.cs" />
