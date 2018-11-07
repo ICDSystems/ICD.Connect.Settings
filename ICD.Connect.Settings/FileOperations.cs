@@ -86,8 +86,12 @@ namespace ICD.Connect.Settings
 			{
 				using (IcdXmlTextWriter writer = new IcdXmlTextWriter(stream, new UTF8Encoding(false)))
 				{
-					WriteSettingsWarning(writer);
-					settings.ToXml(writer, ROOT_ELEMENT);
+					writer.WriteStartDocument();
+					{
+						WriteSettingsWarning(writer);
+						settings.ToXml(writer, ROOT_ELEMENT);
+					}
+					writer.WriteEndDocument();
 				}
 			}
 
