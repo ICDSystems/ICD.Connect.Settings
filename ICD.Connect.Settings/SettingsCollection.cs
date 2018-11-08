@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 
@@ -14,8 +15,8 @@ namespace ICD.Connect.Settings
 	/// </summary>
 	public sealed class SettingsCollection : ICollection<ISettings>
 	{
-		public event EventHandler OnItemAdded;
-		public event EventHandler OnItemRemoved;
+		public event EventHandler<GenericEventArgs<ISettings>> OnItemAdded;
+		public event EventHandler<GenericEventArgs<ISettings>> OnItemRemoved;
 
 		private readonly IcdOrderedDictionary<int, ISettings> m_Collection;
 		private readonly SafeCriticalSection m_CollectionSection;
@@ -121,7 +122,7 @@ namespace ICD.Connect.Settings
 				m_CollectionSection.Leave();
 			}
 
-			OnItemAdded.Raise(this);
+			OnItemAdded.Raise(this, new GenericEventArgs<ISettings>(item));
 			return true;
 		}
 
@@ -196,17 +197,13 @@ namespace ICD.Connect.Settings
 
 			try
 			{
-				if (m_Collection.Count == 0)
-					return;
-
-				m_Collection.Clear();
+				foreach (ISettings item in m_Collection.Values.ToArray(m_Collection.Count))
+					Remove(item);
 			}
 			finally
 			{
 				m_CollectionSection.Leave();
 			}
-
-			OnItemRemoved.Raise(this);
 		}
 
 		/// <summary>
@@ -269,7 +266,7 @@ namespace ICD.Connect.Settings
 				m_CollectionSection.Leave();
 			}
 
-			OnItemRemoved.Raise(this);
+			OnItemRemoved.Raise(this, new GenericEventArgs<ISettings>(item));
 			return true;
 		}
 
