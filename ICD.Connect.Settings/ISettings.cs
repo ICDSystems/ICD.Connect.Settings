@@ -72,11 +72,6 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		IEnumerable<Permission> Permissions { get; set; }
 
-		/// <summary>
-		/// Returns the count from the collection of ids that the settings depends on.
-		/// </summary>
-		int DependencyCount { get; }
-
 		#endregion
 
 		#region Methods
@@ -107,7 +102,7 @@ namespace ICD.Connect.Settings
 		/// belongs to will need to be instantiated first.
 		/// </summary>
 		/// <returns></returns>
-		bool HasDeviceDependency(int id);
+		bool HasDependency(int id);
 
 		#endregion
 	}

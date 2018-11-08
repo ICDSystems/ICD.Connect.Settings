@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Permissions;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
@@ -125,11 +126,6 @@ namespace ICD.Connect.Settings
 		[HiddenSettingsProperty]
 		public IEnumerable<Permission> Permissions { get; set; }
 
-		/// <summary>
-		/// Returns the count from the collection of ids that the settings depends on.
-		/// </summary>
-		public virtual int DependencyCount { get { return 0; } }
-
 		#endregion
 
 		#region Methods
@@ -217,14 +213,15 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Returns true if the settings depend on a device with the given ID.
+		/// Returns true if the settings depend on an originator with the given ID.
 		/// For example, to instantiate an IR Port from settings, the device the physical port
 		/// belongs to will need to be instantiated first.
 		/// </summary>
 		/// <returns></returns>
-		public virtual bool HasDeviceDependency(int id)
+		public bool HasDependency(int id)
 		{
-			return false;
+			return AttributeUtils.GetProperties<OriginatorIdSettingsPropertyAttribute>(this, true)
+			                     .Any(p => p.GetValue(this, null) as int? == id);
 		}
 
 		#endregion

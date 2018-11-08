@@ -58,7 +58,13 @@ namespace ICD.Connect.Settings.Tests
 		    throw new NotImplementedException();
 	    }
 
-	    public bool HasDeviceDependency(int id)
+	    /// <summary>
+	    /// Returns true if the settings depend on a device with the given ID.
+	    /// For example, to instantiate an IR Port from settings, the device the physical port
+	    /// belongs to will need to be instantiated first.
+	    /// </summary>
+	    /// <returns></returns>
+	    public bool HasDependency(int id)
 	    {
 		    throw new NotImplementedException();
 	    }
