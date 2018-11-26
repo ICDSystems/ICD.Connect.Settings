@@ -88,23 +88,6 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Gets the factory name for the given settings type.
-		/// </summary>
-		/// <typeparam name="TSettings"></typeparam>
-		/// <returns></returns>
-		public static string GetFactoryName<TSettings>()
-			where TSettings : ISettings
-		{
-			Type type = typeof(TSettings);
-
-			string name;
-			if (!s_FactoryNameTypeMap.TryGetKey(type, out name))
-				throw new KeyNotFoundException(string.Format("Unable to find factory name for {0}", type.Name));
-
-			return name;
-		}
-
-		/// <summary>
 		/// Gets the available factory names.
 		/// </summary>
 		/// <returns></returns>
