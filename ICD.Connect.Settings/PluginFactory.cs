@@ -1,5 +1,4 @@
-﻿using ICD.Common.Utils.Collections;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharp.Reflection;
 #else
 using System.Reflection;
@@ -21,7 +20,7 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Maps factory name -> settings type
 		/// </summary>
-		private static readonly BiDictionary<string, Type> s_FactoryNameTypeMap;
+		private static readonly Dictionary<string, Type> s_FactoryNameTypeMap;
 
 		private static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
@@ -30,7 +29,7 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		static PluginFactory()
 		{
-			s_FactoryNameTypeMap = new BiDictionary<string, Type>();
+			s_FactoryNameTypeMap = new Dictionary<string, Type>();
 
 			try
 			{
