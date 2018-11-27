@@ -5,7 +5,7 @@ using ICD.Common.Utils.Attributes;
 namespace ICD.Connect.Settings.Attributes
 {
 	[MeansImplicitUse]
-	[AttributeUsage(AttributeTargets.Class)]
+	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 	public sealed class KrangSettingsAttribute : AbstractIcdAttribute
 	{
 		private readonly string m_FactoryName;

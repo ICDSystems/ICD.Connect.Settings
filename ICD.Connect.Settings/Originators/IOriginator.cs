@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.API.Nodes;
@@ -158,6 +159,27 @@ namespace ICD.Connect.Settings.Originators
 				return extends.CombineName;
 
 			return extends.Name;
+		}
+
+		/// <summary>
+		/// Returns a string representation of the originator with ID and Name info.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <returns></returns>
+		public static string ToStringShorthand(this IOriginator extends)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			ReprBuilder builder = new ReprBuilder(extends);
+
+			if (extends.Id != 0)
+				builder.AppendProperty("Id", extends.Id);
+
+			if (!string.IsNullOrEmpty(extends.Name) && extends.Name != extends.GetType().Name)
+				builder.AppendProperty("Name", extends.Name);
+
+			return builder.ToString();
 		}
 	}
 }

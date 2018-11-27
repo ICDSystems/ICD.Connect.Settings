@@ -3,7 +3,7 @@
 namespace ICD.Connect.Settings.Attributes.SettingsProperties
 {
 	[MeansImplicitUse]
-	public sealed class IpAddressSettingsPropertyAttribute : AbstractSettingsPropertyAttribute
+	public sealed class ControlPortParentSettingsPropertyAttribute : AbstractSettingsPropertyAttribute
 	{
 	}
 }

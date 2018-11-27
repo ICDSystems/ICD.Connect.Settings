@@ -3,6 +3,7 @@ using ICD.Common.Properties;
 
 namespace ICD.Connect.Settings.Attributes.SettingsProperties
 {
+	[MeansImplicitUse]
 	public sealed class OriginatorIdSettingsPropertyAttribute : AbstractSettingsPropertyAttribute
 	{
 		private readonly Type m_OriginatorType;

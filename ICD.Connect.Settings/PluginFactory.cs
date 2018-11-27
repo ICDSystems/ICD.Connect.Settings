@@ -22,11 +22,6 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		private static readonly Dictionary<string, Type> s_FactoryNameTypeMap;
 
-		/// <summary>
-		/// Maps settings type -> factory name
-		/// </summary>
-		private static readonly Dictionary<Type, string> s_FactoryNameMapInverse;
-
 		private static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
 		/// <summary>
@@ -35,7 +30,6 @@ namespace ICD.Connect.Settings
 		static PluginFactory()
 		{
 			s_FactoryNameTypeMap = new Dictionary<string, Type>();
-			s_FactoryNameMapInverse = new Dictionary<Type, string>();
 
 			try
 			{
@@ -94,29 +88,14 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Gets the factory name for the given settings type.
-		/// </summary>
-		/// <typeparam name="TSettings"></typeparam>
-		/// <returns></returns>
-		public static string GetFactoryName<TSettings>()
-			where TSettings : ISettings
-		{
-			Type type = typeof(TSettings);
-
-			if (!s_FactoryNameMapInverse.ContainsKey(type))
-				throw new KeyNotFoundException(string.Format("Unable to find factory name for {0}", type.Name));
-			return s_FactoryNameMapInverse[type];
-		}
-
-		/// <summary>
 		/// Gets the available factory names.
 		/// </summary>
 		/// <returns></returns>
 		public static IEnumerable<string> GetFactoryNames<TSettings>()
 			where TSettings : ISettings
 		{
-			return s_FactoryNameMapInverse.Where(kvp => kvp.Key.IsAssignableTo(typeof(TSettings)))
-			                               .Select(kvp => kvp.Value);
+			return s_FactoryNameTypeMap.Where(kvp => kvp.Value.IsAssignableTo(typeof(TSettings)))
+			                           .Select(kvp => kvp.Key);
 		}
 
 		/// <summary>
@@ -135,13 +114,7 @@ namespace ICD.Connect.Settings
 		public static IEnumerable<Assembly> GetFactoryAssemblies()
 		{
 			return s_FactoryNameTypeMap.Values
-			                           .Select(v =>
-#if SIMPLSHARP
-			                                   ((CType)v)
-#else
-			                                   v.GetTypeInfo()
-#endif
-				                                   .Assembly)
+			                           .Select(v => v.GetAssembly())
 			                           .Distinct();
 		}
 
@@ -201,7 +174,9 @@ namespace ICD.Connect.Settings
 			}
 			catch (TargetInvocationException e)
 			{
-				throw e.InnerException;
+				if (e.InnerException != null)
+					throw e.InnerException;
+				throw;
 			}
 		}
 
@@ -219,20 +194,7 @@ namespace ICD.Connect.Settings
 
 			Type type = GetType(factoryName);
 
-#if SIMPLSHARP
-			ConstructorInfo ctor = ((CType)type).GetConstructor(new CType[0]);
-#else
-			ConstructorInfo ctor = type.GetTypeInfo().GetConstructor(new Type[0]);
-#endif
-
-			try
-			{
-				return (TSettings)ctor.Invoke(new object[0]);
-			}
-			catch (TargetInvocationException e)
-			{
-				throw e.GetBaseException();
-			}
+			return (TSettings)ReflectionUtils.CreateInstance(type);
 		}
 
 		/// <summary>
@@ -256,16 +218,23 @@ namespace ICD.Connect.Settings
 				}
 			}
 
-			foreach (
-				KrangSettingsAttribute attribute in
+			foreach (KrangSettingsAttribute attribute in
 					AttributeUtils.GetClassAttributes<KrangSettingsAttribute>().OrderBy(a => a.FactoryName))
 			{
 				Logger.AddEntry(eSeverity.Informational, "Loaded type {0}", attribute.FactoryName);
 
+				string name = attribute.FactoryName;
 				Type type = AttributeUtils.GetClass(attribute);
 
-				s_FactoryNameTypeMap.Add(attribute.FactoryName, type);
-				s_FactoryNameMapInverse[type] = attribute.FactoryName;
+				Type existingType;
+				if (s_FactoryNameTypeMap.TryGetValue(name, out existingType))
+				{
+					Logger.AddEntry(eSeverity.Error, "Failed to cache type {0} - Shares duplicate factory name {1} with type {2}",
+					                type.AssemblyQualifiedName, StringUtils.ToRepresentation(name), existingType.AssemblyQualifiedName);
+					continue;
+				}
+
+				s_FactoryNameTypeMap.Add(name, type);
 			}
 		}
 

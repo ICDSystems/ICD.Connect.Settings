@@ -1,5 +1,8 @@
-﻿namespace ICD.Connect.Settings.Attributes.SettingsProperties
+﻿using ICD.Common.Properties;
+
+namespace ICD.Connect.Settings.Attributes.SettingsProperties
 {
+	[MeansImplicitUse]
 	public sealed class PathSettingsPropertyAttribute : AbstractSettingsPropertyAttribute
 	{
 		private readonly string m_BasePath;

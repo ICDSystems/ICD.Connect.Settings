@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
+using ICD.Common.Utils.IO.Compression;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings.Attributes;
@@ -23,7 +26,6 @@ namespace ICD.Connect.Settings
 	public static class LibraryUtils
 	{
 		private const string DLL_EXT = ".dll";
-		private const string VERSION_MATCH = @"-[v|V]([\d+.?]+\d)$";
 
 		private static readonly string[] s_ArchiveExtensions =
 		{
@@ -60,83 +62,131 @@ namespace ICD.Connect.Settings
 			UnzipLibAssemblies();
 
 			return GetAssemblyPaths().OrderBy<string, int>(GetDirectoryIndex)
-			                         .ThenByDescending<string, Version>(GetAssemblyVersionFromPath)
-			                         .Distinct(new FileNameComparer())
+			                         .Distinct(FileNameEqualityComparer.Instance)
 			                         .Select<string, Assembly>(SafeLoadAssembly)
 			                         .Where(a => a != null && IsKrangPlugin(a))
 			                         .OrderBy(a => a.FullName);
 		}
 
-		private sealed class FileNameComparer : IEqualityComparer<string>
+		/// <summary>
+		/// Given a sequence of paths to plugin archives, returns the minimal
+		/// sequence of plugin paths to provide all plugins.
+		/// 
+		/// E.g. skip over ICD.Common.Utils.clz because it is already available via ICD.Connect.Core.cpz
+		/// </summary>
+		/// <param name="paths"></param>
+		/// <returns></returns>
+		public static IEnumerable<string> FilterPluginPaths(IEnumerable<string> paths)
 		{
-			public bool Equals(string x, string y)
-			{
-				return GetHashCode(x) == GetHashCode(y);
-			}
+			if (paths == null)
+				throw new ArgumentNullException("paths");
 
-			public int GetHashCode(string obj)
-			{
-				return obj == null ? 0 : IcdPath.GetFileName(obj).GetHashCode();
-			}
+			Dictionary<string, IcdHashSet<string>> pluginDlls =
+				paths.Distinct()
+				     .ToDictionary(p => p, p => GetPluginDllContents(p).ToIcdHashSet());
+
+			Dictionary<string, string> pluginParents =
+				pluginDlls.ToDictionary(kvp => kvp.Key,
+				                        kvp => pluginDlls.FirstOrDefault(kvpInner => kvpInner.Value.IsProperSupersetOf(kvp.Value)).Key);
+
+			return pluginParents.Where(kvp => kvp.Value == null)
+			                    .Select(kvp => kvp.Key);
 		}
 
 		/// <summary>
-		/// Unzips the archive at the given path.
+		/// Given a path to a plugin archive yields the names of the contained dll files.
 		/// </summary>
 		/// <param name="path"></param>
-		/// <param name="message"></param>
-		public static bool Unzip(string path, out string message)
+		/// <returns></returns>
+		private static IEnumerable<string> GetPluginDllContents(string path)
 		{
-			string outputDir = PathUtils.GetPathWithoutExtension(path);
+			if (!IcdFile.Exists(path) || !IsArchive(path))
+				throw new ArgumentException("Path is not an archive", "path");
 
-			// Delete the previous output dir, sometimes the unzip operation doesn't seem to overwrite
-			if (IcdDirectory.Exists(outputDir))
-			{
-				try
-				{
-					IcdDirectory.Delete(outputDir, true);
-					Logger.AddEntry(eSeverity.Informational, "Removed old archive {0}", outputDir);
-				}
-				catch (Exception e)
-				{
-					message = string.Format("Failed to remove old archive {0} - {1}", outputDir, e.Message);
-					return false;
-				}
-			}
-
-			return IcdZip.Unzip(path, outputDir, out message);
-		}
-
-		/// <summary>
-		/// Loops over the archives in the lib directories and unzips them.
-		/// </summary>
-		public static void UnzipLibAssemblies()
-		{
-			foreach (string path in GetArchivePaths().Where(p => !IsProgramCpz(p)))
-			{
-				string message;
-				bool result = Unzip(path, out message);
-
-				// Delete the archive so we don't waste time extracting on next load
-				if (result)
-				{
-					IcdFile.Delete(path);
-					Logger.AddEntry(eSeverity.Informational, "Extracted archive {0}", path);
-				}
-				else
-				{
-					Logger.AddEntry(eSeverity.Warning, "Failed to extract archive {0} - {1}", path, message);
-				}
-			}
+			return
+				IcdZip.GetFileNames(path)
+				      .Where(f => IcdPath.GetExtension(f).Equals(DLL_EXT, StringComparison.OrdinalIgnoreCase));
 		}
 
 		#endregion
 
 		#region Private Methods
 
+		/// <summary>
+		/// Unzips the archive at the given path.
+		/// </summary>
+		/// <param name="path"></param>
+		private static void Unzip(string path)
+		{
+			string outputDir = PathUtils.GetPathWithoutExtension(path);
+
+			if (IcdDirectory.Exists(path))
+				RemoveOldPlugin(path);
+
+			IcdZip.Unzip(path, outputDir);
+		}
+
+		private static void RemoveOldPlugin(string path)
+		{
+			try
+			{
+				IcdDirectory.Delete(path, true);
+				Logger.AddEntry(eSeverity.Informational, "Removed old plugin {0}", path);
+			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException(string.Format("Failed to remove old plugin {0} - {1}", path, e.Message));
+			}
+		}
+
+		/// <summary>
+		/// Loops over the archives in the lib directories and unzips them.
+		/// </summary>
+		private static void UnzipLibAssemblies()
+		{
+			IcdHashSet<string> pluginPaths = GetArchivePaths().ToIcdHashSet();
+			IcdHashSet<string> filtered = FilterPluginPaths(pluginPaths).ToIcdHashSet();
+
+			foreach (string path in pluginPaths.Order().Where(p => !IsProgramCpz(p)))
+			{
+				if (filtered.Contains(path))
+				{
+					try
+					{
+						Unzip(path);
+					}
+					catch (Exception e)
+					{
+						Logger.AddEntry(eSeverity.Warning, "Failed to extract archive {0} - {1}", path, e.Message);
+						continue;
+					}
+
+					Logger.AddEntry(eSeverity.Informational, "Extracted archive {0}", path);
+				}
+				else
+				{
+					string outputDir = PathUtils.GetPathWithoutExtension(path);
+					if (IcdDirectory.Exists(outputDir))
+						RemoveOldPlugin(outputDir);
+
+					Logger.AddEntry(eSeverity.Warning, "Skipping extracting archive {0} - Already contained in another plugin", path);
+				}
+
+				// Delete the archive so we don't waste time extracting on next load
+				IcdFile.Delete(path);
+			}
+		}
+
 		private static bool IsKrangPlugin(Assembly assembly)
 		{
-			return ReflectionUtils.GetCustomAttributes<KrangPluginAttribute>(assembly).Any();
+			try
+			{
+				return assembly.GetCustomAttributes<KrangPluginAttribute>().Any();
+			}
+			catch (FileNotFoundException)
+			{
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -175,13 +225,8 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		private static IEnumerable<string> GetBuildAssemblyPaths()
 		{
-			string path = typeof(LibraryUtils)
-#if SIMPLSHARP
-				.GetCType()
-#else
-				.GetTypeInfo()
-#endif
-				.Assembly.GetPath();
+#if !SIMPLSHARP
+			string path = typeof(LibraryUtils).GetAssembly().GetPath();
 
 			// Find the .sln
 			while (path != null)
@@ -193,8 +238,17 @@ namespace ICD.Connect.Settings
 				if (foundSln)
 					return PathUtils.RecurseFilePaths(path)
 					                .Where(p => p.Contains("bin"))
-					                .Where(IsAssembly);
+					                .Where(IsAssembly)
+					                .Where(p =>
+					                       {
+						                       // Avoid loading any SimplSharp assemblies
+						                       string dir = IcdPath.GetDirectoryName(p);
+						                       string[] files = IcdDirectory.GetFiles(dir);
+
+						                       return files.All(f => !f.EndsWith("SimplSharpData.dat"));
+					                       });
 			}
+#endif
 
 			return Enumerable.Empty<string>();
 		}
@@ -282,23 +336,6 @@ namespace ICD.Connect.Settings
 			}
 		}
 
-		/// <summary>
-		/// Gets the version from the path.
-		/// e.g. ICD.SimplSharp.Common returns 0.0.0.0
-		///	     ICD.SimplSharp.Common-V1.0 returns 1.0.0.0
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
-		private static Version GetAssemblyVersionFromPath(string path)
-		{
-			string filename = IcdPath.GetFileNameWithoutExtension(path);
-
-			Regex regex = new Regex(VERSION_MATCH);
-			Match match = regex.Match(filename);
-
-			return match.Success ? new Version(match.Groups[1].Value) : new Version(0, 0);
-		}
-
-#endregion
+		#endregion
 	}
 }

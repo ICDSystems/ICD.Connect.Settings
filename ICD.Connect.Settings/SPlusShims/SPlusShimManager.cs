@@ -67,7 +67,19 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// <returns></returns>
 		public IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
-			yield break;
+			m_ShimSafeCriticalSection.Enter();
+			List<ISPlusShim> shims;
+			try
+			{
+				shims = m_Shims.ToList(m_Shims.Count);
+			}
+			finally
+			{
+				m_ShimSafeCriticalSection.Leave();
+			}
+
+			yield return ConsoleNodeGroup.IndexNodeMap("Shims", shims);
+
 		}
 
 		/// <summary>
@@ -92,7 +104,7 @@ namespace ICD.Connect.Settings.SPlusShims
 
 		private void PrintShims()
 		{
-			TableBuilder builder = new TableBuilder("Index", "Simpl Location", "Originator Type", "Originator Name", "Originator Id");
+			TableBuilder builder = new TableBuilder("Index", "Simpl Location", "Simpl Name", "Originator Type", "Originator Name", "Originator Id");
 
 			m_ShimSafeCriticalSection.Enter();
 
@@ -107,13 +119,14 @@ namespace ICD.Connect.Settings.SPlusShims
 					{
 						builder.AddRow(index,
 						               originatorShim.Location,
+									   originatorShim.Name,
 						               originatorShim.Originator != null ? originatorShim.Originator.GetType().ToString() : "",
 						               originatorShim.Originator != null ? originatorShim.Originator.Name : "",
 						               originatorShim.Originator != null ? originatorShim.Originator.Id.ToString() : "");
 					}
 					else
 					{
-						builder.AddRow(index, shim.Location, "", "", "");
+						builder.AddRow(index, shim.Location, shim.Name, "", "", "");
 					}
 					
 				}

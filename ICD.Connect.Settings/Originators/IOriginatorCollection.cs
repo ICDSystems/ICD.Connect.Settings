@@ -5,14 +5,24 @@ using ICD.Common.Properties;
 namespace ICD.Connect.Settings.Originators
 {
 	public interface IOriginatorCollection<TChild> : IEnumerable<TChild>
-		where TChild : IOriginator
+		where TChild : class, IOriginator
 	{
+		/// <summary>
+		/// Raised when children are added/removed to/from the collection.
+		/// </summary>
 		event EventHandler OnChildrenChanged;
 
 		/// <summary>
 		/// Gets the number of children in this collection.
 		/// </summary>
 		int Count { get; }
+
+		/// <summary>
+		/// Gets the child with the given id.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		TChild this[int id] { get; }
 
 		/// <summary>
 		/// Clears the collection.
@@ -26,11 +36,10 @@ namespace ICD.Connect.Settings.Originators
 		void SetChildren(IEnumerable<TChild> children);
 
 		/// <summary>
-		/// Gets the child with the given id.
+		/// Adds the given children to the collection.
 		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		TChild this[int id] { get; }
+		/// <param name="children"></param>
+		void AddChildren(IEnumerable<TChild> children);
 
 		/// <summary>
 		/// Adds the child to the core.
@@ -38,6 +47,12 @@ namespace ICD.Connect.Settings.Originators
 		/// <param name="child"></param>
 		/// <returns>False if a child with the given id already exists.</returns>
 		bool AddChild(TChild child);
+
+		/// <summary>
+		/// Removes the given children from the collection.
+		/// </summary>
+		/// <param name="children"></param>
+		void RemoveChildren(IEnumerable<TChild> children);
 
 		/// <summary>
 		/// Removes the child from the core.
@@ -59,7 +74,22 @@ namespace ICD.Connect.Settings.Originators
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		bool ContainsChild<TInstanceType>(int id) where TInstanceType : TChild;
+		bool ContainsChild<TInstanceType>(int id) where TInstanceType : class, TChild;
+
+		/// <summary>
+		/// Returns true if there is a child with the given id.
+		/// </summary>
+		/// <param name="child"></param>
+		/// <returns></returns>
+		bool ContainsChild(TChild child);
+
+		/// <summary>
+		/// Returns true if at least 1 originator exists of the given type.
+		/// </summary>
+		/// <typeparam name="TInstanceType"></typeparam>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		bool ContainsChildAny<TInstanceType>(IEnumerable<int> ids) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets the child with the given id.
@@ -74,7 +104,7 @@ namespace ICD.Connect.Settings.Originators
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <returns></returns>
 		[NotNull]
-		TInstanceType GetChild<TInstanceType>() where TInstanceType : TChild;
+		TInstanceType GetChild<TInstanceType>() where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets the child with the given id.
@@ -83,7 +113,7 @@ namespace ICD.Connect.Settings.Originators
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[NotNull]
-		TInstanceType GetChild<TInstanceType>(int id) where TInstanceType : TChild;
+		TInstanceType GetChild<TInstanceType>(int id) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Returns the first instance of the given type from the given instance ids.
@@ -92,7 +122,7 @@ namespace ICD.Connect.Settings.Originators
 		/// <param name="ids"></param>
 		/// <returns></returns>
 		[CanBeNull]
-		TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild;
+		TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Returns the first instance of the given type from the given instance ids.
@@ -103,7 +133,7 @@ namespace ICD.Connect.Settings.Originators
 		/// <returns></returns>
 		[CanBeNull]
 		TInstanceType GetChild<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector)
-			where TInstanceType : TChild;
+			where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets all of the children.
@@ -123,7 +153,7 @@ namespace ICD.Connect.Settings.Originators
 		/// </summary>
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <returns></returns>
-		IEnumerable<TInstanceType> GetChildren<TInstanceType>() where TInstanceType : TChild;
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>() where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets the children matching the given type.
@@ -131,7 +161,7 @@ namespace ICD.Connect.Settings.Originators
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="selector"></param>
 		/// <returns></returns>
-		IEnumerable<TInstanceType> GetChildren<TInstanceType>(Func<TInstanceType, bool> selector) where TInstanceType : TChild;
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>(Func<TInstanceType, bool> selector) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets the children with the given ids, matching the given type.
@@ -139,7 +169,7 @@ namespace ICD.Connect.Settings.Originators
 		/// <typeparam name="TInstanceType"></typeparam>
 		/// <param name="ids"></param>
 		/// <returns></returns>
-		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild;
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : class, TChild;
 
 		/// <summary>
 		/// Gets the children with the given ids, matching the given type.
@@ -148,7 +178,7 @@ namespace ICD.Connect.Settings.Originators
 		/// <param name="ids"></param>
 		/// <param name="selector"></param>
 		/// <returns></returns>
-		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector) where TInstanceType : TChild;
+		IEnumerable<TInstanceType> GetChildren<TInstanceType>(IEnumerable<int> ids, Func<TInstanceType, bool> selector) where TInstanceType : class, TChild;
 
 		IEnumerable<int> GetChildrenIds();
 
@@ -160,13 +190,5 @@ namespace ICD.Connect.Settings.Originators
 		/// <param name="child"></param>
 		/// <returns></returns>
 		bool TryGetChild(int id, out TChild child);
-
-		/// <summary>
-		/// Returns true if at least 1 originator exists of the given type.
-		/// </summary>
-		/// <typeparam name="TInstanceType"></typeparam>
-		/// <param name="ids"></param>
-		/// <returns></returns>
-		bool HasChildren<TInstanceType>(IEnumerable<int> ids) where TInstanceType : TChild;
 	}
 }

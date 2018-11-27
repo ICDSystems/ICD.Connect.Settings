@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Permissions;
@@ -30,6 +30,9 @@ namespace ICD.Connect.Settings.Originators
 		public event EventHandler OnSettingsApplied;
 
 		private readonly List<Permission> m_Permissions;
+
+		private ILoggerService m_CachedLogger;
+		private PermissionsManager m_CachedPermissionsManager;
 
 		#region Properties
 
@@ -73,12 +76,15 @@ namespace ICD.Connect.Settings.Originators
 		/// Logger for the originator.
 		/// </summary>
 		[Obsolete]
-		public ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
+		public ILoggerService Logger
+		{
+			get { return m_CachedLogger = m_CachedLogger ?? ServiceProvider.TryGetService<ILoggerService>(); }
+		}
 
 		/// <summary>
 		/// Gets the name of the node.
 		/// </summary>
-		public virtual string ConsoleName { get { return string.IsNullOrEmpty(Name) ? GetType().Name : Name; } }
+		public virtual string ConsoleName { get { return string.IsNullOrEmpty(Name) ? GetType().GetNameWithoutGenericArity() : Name; } }
 
 		/// <summary>
 		/// Gets the help information for the node.
@@ -87,7 +93,11 @@ namespace ICD.Connect.Settings.Originators
 
 		protected PermissionsManager PermissionsManager
 		{
-			get { return ServiceProvider.TryGetService<PermissionsManager>(); }
+			get
+			{
+				return m_CachedPermissionsManager =
+					       m_CachedPermissionsManager ?? ServiceProvider.TryGetService<PermissionsManager>();
+			}
 		}
 
 		#endregion
@@ -207,7 +217,8 @@ namespace ICD.Connect.Settings.Originators
 			m_Permissions.Clear();
 			m_Permissions.AddRange(permissions);
 
-			PermissionsManager.SetObjectPermissions(this, m_Permissions);
+		    if (PermissionsManager != null)
+		        PermissionsManager.SetObjectPermissions(this, m_Permissions);
 		}
 
 		#endregion
