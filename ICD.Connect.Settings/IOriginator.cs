@@ -8,6 +8,7 @@ using ICD.Connect.API.Attributes;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
 using ICD.Connect.Settings.Proxies;
+using ICD.Connect.Telemetry;
 
 namespace ICD.Connect.Settings
 {
@@ -15,7 +16,7 @@ namespace ICD.Connect.Settings
 	/// IOriginator represents an object that has settings.
 	/// </summary>
 	[ApiClass(typeof(ProxyOriginator))]
-	public interface IOriginator : IConsoleNode
+	public interface IOriginator : IConsoleNode, ITelemetryProvider
 	{
 		/// <summary>
 		/// Called when the settings start clearing.

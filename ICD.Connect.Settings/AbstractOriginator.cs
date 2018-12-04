@@ -9,6 +9,7 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
+using ICD.Connect.Telemetry;
 
 namespace ICD.Connect.Settings
 {
@@ -100,6 +101,8 @@ namespace ICD.Connect.Settings
 					       m_CachedPermissionsManager ?? ServiceProvider.TryGetService<PermissionsManager>();
 			}
 		}
+
+		public ITelemetryCollection Telemetry { get; private set; }
 
 		#endregion
 
@@ -267,6 +270,9 @@ namespace ICD.Connect.Settings
 
 			ApplySettingsFinal(settings, factory);
 
+			Telemetry = new StaticTelemetryNodeItem<object>(Name, null);
+			TelemetryUtils.InstantiateTelemetry(this);
+
 			OnSettingsApplied.Raise(this);
 		}
 
@@ -374,6 +380,22 @@ namespace ICD.Connect.Settings
 		public virtual void BuildConsoleStatus(AddStatusRowDelegate addRow)
 		{
 			OriginatorConsole.BuildConsoleStatus(this, addRow);
+
+			var tableBuilder = new TableBuilder("Name", "Value");
+
+			foreach (ITelemetryItem node in Telemetry.GetChildren())
+			{
+				IFeedbackTelemetryItem feedbackItem = node as IFeedbackTelemetryItem;
+				if(feedbackItem != null)
+					tableBuilder.AddRow(feedbackItem.Name, feedbackItem.Value);
+
+				IManagementTelemetryItem managementItem = node as IManagementTelemetryItem;
+				if(managementItem != null)
+					tableBuilder.AddRow(managementItem.Name, "Method Telemetry");
+			}
+
+			IcdConsole.PrintLine(eConsoleColor.Magenta, "TELEMETRY for {0}", this);
+			IcdConsole.PrintLine(eConsoleColor.Magenta, tableBuilder.ToString());
 		}
 
 		/// <summary>
