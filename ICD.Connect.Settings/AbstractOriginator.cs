@@ -10,6 +10,7 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
 using ICD.Connect.Telemetry;
+using ICD.Connect.Telemetry.Nodes;
 
 namespace ICD.Connect.Settings
 {
@@ -30,6 +31,8 @@ namespace ICD.Connect.Settings
 		/// Raised when settings have been applied to the originator.
 		/// </summary>
 		public event EventHandler OnSettingsApplied;
+
+		public event EventHandler OnRequestTelemetryRebuild;
 
 		private readonly List<Permission> m_Permissions;
 

@@ -6,6 +6,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Comparers;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings
@@ -17,6 +18,9 @@ namespace ICD.Connect.Settings
 		/// Raised when children are added/removed to/from the collection.
 		/// </summary>
 		public event EventHandler OnChildrenChanged;
+
+		public event EventHandler<GenericEventArgs<IOriginator>> OnOriginatorAdded;
+		public event EventHandler<GenericEventArgs<IOriginator>> OnOriginatorRemoved;
 
 		private readonly Dictionary<Type, List<TChild>> m_TypeToChildren;
 		private readonly IcdOrderedDictionary<int, TChild> m_Children;
@@ -125,6 +129,7 @@ namespace ICD.Connect.Settings
 
 					m_Children.Remove(child.Id);
 					removed.Add(child);
+					OnOriginatorRemoved.Raise(this, new GenericEventArgs<IOriginator>(child));
 				}
 			}
 			finally
@@ -193,6 +198,7 @@ namespace ICD.Connect.Settings
 
 					m_Children.Add(child.Id, child);
 					added.Add(child);
+					OnOriginatorAdded.Raise(this, new GenericEventArgs<IOriginator>(child));
 				}
 			}
 			finally

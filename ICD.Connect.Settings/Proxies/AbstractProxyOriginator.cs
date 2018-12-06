@@ -20,6 +20,7 @@ namespace ICD.Connect.Settings.Proxies
 		public event EventHandler OnSettingsClearing;
 		public event EventHandler OnSettingsCleared;
 		public event EventHandler OnSettingsApplied;
+		public event EventHandler OnRequestTelemetryRebuild;
 
 		#region Properties
 
@@ -69,6 +70,7 @@ namespace ICD.Connect.Settings.Proxies
 		/// </summary>
 		public virtual string ConsoleHelp { get { return string.Empty; } }
 
+		
 		public ITelemetryCollection Telemetry { get; [UsedImplicitly] set; }
 
 		#endregion
