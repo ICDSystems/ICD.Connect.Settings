@@ -103,11 +103,17 @@ namespace ICD.Connect.Settings
 
 		#endregion
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
 		protected AbstractOriginator()
 		{
 			m_Permissions = new List<Permission>();
 		}
 
+		/// <summary>
+		/// Deconstructor.
+		/// </summary>
 		~AbstractOriginator()
 		{
 			Dispose(false);
