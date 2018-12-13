@@ -66,7 +66,7 @@ namespace ICD.Connect.Settings.Proxies
 		/// <summary>
 		/// When true this instance is serialized to the system config.
 		/// </summary>
-		public bool Serialize { get { return false; } set { throw new NotSupportedException(); } }
+		public bool Serialize { get; set; }
 
 		/// <summary>
 		/// Logger for the originator.
@@ -147,6 +147,12 @@ namespace ICD.Connect.Settings.Proxies
 		/// <param name="settings"></param>
 		public void CopySettings(TSettings settings)
 		{
+			settings.Id = Id;
+			settings.Name = Name;
+			settings.CombineName = CombineName;
+			settings.Description = Description;
+			settings.Hide = Hide;
+
 			CopySettingsFinal(settings);
 		}
 
@@ -184,6 +190,14 @@ namespace ICD.Connect.Settings.Proxies
 		/// <param name="factory"></param>
 		public void ApplySettings(TSettings settings, IDeviceFactory factory)
 		{
+			ClearSettings();
+
+			Id = settings.Id;
+			Name = settings.Name;
+			CombineName = settings.CombineName;
+			Description = settings.Description;
+			Hide = settings.Hide;
+
 			ApplySettingsFinal(settings, factory);
 
 			OnSettingsApplied.Raise(this);
@@ -206,6 +220,12 @@ namespace ICD.Connect.Settings.Proxies
 			OnSettingsClearing.Raise(this);
 
 			ClearSettingsFinal();
+
+			Id = 0;
+			Name = null;
+			CombineName = null;
+			Description = null;
+			Hide = false;
 
 			OnSettingsCleared.Raise(this);
 		}
