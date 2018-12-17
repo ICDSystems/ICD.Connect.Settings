@@ -388,7 +388,11 @@ namespace ICD.Connect.Settings
 		/// <returns></returns>
 		public virtual IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
-			return OriginatorConsole.GetConsoleNodes(this);
+			foreach (var node in OriginatorConsole.GetConsoleNodes(this))
+				yield return node;
+
+			foreach (var node in TelemetryConsole.GetConsoleNodes(this))
+				yield return node;
 		}
 
 		/// <summary>
@@ -398,22 +402,6 @@ namespace ICD.Connect.Settings
 		public virtual void BuildConsoleStatus(AddStatusRowDelegate addRow)
 		{
 			OriginatorConsole.BuildConsoleStatus(this, addRow);
-
-			var tableBuilder = new TableBuilder("Name", "Value");
-
-			foreach (ITelemetryItem node in Telemetry.GetChildren())
-			{
-				IFeedbackTelemetryItem feedbackItem = node as IFeedbackTelemetryItem;
-				if(feedbackItem != null)
-					tableBuilder.AddRow(feedbackItem.Name, feedbackItem.Value);
-
-				IManagementTelemetryItem managementItem = node as IManagementTelemetryItem;
-				if(managementItem != null)
-					tableBuilder.AddRow(managementItem.Name, "Method Telemetry");
-			}
-
-			IcdConsole.PrintLine(eConsoleColor.Magenta, "TELEMETRY for {0}", this);
-			IcdConsole.PrintLine(eConsoleColor.Magenta, tableBuilder.ToString());
 		}
 
 		/// <summary>
