@@ -9,6 +9,7 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
 using ICD.Connect.Settings.Proxies;
 using ICD.Connect.Telemetry;
+using ICD.Connect.Telemetry.Attributes;
 
 namespace ICD.Connect.Settings
 {
@@ -37,18 +38,27 @@ namespace ICD.Connect.Settings
 		[PublicAPI]
 		event EventHandler OnSettingsApplied;
 
+		/// <summary>
+		/// Called when this originator changes names.
+		/// </summary>
+		[PublicAPI]
+		[EventTelemetry(OriginatorTelemetryNames.NAME_CHANGED)]
+		event EventHandler OnNameChanged;
+
 		#region Properties
 
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_ID, OriginatorApi.HELP_PROPERTY_ID)]
+		[StaticPropertyTelemetry(OriginatorTelemetryNames.ID)]
 		int Id { get; set; }
 
 		/// <summary>
 		/// The name of the originator.
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_NAME, OriginatorApi.HELP_PROPERTY_NAME)]
+		[DynamicPropertyTelemetry(OriginatorTelemetryNames.NAME, OriginatorTelemetryNames.NAME_CHANGED)]
 		string Name { get; set; }
 
 		/// <summary>

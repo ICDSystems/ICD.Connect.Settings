@@ -41,6 +41,7 @@
     <ProjectReference Include="..\..\ICD.Common.Permissions\ICD.Common.Permissions\ICD.Common.Permissions_NetStandard.csproj" />
     <ProjectReference Include="..\..\ICD.Common.Utils\ICD.Common.Utils\ICD.Common.Utils_NetStandard.csproj" />
     <ProjectReference Include="..\..\ICD.Connect.API\ICD.Connect.API\ICD.Connect.API_NetStandard.csproj" />
+    <ProjectReference Include="..\..\ICD.Connect.Telemetry\ICD.Connect.Telemetry\ICD.Connect.Telemetry_NetStandard.csproj" />
   </ItemGroup>
 
 </Project>

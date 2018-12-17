@@ -79,6 +79,7 @@
     <Compile Include="Migration\ConfigVersionMigrator_2x0_To_3x0.cs" />
     <Compile Include="Migration\IConfigVersionMigrator.cs" />
     <Compile Include="OriginatorConsole.cs" />
+    <Compile Include="OriginatorTelemetryNames.cs" />
     <Compile Include="Proxies\AbstractProxyOriginator.cs" />
     <Compile Include="Attributes\KrangPluginAttribute.cs" />
     <Compile Include="Attributes\KrangSettingsAttribute.cs" />
