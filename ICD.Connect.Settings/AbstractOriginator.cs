@@ -120,8 +120,6 @@ namespace ICD.Connect.Settings
 			}
 		}
 
-		public ITelemetryCollection Telemetry { get; private set; }
-
 		#endregion
 
 		protected AbstractOriginator()
@@ -288,7 +286,6 @@ namespace ICD.Connect.Settings
 
 			ApplySettingsFinal(settings, factory);
 
-			Telemetry = new StaticTelemetryNodeItem<object>(Name, null);
 			TelemetryUtils.InstantiateTelemetry(this);
 
 			OnSettingsApplied.Raise(this);

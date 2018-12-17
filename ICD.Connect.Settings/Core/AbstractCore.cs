@@ -23,6 +23,7 @@ namespace ICD.Connect.Settings.Core
 			m_Originators = new CoreOriginatorCollection();
 			m_Originators.OnOriginatorAdded += OriginatorsOnOriginatorAdded;
 			m_Originators.OnOriginatorRemoved += OriginatorsOnOriginatorRemoved;
+			ServiceProvider.GetService<ITelemetryService>().AddTelemetryProvider(this);
 		}
 
 		#region Originator Collection Callbacks
