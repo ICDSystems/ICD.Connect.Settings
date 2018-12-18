@@ -7,6 +7,7 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Core;
 using ICD.Connect.Settings.Header;
+using ICD.Connect.Settings.Migration;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronIO;
 using Activator = Crestron.SimplSharp.Reflection.Activator;
@@ -203,7 +204,18 @@ namespace ICD.Connect.Settings
 				Logger.AddEntry(eSeverity.Warning, "Configuration was generated for an older version (Config={0}, Current={1})",
 				                header.ConfigVersion, ConfigurationHeader.CurrentConfigVersion);
 
-				// TODO - Migrate
+				try
+				{
+					Version resulting;
+					configXml = ConfigMigrator.Migrate(configXml, header.ConfigVersion, out resulting);
+					save = true;
+
+					Logger.AddEntry(eSeverity.Notice, "Migrated config from {0} to {1}", header.ConfigVersion, resulting);
+				}
+				catch (Exception e)
+				{
+					Logger.AddEntry(eSeverity.Error, "Failed to migrate configuration - {0}", e.Message);
+				}
 			}
 
 			settings.ParseXml(configXml);
