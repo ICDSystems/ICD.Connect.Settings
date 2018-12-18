@@ -21,6 +21,11 @@ namespace ICD.Connect.Settings.Header
 		#region Properties
 
 		/// <summary>
+		/// Gets the current config version.
+		/// </summary>
+		public static Version CurrentConfigVersion { get { return s_CurrentConfigVersion; } }
+
+		/// <summary>
 		/// Gets the config version.
 		/// </summary>
 		public Version ConfigVersion { get; private set; }

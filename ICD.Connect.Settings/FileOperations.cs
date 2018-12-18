@@ -6,6 +6,7 @@ using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Header;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronIO;
 using Activator = Crestron.SimplSharp.Reflection.Activator;
@@ -160,13 +161,13 @@ namespace ICD.Connect.Settings
 				Logger.AddEntry(eSeverity.Warning, "Failed to find settings at {0}", IcdConfigPath);
 			}
 
-			bool save = false;
+			bool save;
 
 			// Save a stub xml file if one doesn't already exist
 			if (string.IsNullOrEmpty(configXml))
 				save = true;
 			else
-				settings.ParseXml(configXml);
+				ParseXml(settings, configXml, out save);
 
 			ApplyCoreSettings(core, settings);
 
@@ -177,6 +178,36 @@ namespace ICD.Connect.Settings
 		#endregion
 
 		#region Private Methods
+
+		/// <summary>
+		/// Performs some additional validation/migration before applying XML to the given settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="configXml"></param>
+		/// <param name="save"></param>
+		private static void ParseXml(ICoreSettings settings, string configXml, out bool save)
+		{
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			save = false;
+
+			ConfigurationHeader header = settings.GetHeader(configXml);
+
+			if (header.ConfigVersion.Equals(new Version(0, 0)))
+			{
+				Logger.AddEntry(eSeverity.Warning, "Unable to determine configuration version, assuming latest");
+			}
+			else if (header.ConfigVersion < ConfigurationHeader.CurrentConfigVersion)
+			{
+				Logger.AddEntry(eSeverity.Warning, "Configuration was generated for an older version (Config={0}, Current={1})",
+				                header.ConfigVersion, ConfigurationHeader.CurrentConfigVersion);
+
+				// TODO - Migrate
+			}
+
+			settings.ParseXml(configXml);
+		}
 
 		/// <summary>
 		/// Writes a comment to the xml warning integrators about this XML being overwritten
