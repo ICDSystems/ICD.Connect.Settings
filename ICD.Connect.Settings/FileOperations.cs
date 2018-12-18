@@ -25,10 +25,16 @@ namespace ICD.Connect.Settings
 		private const string CONFIG_LOCAL_PATH = "RoomConfig-Base.xml";
 		private const string LICENSE_LOCAL_PATH = "license";
 
+		#region Properties
+
 		public static string IcdConfigPath { get { return PathUtils.GetProgramConfigPath(CONFIG_LOCAL_PATH); } }
 		public static string LicensePath { get { return PathUtils.GetProgramConfigPath(LICENSE_LOCAL_PATH); } }
 
 		public static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
+
+		#endregion
+
+		#region Methods
 
 		/// <summary>
 		/// Applies the settings to the core.
@@ -124,20 +130,6 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Writes a comment to the xml warning integrators about this XML being overwritten
-		/// </summary>
-		/// <param name="writer"></param>
-		private static void WriteSettingsWarning(IcdXmlTextWriter writer)
-		{
-			if (writer == null)
-				throw new ArgumentNullException("writer");
-
-			writer.WriteComment("\nThis configuration is generated automatically.\n" +
-			                    "Only change this file if you know what you are doing.\n" +
-			                    "Any invalid data, whitespace, and comments will be deleted the next time this is generated.\n");
-		}
-
-		/// <summary>
 		/// Loads the settings from disk to the core.
 		/// </summary>
 		public static void LoadCoreSettings<TCore, TSettings>(TCore core)
@@ -181,5 +173,25 @@ namespace ICD.Connect.Settings
 			if (save)
 				SaveSettings(core.CopySettings(), true);
 		}
+
+		#endregion
+
+		#region Private Methods
+
+		/// <summary>
+		/// Writes a comment to the xml warning integrators about this XML being overwritten
+		/// </summary>
+		/// <param name="writer"></param>
+		private static void WriteSettingsWarning(IcdXmlTextWriter writer)
+		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+
+			writer.WriteComment("\nThis configuration is generated automatically.\n" +
+			                    "Only change this file if you know what you are doing.\n" +
+			                    "Any invalid data, whitespace, and comments will be deleted the next time this is generated.\n");
+		}
+
+		#endregion
 	}
 }
