@@ -156,12 +156,12 @@ namespace ICD.Connect.Settings
 			string configXml = null;
 			if (IcdFile.Exists(IcdConfigPath))
 			{
-				Logger.AddEntry(eSeverity.Notice, "Loading settings from {0}", IcdConfigPath);
+				Logger.AddEntry(eSeverity.Notice, "Reading settings from {0}", IcdConfigPath);
 
 				configXml = IcdFile.ReadToEnd(IcdConfigPath, new UTF8Encoding(false));
 				configXml = EncodingUtils.StripUtf8Bom(configXml);
 
-				Logger.AddEntry(eSeverity.Notice, "Finished loading settings");
+				Logger.AddEntry(eSeverity.Notice, "Finished reading settings");
 			}
 			else
 			{
