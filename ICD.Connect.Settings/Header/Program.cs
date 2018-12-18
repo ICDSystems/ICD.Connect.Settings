@@ -11,12 +11,11 @@ namespace ICD.Connect.Settings.Header
 {
 	public sealed class Program
 	{
-		public const string PROGRAM_ELEMENT = "Program";
 		private const string NAME_ELEMENT = "Name";
 		private const string COMPILED_ON_ELEMENT = "CompiledOn";
 		private const string VERSION_ELEMENT = "Version";
 
-		private string Element { get { return PROGRAM_ELEMENT; } }
+		#region Properties
 
 		public string Name { get; private set; }
 
@@ -24,11 +23,14 @@ namespace ICD.Connect.Settings.Header
 
 		public string CompiledOn { get; private set; }
 
+		#endregion
+
 		/// <summary>
 		/// Creates a new Program settings instance.
 		/// Initializes the properties with default values
 		/// </summary>
-		public Program() : this(false)
+		public Program()
+			: this(false)
 		{
 		}
 
@@ -40,67 +42,54 @@ namespace ICD.Connect.Settings.Header
 		/// <param name="currentSettings">true to initialize with new settings, false for default/minimum values</param>
 		public Program(bool currentSettings)
 		{
-			if (currentSettings)
-			{
-				Name = ProgramUtils.ApplicationName;
+			Clear();
+
+			if (!currentSettings)
+				return;
+
+			Name = ProgramUtils.ApplicationName;
 #if SIMPLSHARP
-				Version = Assembly.GetExecutingAssembly().GetName().Version;
+			Version = Assembly.GetExecutingAssembly().GetName().Version;
 #else
-                Version = Assembly.GetEntryAssembly().GetName().Version;
+			Version = Assembly.GetEntryAssembly().GetName().Version;
 #endif
-				CompiledOn = ProgramUtils.CompiledDate;
-			}
-			else
-			{
-				Name = string.Empty;
-				Version = new Version("0.0.0.0");
-				CompiledOn = string.Empty;
-			}
+			CompiledOn = ProgramUtils.CompiledDate;
+		}
+
+		#region Methods
+
+		public void Clear()
+		{
+			Name = string.Empty;
+			Version = new Version(0, 0);
+			CompiledOn = string.Empty;
 		}
 
 		/// <summary>
 		/// Writes the settings back to XML.
 		/// </summary>
 		/// <param name="writer"></param>
-		public void ToXml(IcdXmlTextWriter writer)
+		/// <param name="element"></param>
+		public void ToXml(IcdXmlTextWriter writer, string element)
 		{
-			writer.WriteStartElement(Element);
+			writer.WriteStartElement(element);
 			{
-				WriteElements(writer);
+				writer.WriteElementString(NAME_ELEMENT, Name);
+				writer.WriteElementString(COMPILED_ON_ELEMENT, CompiledOn);
+				writer.WriteElementString(VERSION_ELEMENT, Version.ToString());
 			}
 			writer.WriteEndElement();
 		}
 
-		private void WriteElements(IcdXmlTextWriter writer)
+		public void ParseXml(string xml)
 		{
-			writer.WriteElementString(NAME_ELEMENT, Name);
-			writer.WriteElementString(COMPILED_ON_ELEMENT, CompiledOn);
-			writer.WriteElementString(VERSION_ELEMENT, Version.ToString());
+			Clear();
+
+			Name = XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT) ?? string.Empty;
+			Version = new Version(XmlUtils.TryReadChildElementContentAsString(xml, VERSION_ELEMENT) ?? "0.0.0.0");
+			CompiledOn = XmlUtils.TryReadChildElementContentAsString(xml, COMPILED_ON_ELEMENT);
 		}
 
-		public static Program ParseXml(string xml)
-		{
-			return new Program
-			{
-				Name = GetNameFromXml(xml),
-				Version = GetVersionFromXml(xml),
-				CompiledOn = GetCompiledOnFromXml(xml)
-			};
-		}
-
-		private static string GetCompiledOnFromXml(string xml)
-		{
-			return XmlUtils.TryReadChildElementContentAsString(xml, COMPILED_ON_ELEMENT);
-		}
-
-		private static Version GetVersionFromXml(string xml)
-		{
-			return new Version(XmlUtils.TryReadChildElementContentAsString(xml, VERSION_ELEMENT) ?? "0.0.0.0");
-		}
-
-		private static string GetNameFromXml(string xml)
-		{
-			return XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT) ?? "";
-		}
+		#endregion
 	}
 }
