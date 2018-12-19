@@ -74,6 +74,7 @@
     <Compile Include="Attributes\SettingsProperties\ControlPortParentSettingsPropertyAttribute.cs" />
     <Compile Include="Migration\AbstractConfigVersionMigrator.cs" />
     <Compile Include="Migration\ConfigMigrator.cs" />
+    <Compile Include="Migration\ConfigVersionMigrator_2x0_To_3x0.cs" />
     <Compile Include="Migration\IConfigVersionMigrator.cs" />
     <Compile Include="OriginatorConsole.cs" />
     <Compile Include="Proxies\AbstractProxyOriginator.cs" />

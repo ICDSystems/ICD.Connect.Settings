@@ -16,6 +16,8 @@ namespace ICD.Connect.Settings.Migration
 		static ConfigMigrator()
 		{
 			s_Migrators = new Dictionary<Version, IConfigVersionMigrator>();
+
+			RegisterMigrator(new ConfigVersionMigrator_2x0_To_3x0());
 		}
 
 		/// <summary>

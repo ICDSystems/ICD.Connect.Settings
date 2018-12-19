@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
  - Added migration features for automatically updating older configs
+ - Added migration for config version 2.0 to 3.0
 
 ## [7.2.0] - 2018-11-08
 ### Added
