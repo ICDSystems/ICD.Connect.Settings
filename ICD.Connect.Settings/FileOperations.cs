@@ -170,10 +170,10 @@ namespace ICD.Connect.Settings
 			else
 				ParseXml(settings, configXml, out save);
 
-			ApplyCoreSettings(core, settings);
-
 			if (save)
-				SaveSettings(core.CopySettings(), true);
+				SaveSettings(settings, true);
+
+			ApplyCoreSettings(core, settings);
 		}
 
 		#endregion
