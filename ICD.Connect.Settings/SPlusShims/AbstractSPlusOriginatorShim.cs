@@ -183,7 +183,10 @@ namespace ICD.Connect.Settings.SPlusShims
 			bool childExists = core.Originators.TryGetChild(id, out output);
 
 			if (!childExists)
+			{
 				Log(eSeverity.Error, "No Originator with id {0}", id);
+				return default(TOriginator);
+			}
 
 			if (output is TOriginator)
 				return (TOriginator)output;
