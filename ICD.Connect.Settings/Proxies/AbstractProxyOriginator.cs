@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Permissions;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
@@ -13,11 +14,26 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Settings.Proxies
 {
-	public abstract class AbstractProxyOriginator : AbstractProxy, IProxyOriginator
+	public abstract class AbstractProxyOriginator<TSettings> : AbstractProxy, IProxyOriginator<TSettings>
+		where TSettings : IProxySettings
 	{
+		/// <summary>
+		/// Called when the settings start clearing.
+		/// </summary>
 		public event EventHandler OnSettingsClearing;
+
+		/// <summary>
+		/// Called when the settings have been cleared.
+		/// </summary>
 		public event EventHandler OnSettingsCleared;
+
+		/// <summary>
+		/// Called when settings have been applied to the originator.
+		/// This means the originator has finished loading.
+		/// </summary>
 		public event EventHandler OnSettingsApplied;
+
+		private ILoggerService m_CachedLogger;
 
 		#region Properties
 
@@ -50,12 +66,16 @@ namespace ICD.Connect.Settings.Proxies
 		/// <summary>
 		/// When true this instance is serialized to the system config.
 		/// </summary>
-		public bool Serialize { get { return false; } set { throw new NotSupportedException(); } }
+		public bool Serialize { get; set; }
 
 		/// <summary>
 		/// Logger for the originator.
 		/// </summary>
-		public ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
+		[Obsolete]
+		public ILoggerService Logger
+		{
+			get { return m_CachedLogger = m_CachedLogger ?? ServiceProvider.TryGetService<ILoggerService>(); }
+		}
 
 		/// <summary>
 		/// Gets the name of the node.
@@ -87,18 +107,61 @@ namespace ICD.Connect.Settings.Proxies
 		/// Copies the current instance settings.
 		/// </summary>
 		/// <returns></returns>
-		public ISettings CopySettings()
+		ISettings IOriginator.CopySettings()
 		{
-			throw new NotSupportedException();
+			return CopySettings();
+		}
+
+		/// <summary>
+		/// Copies the current instance settings.
+		/// </summary>
+		/// <returns></returns>
+		public TSettings CopySettings()
+		{
+			TSettings output = ReflectionUtils.CreateInstance<TSettings>();
+			CopySettings(output);
+			return output;
 		}
 
 		/// <summary>
 		/// Copies the current instance properties to the settings instance.
 		/// </summary>
 		/// <param name="settings"></param>
-		public void CopySettings(ISettings settings)
+		void IOriginator.CopySettings(ISettings settings)
 		{
-			throw new NotSupportedException();
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			if (!(settings is TSettings))
+			{
+				string message = string.Format("Can not use {0} with {1}", settings.GetType().Name, GetType().Name);
+				throw new ArgumentException(message);
+			}
+
+			CopySettings((TSettings)settings);
+		}
+
+		/// <summary>
+		/// Copies the current instance properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		public void CopySettings(TSettings settings)
+		{
+			settings.Id = Id;
+			settings.Name = Name;
+			settings.CombineName = CombineName;
+			settings.Description = Description;
+			settings.Hide = Hide;
+
+			CopySettingsFinal(settings);
+		}
+
+		/// <summary>
+		/// Override to apply properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		protected virtual void CopySettingsFinal(TSettings settings)
+		{
 		}
 
 		/// <summary>
@@ -106,9 +169,47 @@ namespace ICD.Connect.Settings.Proxies
 		/// </summary>
 		/// <param name="settings"></param>
 		/// <param name="factory"></param>
-		public void ApplySettings(ISettings settings, IDeviceFactory factory)
+		void IOriginator.ApplySettings(ISettings settings, IDeviceFactory factory)
 		{
-			throw new NotSupportedException();
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			if (!(settings is TSettings))
+			{
+				string message = string.Format("Can not use {0} with {1}", settings.GetType().Name, GetType().Name);
+				throw new ArgumentException(message);
+			}
+
+			ApplySettings((TSettings)settings, factory);
+		}
+
+		/// <summary>
+		/// Applies the settings to the instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		public void ApplySettings(TSettings settings, IDeviceFactory factory)
+		{
+			ClearSettings();
+
+			Id = settings.Id;
+			Name = settings.Name;
+			CombineName = settings.CombineName;
+			Description = settings.Description;
+			Hide = settings.Hide;
+
+			ApplySettingsFinal(settings, factory);
+
+			OnSettingsApplied.Raise(this);
+		}
+
+		/// <summary>
+		/// Override to apply settings to the instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		protected virtual void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
+		{
 		}
 
 		/// <summary>
@@ -116,7 +217,25 @@ namespace ICD.Connect.Settings.Proxies
 		/// </summary>
 		public void ClearSettings()
 		{
-			throw new NotSupportedException();
+			OnSettingsClearing.Raise(this);
+
+			ClearSettingsFinal();
+
+			Id = 0;
+			Name = null;
+			CombineName = null;
+			Description = null;
+			Hide = false;
+
+			OnSettingsCleared.Raise(this);
+		}
+
+
+		/// <summary>
+		/// Override to clear the instance settings.
+		/// </summary>
+		protected virtual void ClearSettingsFinal()
+		{
 		}
 
 		#endregion

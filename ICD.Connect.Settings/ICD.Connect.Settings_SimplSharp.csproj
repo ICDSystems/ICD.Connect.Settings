@@ -94,6 +94,7 @@
     <Compile Include="IdUtils.cs" />
     <Compile Include="IOriginatorCollection.cs" />
     <None Include="ObfuscationSettings.cs" />
+    <Compile Include="Proxies\AbstractProxySettings.cs" />
     <Compile Include="Proxies\IProxyOriginator.cs" />
     <Compile Include="LibraryUtils.cs" />
     <Compile Include="OriginatorApi.cs" />
@@ -109,7 +110,9 @@
     <Compile Include="Core\IDeviceFactory.cs" />
     <Compile Include="IOriginator.cs" />
     <Compile Include="ISettings.cs" />
+    <Compile Include="Proxies\IProxySettings.cs" />
     <Compile Include="Proxies\ProxyOriginator.cs" />
+    <Compile Include="Proxies\ProxyOriginatorSettings.cs" />
     <Compile Include="SettingsCollection.cs" />
     <Compile Include="Simpl\AbstractSimplOriginator.cs" />
     <Compile Include="Simpl\ISimplOriginator.cs" />
