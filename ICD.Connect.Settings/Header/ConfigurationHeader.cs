@@ -9,21 +9,41 @@ namespace ICD.Connect.Settings.Header
 	{
 		private static readonly Version s_CurrentConfigVersion = new Version("3.1");
 
-		private const string HEADER_ELEMENT = "Header";
 		private const string CONFIG_VERSION_ELEMENT = "ConfigVersion";
 		private const string GENERATED_ON_ELEMENT = "GeneratedOn";
 
+		private const string PROGRAM_ELEMENT = "Program";
+		private const string PROCESSOR_ELEMENT = "Processor";
+
+		private readonly Program m_Program;
+		private readonly Processor m_Processor;
+
 		#region Properties
 
-		private static string Element { get { return HEADER_ELEMENT; } }
+		/// <summary>
+		/// Gets the current config version.
+		/// </summary>
+		public static Version CurrentConfigVersion { get { return s_CurrentConfigVersion; } }
 
+		/// <summary>
+		/// Gets the config version.
+		/// </summary>
 		public Version ConfigVersion { get; private set; }
 
+		/// <summary>
+		/// Gets the date that the config was generated on.
+		/// </summary>
 		public DateTime GeneratedOn { get; private set; }
 
-		public Program Program { get; private set; }
+		/// <summary>
+		/// Gets the header program information.
+		/// </summary>
+		public Program Program { get { return m_Program; } }
 
-		public Processor Processor { get; private set; }
+		/// <summary>
+		/// Gets the header processor information.
+		/// </summary>
+		public Processor Processor { get { return m_Processor; } }
 
 		#endregion
 
@@ -54,65 +74,68 @@ namespace ICD.Connect.Settings.Header
 				ConfigVersion = new Version(0, 0);
 				GeneratedOn = DateTime.MinValue;
 			}
-			Program = new Program(currentSettings);
-			Processor = new Processor(currentSettings);
+
+			m_Program = new Program(currentSettings);
+			m_Processor = new Processor(currentSettings);
 		}
+
+		#region Methods
 
 		/// <summary>
-		/// Writes the settings back to XML.
+		/// Resets the configuration header to default values.
 		/// </summary>
-		/// <param name="writer"></param>
-		public void ToXml(IcdXmlTextWriter writer)
-		{
-			writer.WriteStartElement(Element);
-			{
-				WriteElements(writer);
-			}
-			writer.WriteEndElement();
-		}
-
-		private void WriteElements(IcdXmlTextWriter writer)
-		{
-			writer.WriteElementString(CONFIG_VERSION_ELEMENT, ConfigVersion.ToString());
-			writer.WriteElementString(GENERATED_ON_ELEMENT, GeneratedOn.ToString("G"));
-
-			Program.ToXml(writer);
-			Processor.ToXml(writer);
-		}
-
 		public void Clear()
 		{
 			ConfigVersion = new Version(0, 0);
 			GeneratedOn = DateTime.MinValue;
-			Program = new Program(false);
-			Processor = new Processor(false);
+
+			m_Program.Clear();
+			m_Processor.Clear();
 		}
 
 		/// <summary>
-		/// Parses the xml and returns a new ConfigurationHeader object
+		/// Writes the configuration header to XML.
+		/// </summary>
+		/// <param name="writer"></param>
+		/// <param name="elementName"></param>
+		public void ToXml(IcdXmlTextWriter writer, string elementName)
+		{
+			writer.WriteStartElement(elementName);
+			{
+				writer.WriteElementString(CONFIG_VERSION_ELEMENT, ConfigVersion.ToString());
+				writer.WriteElementString(GENERATED_ON_ELEMENT, GeneratedOn.ToString("G"));
+
+				m_Program.ToXml(writer, PROGRAM_ELEMENT);
+				m_Processor.ToXml(writer, PROCESSOR_ELEMENT);
+			}
+			writer.WriteEndElement();
+		}
+
+		/// <summary>
+		/// Reads the configuration header from xml.
 		/// </summary>
 		/// <param name="xml"></param>
 		public void ParseXml(string xml)
 		{
-			string programXml;
-			string processorXml;
-			Program program = XmlUtils.TryGetChildElementAsString(xml, Program.PROGRAM_ELEMENT, out programXml)
-				                  ? Program.ParseXml(programXml)
-				                  : new Program();
-			Processor processor = XmlUtils.TryGetChildElementAsString(xml, Processor.PROCESSOR_ELEMENT, out processorXml)
-				                      ? Processor.ParseXml(processorXml)
-				                      : new Processor();
+			Clear();
 
-			ConfigVersion = GetConfigVersionFromXml(xml);
+			ConfigVersion = new Version(XmlUtils.TryReadChildElementContentAsString(xml, CONFIG_VERSION_ELEMENT) ?? "0.0.0.0");
 			GeneratedOn = GetGeneratedOnFromXml(xml);
-			Program = program;
-			Processor = processor;
+
+			string programXml;
+			XmlUtils.TryGetChildElementAsString(xml, PROGRAM_ELEMENT, out programXml);
+			if (!string.IsNullOrEmpty(programXml))
+				m_Program.ParseXml(programXml);
+
+			string processorXml;
+			XmlUtils.TryGetChildElementAsString(xml, PROCESSOR_ELEMENT, out processorXml);
+			if (!string.IsNullOrEmpty(processorXml))
+				m_Processor.ParseXml(processorXml);
 		}
 
-		private static Version GetConfigVersionFromXml(string xml)
-		{
-			return new Version(XmlUtils.TryReadChildElementContentAsString(xml, CONFIG_VERSION_ELEMENT) ?? "0.0.0.0");
-		}
+		#endregion
+
+		#region Private Methods
 
 		private static DateTime GetGeneratedOnFromXml(string xml)
 		{
@@ -131,5 +154,7 @@ namespace ICD.Connect.Settings.Header
 
 			return DateTime.MinValue;
 		}
+
+		#endregion
 	}
 }

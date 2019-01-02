@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.3.0] - 2019-01-02
+### Added
+ - Added migration features for automatically updating older configs
+ - Added migration for config version 2.0 to 3.0
+ - Added support for multiple KrangSettings attributes per class
+
 ## [7.2.0] - 2018-11-08
 ### Added
  - Writing document encoding information to saved configurations
