@@ -71,13 +71,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\SettingsProperties\ControlPortParentSettingsPropertyAttribute.cs" />
+    <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x0_To_3x1.cs" />
     <Compile Include="Originators\AbstractOriginatorCollection.cs" />
     <Compile Include="Originators\OriginatorConsole.cs" />
     <Compile Include="Originators\Simpl\ISimplOriginator.cs" />
-    <Compile Include="Migration\AbstractConfigVersionMigrator.cs" />
+    <Compile Include="Migration\Migrators\AbstractConfigVersionMigrator.cs" />
     <Compile Include="Migration\ConfigMigrator.cs" />
-    <Compile Include="Migration\ConfigVersionMigrator_2x0_To_3x0.cs" />
-    <Compile Include="Migration\IConfigVersionMigrator.cs" />
+    <Compile Include="Migration\Migrators\ConfigVersionMigrator_2x0_To_3x0.cs" />
+    <Compile Include="Migration\Migrators\IConfigVersionMigrator.cs" />
     <Compile Include="Proxies\AbstractProxyOriginator.cs" />
     <Compile Include="Attributes\KrangPluginAttribute.cs" />
     <Compile Include="Attributes\KrangSettingsAttribute.cs" />
