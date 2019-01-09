@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+ - Added config migration for port configuration
+ - Added Log method to AbstractOriginator for exceptions
+
+### Changed
+ - Moving originators and settings classes into subdirectories
+ - Incremented config version from 3.0 to 3.1
 
 ## [7.3.0] - 2019-01-02
 ### Added
@@ -55,15 +62,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [6.0.0] - 2018-05-24
 ### Added
- - Added interface for username/password configuration
  - Added SPlusGlobalEvents framework, for initializing from s+ and future s+ eventing.
  - Added OnSettingsApplied and OnSettingsCleared events to AbstractSPlusOriginatorShim
 
 ### Removed
  - Removed element property from settings
-
-### Changed
- - Moving originators and settings classes into subdirectories
 
 ## [5.0.0] - 2018-05-09
 ### Changed
