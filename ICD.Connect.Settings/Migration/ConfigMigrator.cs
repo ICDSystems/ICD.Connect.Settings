@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Connect.Settings.Migration.Migrators;
 
 namespace ICD.Connect.Settings.Migration
 {
@@ -18,6 +19,7 @@ namespace ICD.Connect.Settings.Migration
 			s_Migrators = new Dictionary<Version, IConfigVersionMigrator>();
 
 			RegisterMigrator(new ConfigVersionMigrator_2x0_To_3x0());
+			RegisterMigrator(new ConfigVersionMigrator_3x0_To_3x1());
 		}
 
 		/// <summary>

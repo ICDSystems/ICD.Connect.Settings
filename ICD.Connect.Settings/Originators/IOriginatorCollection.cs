@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using ICD.Common.Properties;
 
-namespace ICD.Connect.Settings
+namespace ICD.Connect.Settings.Originators
 {
 	public interface IOriginatorCollection<TChild> : IEnumerable<TChild>
 		where TChild : class, IOriginator

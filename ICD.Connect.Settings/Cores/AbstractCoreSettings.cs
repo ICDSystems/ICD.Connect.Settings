@@ -1,6 +1,6 @@
 ﻿using ICD.Connect.Settings.Header;
 
-namespace ICD.Connect.Settings.Core
+namespace ICD.Connect.Settings.Cores
 {
 	public abstract class AbstractCoreSettings : AbstractSettings, ICoreSettings
 	{

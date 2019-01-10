@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Settings.Originators;
 
-namespace ICD.Connect.Settings.Core
+namespace ICD.Connect.Settings.Cores
 {
 	/// <summary>
 	/// CoreDeviceFactory wraps an ICoreSettings to provide a device factory.

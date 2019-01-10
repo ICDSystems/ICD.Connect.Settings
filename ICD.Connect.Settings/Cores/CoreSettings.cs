@@ -1,7 +1,7 @@
 ﻿using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Header;
 
-namespace ICD.Connect.Settings.Core
+namespace ICD.Connect.Settings.Cores
 {
 	[KrangSettings("Core", typeof(Core))]
 	public sealed class CoreSettings : AbstractCoreSettings

@@ -5,8 +5,12 @@ using System.Text.RegularExpressions;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 
-namespace ICD.Connect.Settings.Migration
+namespace ICD.Connect.Settings.Migration.Migrators
 {
+	/// <summary>
+	/// Moves VolumePoints out of the MetlifeRoom and into the Krang config.
+	/// Sources and Destinations now have multiple addresses.
+	/// </summary>
 	public sealed class ConfigVersionMigrator_2x0_To_3x0 : AbstractConfigVersionMigrator
 	{
 		private const string ID_REGEX = @"id=\""(?'id'\d+)\""";

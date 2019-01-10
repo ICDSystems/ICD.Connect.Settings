@@ -5,7 +5,7 @@ using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Header;
 using ICD.Connect.Settings.Migration;
 #if SIMPLSHARP

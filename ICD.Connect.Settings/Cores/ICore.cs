@@ -1,6 +1,7 @@
 ﻿using ICD.Connect.API.Attributes;
+using ICD.Connect.Settings.Originators;
 
-namespace ICD.Connect.Settings.Core
+namespace ICD.Connect.Settings.Cores
 {
 	[ApiClass("Core", "Contains the devices, panels, rooms etc for a control system.")]
 	public interface ICore : IOriginator

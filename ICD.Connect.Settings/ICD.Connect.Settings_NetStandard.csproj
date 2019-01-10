@@ -32,6 +32,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="ICD.Connect.projectinfo" />
+    <None Remove="ICD.Connect.Settings_NetStandard.csproj.DotSettings" />
+    <None Remove="ICD.Connect.Settings_SimplSharp.csproj.DotSettings" />
     <None Remove="ICD.Connect.Settings_SimplSharp.suo" />
     <None Remove="ICD.SimplSharp.projectinfo" />
     <None Remove="Properties\ControlSystem.cfg" />
