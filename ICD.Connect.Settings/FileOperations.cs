@@ -42,8 +42,8 @@ namespace ICD.Connect.Settings
 		/// Applies the settings to the core.
 		/// </summary>
 		public static void ApplyCoreSettings<TCore, TSettings>(TCore core, TSettings settings)
-			where TSettings : ICoreSettings
-			where TCore : ICore
+			where TSettings : class, ICoreSettings
+			where TCore : class, ICore
 		{
 			if (core == null)
 				throw new ArgumentNullException("core");
@@ -135,8 +135,8 @@ namespace ICD.Connect.Settings
 		/// Loads the settings from disk to the core.
 		/// </summary>
 		public static void LoadCoreSettings<TCore, TSettings>(TCore core)
-			where TSettings : ICoreSettings, new()
-			where TCore : ICore
+			where TSettings : class, ICoreSettings, new()
+			where TCore : class, ICore
 		{
 			if (core == null)
 				throw new ArgumentNullException("core");
