@@ -1,4 +1,5 @@
 ﻿using ICD.Connect.API.Proxies;
+using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings.Proxies
 {

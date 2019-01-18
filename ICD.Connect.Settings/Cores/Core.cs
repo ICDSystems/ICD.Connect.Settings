@@ -4,8 +4,9 @@ using System.Linq;
 using ICD.Common.Permissions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Settings.Originators;
 
-namespace ICD.Connect.Settings.Core
+namespace ICD.Connect.Settings.Cores
 {
 	public sealed class Core : AbstractCore<CoreSettings>
 	{

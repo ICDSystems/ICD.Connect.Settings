@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Settings.Simpl
+﻿namespace ICD.Connect.Settings.Originators.Simpl
 {
 	public static class SimplOriginatorApi
 	{

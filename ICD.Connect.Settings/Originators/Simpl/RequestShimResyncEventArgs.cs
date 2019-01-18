@@ -1,7 +1,7 @@
 ﻿using ICD.Connect.API.EventArguments;
 using ICD.Connect.API.Info;
 
-namespace ICD.Connect.Settings.Simpl
+namespace ICD.Connect.Settings.Originators.Simpl
 {
 	public sealed class RequestShimResyncEventArgs : AbstractApiEventArgs
 	{

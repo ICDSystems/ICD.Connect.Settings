@@ -1,6 +1,7 @@
 ﻿using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Header;
 
-namespace ICD.Connect.Settings.Core
+namespace ICD.Connect.Settings.Cores
 {
 	[KrangSettings("Core", typeof(Core))]
 	public sealed class CoreSettings : AbstractCoreSettings
@@ -8,6 +9,16 @@ namespace ICD.Connect.Settings.Core
 		private readonly SettingsCollection m_OriginatorSettings;
 
 		public override SettingsCollection OriginatorSettings { get { return m_OriginatorSettings; } }
+
+		/// <summary>
+		/// Parses and returns only the header portion from the full XML config.
+		/// </summary>
+		/// <param name="configXml"></param>
+		/// <returns></returns>
+		public override ConfigurationHeader GetHeader(string configXml)
+		{
+			throw new System.NotImplementedException();
+		}
 
 		/// <summary>
 		/// Constructor.

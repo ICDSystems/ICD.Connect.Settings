@@ -2,6 +2,7 @@
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Settings.Originators;
 using NUnit.Framework;
 
 namespace ICD.Connect.Settings.Tests

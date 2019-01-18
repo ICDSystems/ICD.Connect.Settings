@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.0.0] - 2019-01-10
+### Added
+ - Added config migration for port configuration
+ - Added Log method to AbstractOriginator for exceptions
+
+### Changed
+ - Moving originators and settings classes into subdirectories
+ - Incremented config version from 3.0 to 3.1
+
+## [7.3.0] - 2019-01-02
+### Added
+ - Added migration features for automatically updating older configs
+ - Added migration for config version 2.0 to 3.0
+ - Added support for multiple KrangSettings attributes per class
+
 ## [7.2.0] - 2018-11-08
 ### Added
  - Writing document encoding information to saved configurations

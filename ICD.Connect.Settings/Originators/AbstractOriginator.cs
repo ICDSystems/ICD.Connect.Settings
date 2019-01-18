@@ -8,9 +8,8 @@ using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Settings
+namespace ICD.Connect.Settings.Originators
 {
 	public abstract class AbstractOriginator<T> : IOriginator<T>, IStateDisposable
 		where T : ISettings, new()
@@ -163,6 +162,7 @@ namespace ICD.Connect.Settings
 
 		public void Log(eSeverity severity, string message)
 		{
+// ReSharper disable once CSharpWarnings::CS0612
 			Logger.AddEntry(severity, "{0} - {1}", this, message);
 		}
 
@@ -170,6 +170,18 @@ namespace ICD.Connect.Settings
 		{
 			message = string.Format(message, args);
 			Log(severity, message);
+		}
+
+		public void Log(eSeverity severity, Exception e, string message)
+		{
+			// ReSharper disable once CSharpWarnings::CS0612
+			Logger.AddEntry(severity, e, "{0} - {1}", this, message);
+		}
+
+		public void Log(eSeverity severity, Exception e, string message, params object[] args)
+		{
+			message = string.Format(message, args);
+			Log(severity, e, message);
 		}
 
 		#endregion

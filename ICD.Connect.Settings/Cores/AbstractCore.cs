@@ -1,9 +1,10 @@
-﻿using System;
+using System;
+using ICD.Connect.Settings.Originators;
 
-namespace ICD.Connect.Settings.Core
+namespace ICD.Connect.Settings.Cores
 {
 	public abstract class AbstractCore<TSettings> : AbstractOriginator<TSettings>, ICore
-		where TSettings : ICoreSettings, new()
+		where TSettings : class, ICoreSettings, new()
 	{
 		private readonly CoreOriginatorCollection m_Originators;
 

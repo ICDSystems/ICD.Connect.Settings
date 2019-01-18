@@ -1,5 +1,6 @@
 ﻿using System;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
+using ICD.Connect.Settings.Originators;
 using NUnit.Framework;
 
 namespace ICD.Connect.Settings.Tests.Attributes.SettingsProperties

@@ -8,7 +8,7 @@ using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
 
-namespace ICD.Connect.Settings
+namespace ICD.Connect.Settings.Originators
 {
 	public abstract class AbstractOriginatorCollection<TChild> : IOriginatorCollection<TChild>
 		where TChild : class, IOriginator

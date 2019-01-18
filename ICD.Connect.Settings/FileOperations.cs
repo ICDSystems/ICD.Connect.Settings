@@ -5,7 +5,9 @@ using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Cores;
+using ICD.Connect.Settings.Header;
+using ICD.Connect.Settings.Migration;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronIO;
 using Activator = Crestron.SimplSharp.Reflection.Activator;
@@ -25,17 +27,23 @@ namespace ICD.Connect.Settings
 		private const string CONFIG_LOCAL_PATH = "RoomConfig-Base.xml";
 		private const string LICENSE_LOCAL_PATH = "license";
 
+		#region Properties
+
 		public static string IcdConfigPath { get { return PathUtils.GetProgramConfigPath(CONFIG_LOCAL_PATH); } }
 		public static string LicensePath { get { return PathUtils.GetProgramConfigPath(LICENSE_LOCAL_PATH); } }
 
 		public static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
+		#endregion
+
+		#region Methods
+
 		/// <summary>
 		/// Applies the settings to the core.
 		/// </summary>
 		public static void ApplyCoreSettings<TCore, TSettings>(TCore core, TSettings settings)
-			where TSettings : ICoreSettings
-			where TCore : ICore
+			where TSettings : class, ICoreSettings
+			where TCore : class, ICore
 		{
 			if (core == null)
 				throw new ArgumentNullException("core");
@@ -124,25 +132,11 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Writes a comment to the xml warning integrators about this XML being overwritten
-		/// </summary>
-		/// <param name="writer"></param>
-		private static void WriteSettingsWarning(IcdXmlTextWriter writer)
-		{
-			if (writer == null)
-				throw new ArgumentNullException("writer");
-
-			writer.WriteComment("\nThis configuration is generated automatically.\n" +
-			                    "Only change this file if you know what you are doing.\n" +
-			                    "Any invalid data, whitespace, and comments will be deleted the next time this is generated.\n");
-		}
-
-		/// <summary>
 		/// Loads the settings from disk to the core.
 		/// </summary>
 		public static void LoadCoreSettings<TCore, TSettings>(TCore core)
-			where TSettings : ICoreSettings, new()
-			where TCore : ICore
+			where TSettings : class, ICoreSettings, new()
+			where TCore : class, ICore
 		{
 			if (core == null)
 				throw new ArgumentNullException("core");
@@ -156,30 +150,91 @@ namespace ICD.Connect.Settings
 			string configXml = null;
 			if (IcdFile.Exists(IcdConfigPath))
 			{
-				Logger.AddEntry(eSeverity.Notice, "Loading settings from {0}", IcdConfigPath);
+				Logger.AddEntry(eSeverity.Notice, "Reading settings from {0}", IcdConfigPath);
 
 				configXml = IcdFile.ReadToEnd(IcdConfigPath, new UTF8Encoding(false));
 				configXml = EncodingUtils.StripUtf8Bom(configXml);
 
-				Logger.AddEntry(eSeverity.Notice, "Finished loading settings");
+				Logger.AddEntry(eSeverity.Notice, "Finished reading settings");
 			}
 			else
 			{
 				Logger.AddEntry(eSeverity.Warning, "Failed to find settings at {0}", IcdConfigPath);
 			}
 
-			bool save = false;
+			bool save;
 
 			// Save a stub xml file if one doesn't already exist
 			if (string.IsNullOrEmpty(configXml))
 				save = true;
 			else
-				settings.ParseXml(configXml);
-
-			ApplyCoreSettings(core, settings);
+				ParseXml(settings, configXml, out save);
 
 			if (save)
-				SaveSettings(core.CopySettings(), true);
+				SaveSettings(settings, true);
+
+			ApplyCoreSettings(core, settings);
 		}
+
+		#endregion
+
+		#region Private Methods
+
+		/// <summary>
+		/// Performs some additional validation/migration before applying XML to the given settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="configXml"></param>
+		/// <param name="save"></param>
+		private static void ParseXml(ICoreSettings settings, string configXml, out bool save)
+		{
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			save = false;
+
+			ConfigurationHeader header = settings.GetHeader(configXml);
+
+			if (header.ConfigVersion.Equals(new Version(0, 0)))
+			{
+				Logger.AddEntry(eSeverity.Warning, "Unable to determine configuration version, assuming latest");
+			}
+			else if (header.ConfigVersion < ConfigurationHeader.CurrentConfigVersion)
+			{
+				Logger.AddEntry(eSeverity.Warning, "Configuration was generated for an older version (Config={0}, Current={1})",
+				                header.ConfigVersion, ConfigurationHeader.CurrentConfigVersion);
+
+				try
+				{
+					Version resulting;
+					configXml = ConfigMigrator.Migrate(configXml, header.ConfigVersion, out resulting);
+					save = true;
+
+					Logger.AddEntry(eSeverity.Notice, "Migrated config from {0} to {1}", header.ConfigVersion, resulting);
+				}
+				catch (Exception e)
+				{
+					Logger.AddEntry(eSeverity.Error, "Failed to migrate configuration - {0}", e.Message);
+				}
+			}
+
+			settings.ParseXml(configXml);
+		}
+
+		/// <summary>
+		/// Writes a comment to the xml warning integrators about this XML being overwritten
+		/// </summary>
+		/// <param name="writer"></param>
+		private static void WriteSettingsWarning(IcdXmlTextWriter writer)
+		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+
+			writer.WriteComment("\nThis configuration is generated automatically.\n" +
+			                    "Only change this file if you know what you are doing.\n" +
+			                    "Any invalid data, whitespace, and comments will be deleted the next time this is generated.\n");
+		}
+
+		#endregion
 	}
 }

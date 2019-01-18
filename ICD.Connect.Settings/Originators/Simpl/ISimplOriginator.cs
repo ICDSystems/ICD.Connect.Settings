@@ -1,7 +1,7 @@
-﻿using System;
-using ICD.Connect.API.Attributes;
+using System;
+﻿using ICD.Connect.API.Attributes;
 
-namespace ICD.Connect.Settings.Simpl
+namespace ICD.Connect.Settings.Originators.Simpl
 {
 	public interface ISimplOriginator : IOriginator
 	{
