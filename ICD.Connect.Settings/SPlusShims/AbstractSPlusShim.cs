@@ -67,7 +67,7 @@ namespace ICD.Connect.Settings.SPlusShims
 
 		#region Private/Protected Helpers
 
-		protected void RequestResync()
+		protected virtual void RequestResync()
 		{
 			var handler = OnResyncRequested;
 			if (handler != null)
@@ -81,7 +81,7 @@ namespace ICD.Connect.Settings.SPlusShims
 
 		protected void Log(eSeverity severity, string message, params object[] args)
 		{
-			message = string.Format(message, args);
+			message = String.Format(message, args);
 			Log(severity, message);
 		}
 
@@ -89,10 +89,15 @@ namespace ICD.Connect.Settings.SPlusShims
 		{
 			ReprBuilder builder = new ReprBuilder(this);
 
-			if (!string.IsNullOrEmpty(Location))
+			if (!String.IsNullOrEmpty(Location))
 				builder.AppendProperty("Location", Location);
 
 			return builder.ToString();
+		}
+
+		protected static string SPlusSafeString(string input)
+		{
+			return input ?? String.Empty;
 		}
 
 		#endregion
@@ -137,6 +142,5 @@ namespace ICD.Connect.Settings.SPlusShims
 		}
 
 		#endregion
-
 	}
 }

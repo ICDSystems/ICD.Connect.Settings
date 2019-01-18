@@ -116,7 +116,9 @@
     <Compile Include="SettingsCollection.cs" />
     <Compile Include="Simpl\AbstractSimplOriginator.cs" />
     <Compile Include="Simpl\ISimplOriginator.cs" />
+    <Compile Include="Simpl\ISimplOriginatorApi.cs" />
     <Compile Include="Simpl\ISimplOriginatorSettings.cs" />
+    <Compile Include="Simpl\RequestShimResyncEventArgs.cs" />
     <Compile Include="SPlusShims\AbstractSPlusOriginatorShim.cs" />
     <Compile Include="SPlusShims\AbstractSPlusShim.cs" />
     <Compile Include="SPlusShims\EventArguments\SPlusBoolEventArgs.cs" />

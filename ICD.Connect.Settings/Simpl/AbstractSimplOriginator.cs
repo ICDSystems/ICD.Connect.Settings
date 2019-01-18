@@ -1,7 +1,10 @@
-﻿namespace ICD.Connect.Settings.Simpl
+﻿using System;
+
+namespace ICD.Connect.Settings.Simpl
 {
 	public abstract class AbstractSimplOriginator<TSettings> : AbstractOriginator<TSettings>, ISimplOriginator
 		where TSettings : ISimplOriginatorSettings, new()
 	{
+		public event EventHandler<RequestShimResyncEventArgs> OnRequestShimResync;
 	}
 }

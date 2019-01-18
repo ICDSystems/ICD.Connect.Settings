@@ -212,6 +212,7 @@ namespace ICD.Connect.Settings.SPlusShims
 
 			Originator.OnSettingsApplied += OriginatorOnSettingsApplied;
 			Originator.OnSettingsCleared += OriginatorOnSettingsCleared;
+			Originator.OnRequestShimResync += OriginatorOnRequestShimResync;
 		}
 
 		/// <summary>
@@ -225,6 +226,7 @@ namespace ICD.Connect.Settings.SPlusShims
 
 			Originator.OnSettingsApplied -= OriginatorOnSettingsApplied;
 			Originator.OnSettingsCleared -= OriginatorOnSettingsCleared;
+			Originator.OnRequestShimResync -= OriginatorOnRequestShimResync;
 		}
 
 		private void OriginatorOnSettingsApplied(object sender, EventArgs eventArgs)
@@ -235,6 +237,11 @@ namespace ICD.Connect.Settings.SPlusShims
 		private void OriginatorOnSettingsCleared(object sender, EventArgs eventArgs)
 		{
 			OnSettingsCleared.Raise(this);
+		}
+
+		private void OriginatorOnRequestShimResync(object sender, EventArgs eventArgs)
+		{
+			RequestResync();
 		}
 
 		#endregion
