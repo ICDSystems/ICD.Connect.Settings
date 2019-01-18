@@ -4,7 +4,7 @@ using ICD.Common.Permissions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings.Tests
 {

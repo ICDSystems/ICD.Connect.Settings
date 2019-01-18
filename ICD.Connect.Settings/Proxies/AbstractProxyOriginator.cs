@@ -10,7 +10,7 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Info;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.API.Proxies;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings.Proxies
 {

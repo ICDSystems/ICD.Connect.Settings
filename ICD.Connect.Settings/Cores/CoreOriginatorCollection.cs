@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ICD.Connect.Settings.Originators;
 
-namespace ICD.Connect.Settings.Core
+namespace ICD.Connect.Settings.Cores
 {
 	public sealed class CoreOriginatorCollection : AbstractOriginatorCollection<IOriginator>
 	{

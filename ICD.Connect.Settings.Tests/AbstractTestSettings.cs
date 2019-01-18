@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings.Tests
 {
