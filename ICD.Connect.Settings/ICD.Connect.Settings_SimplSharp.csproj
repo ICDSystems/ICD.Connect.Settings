@@ -91,7 +91,6 @@
     <Compile Include="Attributes\SettingsProperties\OriginatorIdSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\IpAddressSettingsPropertyAttribute.cs" />
-    <Compile Include="Comparers\OriginatorIdComparer.cs" />
     <Compile Include="Cores\AbstractCore.cs" />
     <Compile Include="Cores\AbstractCoreSettings.cs" />
     <Compile Include="Cores\Core.cs" />
