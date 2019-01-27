@@ -173,7 +173,7 @@ namespace ICD.Connect.Settings.Cores
 		/// Called each time an originator is loaded while applying settings.
 		/// </summary>
 		/// <param name="originator"></param>
-		private void FactoryOnOriginatorLoaded(IOriginator originator)
+		private void FactoryOnOriginatorLoaded(IDeviceFactory factory, IOriginator originator)
 		{
 			m_LoadedOriginators.Push(originator.Id);
 			AddOriginator(originator);

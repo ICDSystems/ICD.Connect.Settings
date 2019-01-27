@@ -18,6 +18,18 @@ namespace ICD.Connect.Settings.Cores
 		private readonly ICoreSettings m_CoreSettings;
 
 		/// <summary>
+		/// Gets the progress of the device factory as it loads through the underlying settings collection.
+		/// </summary>
+		public float PercentComplete
+		{
+			get
+			{
+				int settingsCount = m_CoreSettings.OriginatorSettings.Count;
+				return settingsCount == 0 ? 1.0f : (float) m_OriginatorCache.Count / settingsCount;
+			}
+		}
+
+		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="coreSettings"></param>
@@ -80,16 +92,18 @@ namespace ICD.Connect.Settings.Cores
 		private T LazyLoadOriginator<T>(int id)
 			where T : class, IOriginator
 		{
-			if (!m_OriginatorCache.ContainsKey(id))
+			IOriginator originator;
+			if (!m_OriginatorCache.TryGetValue(id, out originator))
 			{
-				m_OriginatorCache[id] = InstantiateOriginatorWithId<T>(id);
+				originator = InstantiateOriginatorWithId<T>(id);
+				m_OriginatorCache.Add(id, originator);
 
 				OriginatorLoadedCallback handler = OnOriginatorLoaded;
 				if (handler != null)
-					handler(m_OriginatorCache[id]);
+					handler(this, originator);
 			}
 
-			return (T)m_OriginatorCache[id];
+			return (T) originator;
 		}
 
 		/// <summary>

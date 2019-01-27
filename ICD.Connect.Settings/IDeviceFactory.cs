@@ -7,7 +7,7 @@ using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings
 {
-	public delegate void OriginatorLoadedCallback(IOriginator originator);
+	public delegate void OriginatorLoadedCallback(IDeviceFactory factory, IOriginator originator);
 
 	/// <summary>
 	/// IDeviceFactory represents a factory that instantiates dependencies.
@@ -22,6 +22,11 @@ namespace ICD.Connect.Settings
 		/// Raised each time an originator is initially loaded
 		/// </summary>
 		event OriginatorLoadedCallback OnOriginatorLoaded;
+
+		/// <summary>
+		/// Gets the progress of the device factory as it loads through the underlying settings collection.
+		/// </summary>
+		float PercentComplete { get; }
 
 		/// <summary>
 		/// Returns true if the factory contains any settings that will resolve to the given originator type.
