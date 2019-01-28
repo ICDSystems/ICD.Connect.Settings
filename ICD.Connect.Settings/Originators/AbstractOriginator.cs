@@ -135,7 +135,7 @@ namespace ICD.Connect.Settings.Originators
 		public override string ToString()
 		{
 			ReprBuilder builder = new ReprBuilder(this);
-			BuildStringRepresentationProperties(builder.AppendProperty);
+			BuildStringRepresentationProperties((n, v) => builder.AppendProperty(n, v));
 			return builder.ToString();
 		}
 
