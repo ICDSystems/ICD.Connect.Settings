@@ -71,8 +71,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\SettingsProperties\ControlPortParentSettingsPropertyAttribute.cs" />
+    <Compile Include="Cores\ICoreSettings.cs" />
+    <Compile Include="IDeviceFactory.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x0_To_3x1.cs" />
     <Compile Include="Originators\AbstractOriginatorCollection.cs" />
+    <Compile Include="Originators\IOriginator.cs" />
     <Compile Include="Originators\OriginatorConsole.cs" />
     <Compile Include="Originators\Simpl\ISimplOriginator.cs" />
     <Compile Include="Migration\Migrators\AbstractConfigVersionMigrator.cs" />
@@ -88,7 +91,6 @@
     <Compile Include="Attributes\SettingsProperties\OriginatorIdSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\IpAddressSettingsPropertyAttribute.cs" />
-    <Compile Include="Comparers\OriginatorIdComparer.cs" />
     <Compile Include="Cores\AbstractCore.cs" />
     <Compile Include="Cores\AbstractCoreSettings.cs" />
     <Compile Include="Cores\Core.cs" />
@@ -124,6 +126,7 @@
     <Compile Include="Originators\Simpl\RequestShimResyncEventArgs.cs" />
     <Compile Include="Originators\Simpl\AbstractSimplOriginator.cs" />
     <Compile Include="Originators\Simpl\ISimplOriginatorSettings.cs" />
+    <Compile Include="Settings\ISettings.cs" />
     <Compile Include="SPlusShims\AbstractSPlusOriginatorShim.cs" />
     <Compile Include="SPlusShims\AbstractSPlusShim.cs" />
     <Compile Include="SPlusShims\EventArguments\SPlusBoolEventArgs.cs" />
