@@ -72,7 +72,6 @@
   <ItemGroup>
     <Compile Include="Attributes\SettingsProperties\ControlPortParentSettingsPropertyAttribute.cs" />
     <Compile Include="Cores\ICoreSettings.cs" />
-    <Compile Include="IDeviceFactory.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x0_To_3x1.cs" />
     <Compile Include="Originators\AbstractOriginatorCollection.cs" />
     <Compile Include="Originators\IOriginator.cs" />
@@ -117,8 +116,6 @@
     <Compile Include="Proxies\IProxySettings.cs" />
     <Compile Include="Cores\ICoreSettings.cs" />
     <Compile Include="IDeviceFactory.cs" />
-    <Compile Include="Originators\IOriginator.cs" />
-    <Compile Include="Settings\ISettings.cs" />
     <Compile Include="Proxies\ProxyOriginator.cs" />
     <Compile Include="Proxies\ProxyOriginatorSettings.cs" />
     <Compile Include="SettingsCollection.cs" />
