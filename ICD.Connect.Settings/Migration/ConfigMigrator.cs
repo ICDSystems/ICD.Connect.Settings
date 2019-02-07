@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Migration.Migrators;
 
 namespace ICD.Connect.Settings.Migration
@@ -20,6 +21,7 @@ namespace ICD.Connect.Settings.Migration
 
 			RegisterMigrator(new ConfigVersionMigrator_2x0_To_3x0());
 			RegisterMigrator(new ConfigVersionMigrator_3x0_To_3x1());
+			RegisterMigrator(new ConfigVersionMigrator_3x1_To_4x0());
 		}
 
 		/// <summary>
@@ -37,6 +39,8 @@ namespace ICD.Connect.Settings.Migration
 				xml = migrator.Migrate(xml);
 				version = migrator.To;
 			}
+
+			xml = XmlUtils.Format(xml);
 
 			resulting = version.Clone() as Version;
 			return xml;

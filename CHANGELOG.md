@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+ - Added config migration for ConferencePoints
+
+### Changed
+ - Incremented config version from 3.1 to 4.0
+
 ## [8.0.0] - 2019-01-10
 ### Added
  - Added config migration for port configuration

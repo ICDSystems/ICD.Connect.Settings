@@ -19,11 +19,10 @@ namespace ICD.Connect.Settings
 		public const int SUBSYSTEM_DEVICES = 2;
 		public const int SUBSYSTEM_PANELS = 3;
 		public const int SUBSYSTEM_CONNECTIONS = 4;
-		public const int SUBSYSTEM_STATIC_ROUTES = 5;
 		public const int SUBSYSTEM_SOURCES = 6;
 		public const int SUBSYSTEM_DESTINATIONS = 7;
 		public const int SUBSYSTEM_PARTITIONS = 8;
-		public const int SUBSYSTEM_VOLUME_POINTS = 9;
+		public const int SUBSYSTEM_POINTS = 9;
 
 		private const int MULTIPLIER_ROOM = 1000;
 		private const int MULTIPLIER_SUBSYSTEM = 100 * 1000;
