@@ -40,7 +40,10 @@ namespace ICD.Connect.Settings.Migration.Migrators
 			XElement conferencePoints = new XElement("ConferencePoints");
 			root.Add(conferencePoints);
 
-			foreach (XElement room in root.Elements("Rooms"))
+			XElement rooms = root.Element("Rooms");
+			IEnumerable<XElement> roomElements = rooms == null ? Enumerable.Empty<XElement>() : rooms.Elements();
+
+			foreach (XElement room in roomElements)
 				MigrateRoom(root, room, conferencePoints);
 
 			return document.ToString();
@@ -75,15 +78,6 @@ namespace ICD.Connect.Settings.Migration.Migrators
 				dialingPlan = new XElement("DialingPlan");
 				room.Add(dialingPlan);
 			}
-
-			// Migrate the dialing plan
-			XElement config = dialingPlan.Element("Config");
-			string configPath = config == null ? null : config.Value;
-
-			dialingPlan.RemoveNodes();
-
-			if (configPath != null)
-				dialingPlan.SetValue(configPath);
 
 			// Create the conference points
             XElement audioEndpoint = dialingPlan.Element("AudioEndpoint");
@@ -153,6 +147,14 @@ namespace ICD.Connect.Settings.Migration.Migrators
 				XElement idElement = new XElement("ConferencePoint", id);
 				conferencePointIds.Add(idElement);
 			}
+
+			// Migrate the dialing plan
+			XElement config = dialingPlan.Element("Config");
+			string configPath = config == null ? null : config.Value;
+
+			dialingPlan.RemoveNodes();
+			if (configPath != null)
+				dialingPlan.SetValue(configPath);
 		}
 
 		private void AddConferencePoint(XElement root, XElement conferencePoints, int roomId, int deviceId, int controlId,
