@@ -66,7 +66,7 @@ namespace ICD.Connect.Settings.Migration.Migrators
 				match =>
 				{
 					// Make a new id and keep track of the volume point contents
-					int newId = IdUtils.GetNewId(ids, IdUtils.SUBSYSTEM_VOLUME_POINTS, 0);
+					int newId = IdUtils.GetNewId(ids, IdUtils.SUBSYSTEM_POINTS, 0);
 
 					ids.Add(newId);
 					oldVolumePoints.Add(newId, match.Groups["elements"].Value);

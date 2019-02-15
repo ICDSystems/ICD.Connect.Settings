@@ -7,7 +7,7 @@ namespace ICD.Connect.Settings.Header
 {
 	public sealed class ConfigurationHeader
 	{
-		private static readonly Version s_CurrentConfigVersion = new Version("3.1");
+		private static readonly Version s_CurrentConfigVersion = new Version("4.0");
 
 		private const string CONFIG_VERSION_ELEMENT = "ConfigVersion";
 		private const string GENERATED_ON_ELEMENT = "GeneratedOn";
