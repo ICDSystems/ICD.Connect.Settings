@@ -10,7 +10,6 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Core;
 using ICD.Connect.Telemetry;
-using ICD.Connect.Telemetry.Nodes;
 
 namespace ICD.Connect.Settings
 {
