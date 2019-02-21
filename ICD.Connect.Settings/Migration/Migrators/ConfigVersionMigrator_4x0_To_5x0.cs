@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if SIMPLSHARP
 using Crestron.SimplSharp.CrestronXmlLinq;
+#else
+using System.Xml.Linq;
+#endif
 
 namespace ICD.Connect.Settings.Migration.Migrators
 {
@@ -156,12 +160,13 @@ namespace ICD.Connect.Settings.Migration.Migrators
 
 			// Add cells to partitions
 
-			throw new NotImplementedException();
+			// TODO
+			return xml;
 		}
 
-		private IEnumerable<int> GetRoomIds(XElement rooms)
+		private static IEnumerable<int> GetRoomIds(XElement rooms)
 		{
-			throw new NotImplementedException();
+			return rooms.Elements("Room").Select(room => int.Parse(room.Attribute("id").Value));
 		}
 	}
 }
