@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.3.1] - 2019-03-13
+### Changed
+ - Fixed version comparison issue that was causing unwanted migrations
+
 ## [7.3.0] - 2019-01-02
 ### Added
  - Added migration features for automatically updating older configs
