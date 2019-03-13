@@ -5,6 +5,7 @@ using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Settings.Comparers;
 using ICD.Connect.Settings.Core;
 using ICD.Connect.Settings.Header;
 using ICD.Connect.Settings.Migration;
@@ -195,11 +196,11 @@ namespace ICD.Connect.Settings
 
 			ConfigurationHeader header = settings.GetHeader(configXml);
 
-			if (header.ConfigVersion.Equals(new Version(0, 0)))
+			if (UndefinedVersionEqualityComparer.Instance.Equals(header.ConfigVersion, new Version(0, 0)))
 			{
 				Logger.AddEntry(eSeverity.Warning, "Unable to determine configuration version, assuming latest");
 			}
-			else if (header.ConfigVersion < ConfigurationHeader.CurrentConfigVersion)
+			else if (UndefinedVersionComparer.Instance.Compare(header.ConfigVersion, ConfigurationHeader.CurrentConfigVersion) < 0)
 			{
 				Logger.AddEntry(eSeverity.Warning, "Configuration was generated for an older version (Config={0}, Current={1})",
 				                header.ConfigVersion, ConfigurationHeader.CurrentConfigVersion);
