@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.1.0] - 2019-03-13
 ### Added
  - Added config migration for ConferencePoints
 
