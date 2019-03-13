@@ -72,6 +72,8 @@
   <ItemGroup>
     <Compile Include="AbstractOriginatorCollection.cs" />
     <Compile Include="Attributes\SettingsProperties\ControlPortParentSettingsPropertyAttribute.cs" />
+    <Compile Include="Comparers\UndefinedVersionComparer.cs" />
+    <Compile Include="Comparers\UndefinedVersionEqualityComparer.cs" />
     <Compile Include="Migration\AbstractConfigVersionMigrator.cs" />
     <Compile Include="Migration\ConfigMigrator.cs" />
     <Compile Include="Migration\ConfigVersionMigrator_2x0_To_3x0.cs" />
