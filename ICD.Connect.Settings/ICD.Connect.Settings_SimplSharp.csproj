@@ -81,6 +81,8 @@
     <Compile Include="Originators\OriginatorConsole.cs" />
     <Compile Include="Originators\Simpl\ISimplOriginator.cs" />
     <Compile Include="Migration\Migrators\AbstractConfigVersionMigrator.cs" />
+    <Compile Include="Comparers\UndefinedVersionComparer.cs" />
+    <Compile Include="Comparers\UndefinedVersionEqualityComparer.cs" />
     <Compile Include="Migration\ConfigMigrator.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_2x0_To_3x0.cs" />
     <Compile Include="Migration\Migrators\IConfigVersionMigrator.cs" />
