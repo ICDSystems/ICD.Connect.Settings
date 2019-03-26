@@ -75,7 +75,8 @@ namespace ICD.Connect.Settings.Originators
 		/// Clears and sets the children.
 		/// </summary>
 		/// <returns></returns>
-		public void SetChildren(IEnumerable<TChild> children)
+		public void SetChildren<T>(IEnumerable<T> children)
+			where T : TChild
 		{
 			if (children == null)
 				throw new ArgumentNullException("children");
@@ -98,7 +99,8 @@ namespace ICD.Connect.Settings.Originators
 		/// Removes the given children from the collection.
 		/// </summary>
 		/// <param name="children"></param>
-		public void RemoveChildren(IEnumerable<TChild> children)
+		public void RemoveChildren<T>(IEnumerable<T> children)
+			where T : TChild
 		{
 			if (children == null)
 				throw new ArgumentNullException("children");
@@ -109,7 +111,7 @@ namespace ICD.Connect.Settings.Originators
 
 			try
 			{
-				foreach (TChild child in children)
+				foreach (T child in children)
 				{
 					if (child == null)
 						throw new InvalidOperationException("Child is null");
@@ -162,7 +164,8 @@ namespace ICD.Connect.Settings.Originators
 		/// Adds the given children to the collection.
 		/// </summary>
 		/// <param name="children"></param>
-		public void AddChildren(IEnumerable<TChild> children)
+		public void AddChildren<T>(IEnumerable<T> children)
+			where T : TChild
 		{
 			if (children == null)
 				throw new ArgumentNullException("children");
@@ -173,7 +176,7 @@ namespace ICD.Connect.Settings.Originators
 
 			try
 			{
-				foreach (TChild child in children)
+				foreach (T child in children)
 				{
 					if (child == null)
 						throw new InvalidOperationException("child");
