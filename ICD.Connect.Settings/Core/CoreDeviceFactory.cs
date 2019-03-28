@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings.Core
@@ -17,12 +18,18 @@ namespace ICD.Connect.Settings.Core
 		private readonly ICoreSettings m_CoreSettings;
 
 		/// <summary>
+		/// Keep track of originators instantiated as dependencies so we can catch cyclic dependencies.
+		/// </summary>
+		private readonly Stack<int> m_Dependencies; 
+
+		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="coreSettings"></param>
 		public CoreDeviceFactory(ICoreSettings coreSettings)
 		{
 			m_OriginatorCache = new Dictionary<int, IOriginator>();
+			m_Dependencies = new Stack<int>();
 			m_CoreSettings = coreSettings;
 		}
 
@@ -100,17 +107,62 @@ namespace ICD.Connect.Settings.Core
 		private T InstantiateOriginatorWithId<T>(int id)
 			where T : IOriginator
 		{
+			if (m_OriginatorCache.ContainsKey(id))
+				throw new InvalidOperationException(string.Format("An originator with id {0} has already been instantiated", id));
+
 			if (!m_CoreSettings.OriginatorSettings.ContainsId(id))
-				throw new KeyNotFoundException(string.Format("No {0} settings with id {1}", typeof(T).Name, id));
+				throw new KeyNotFoundException(string.Format("No settings with id {0}", id));
 
 			ISettings settings = m_CoreSettings.OriginatorSettings.GetById(id);
-			if (!settings.OriginatorType.IsAssignableTo(typeof(T)))
-			{
+
+			Type originatorType = settings.OriginatorType;
+			if (!originatorType.IsAssignableTo(typeof(T)))
 				throw new InvalidOperationException(string.Format("{0} will not yield an originator of type {1}",
 				                                                  settings.GetType().Name, typeof(T).Name));
+
+			T output;
+
+			PushDependency(id);
+
+			try
+			{
+				// Instantiate the originator
+				output = (T)ReflectionUtils.CreateInstance(originatorType);
+
+				// This instance came from settings, so we want to store it back to settings.
+				output.Serialize = true;
+				output.ApplySettings(settings, this);
+			}
+			finally
+			{
+				PopDependency(id);
 			}
 
-			return (T)settings.ToOriginator(this);
+			return output;
+		}
+
+		/// <summary>
+		/// Checks for cyclic dependencies.
+		/// </summary>
+		/// <param name="id"></param>
+		private void PushDependency(int id)
+		{
+			if (m_Dependencies.Contains(id))
+				throw new InvalidOperationException("Cyclic dependency detected");
+
+			m_Dependencies.Push(id);
+		}
+
+		/// <summary>
+		/// Pops the current dependency.
+		/// </summary>
+		/// <param name="id"></param>
+		private void PopDependency(int id)
+		{
+			if (m_Dependencies.Peek() != id)
+				throw new InvalidOperationException("Unexpected dependency state");
+
+			m_Dependencies.Pop();
 		}
 
 		#endregion
