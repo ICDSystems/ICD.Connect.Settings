@@ -288,7 +288,9 @@ namespace ICD.Connect.Settings
 
 			ClearSettingsFinal();
 
-			Id = 0;
+			// Don't clear ID - Causes lookup problems
+			//Id = 0;
+
 			Name = null;
 			CombineName = null;
 			Description = null;
