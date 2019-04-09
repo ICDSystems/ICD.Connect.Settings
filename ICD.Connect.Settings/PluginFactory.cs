@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Settings.Attributes;
+#if SIMPLSHARP
 using Crestron.SimplSharp.Reflection;
 #else
 using System.Reflection;
@@ -11,7 +12,6 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Settings
 {
@@ -205,36 +205,88 @@ namespace ICD.Connect.Settings
 			IEnumerable<Assembly> assemblies = LibraryUtils.GetPluginAssemblies();
 
 			foreach (Assembly assembly in assemblies)
+				CacheAssembly(assembly);
+
+			foreach (string factoryName in s_FactoryNameTypeMap.Keys.Order())
+				Logger.AddEntry(eSeverity.Informational, "Loaded type {0}", factoryName);
+		}
+
+		private static void CacheAssembly(Assembly assembly)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+
+			Type[] types;
+
+			try
 			{
-				try
+				types = assembly.GetTypes()
+#if SIMPLSHARP
+				                .Select(t => (Type)t)
+#endif
+				                .Where(t => t.IsClass && !t.IsAbstract && t.IsAssignableTo<ISettings>())
+				                .ToArray();
+			}
+#if STANDARD
+			catch (ReflectionTypeLoadException e)
+			{
+				foreach (Exception inner in e.LoaderExceptions)
 				{
-					if (AttributeUtils.CacheAssembly(assembly))
-						Logger.AddEntry(eSeverity.Informational, "Loaded plugin {0}", assembly.GetName().Name);
-				}
-				catch (Exception e)
-				{
-					Logger.AddEntry(eSeverity.Error, e, "{0} failed to load plugin {1}", typeof(PluginFactory).Name,
+					if (inner is System.IO.FileNotFoundException)
+					{
+						Logger.AddEntry(eSeverity.Error,
+						                "{0} failed to cache assembly {1} - Could not find one or more dependencies by path",
+						                typeof(AttributeUtils).Name, assembly.GetName().Name);
+						continue;
+					}
+
+					Logger.AddEntry(eSeverity.Error, inner, "{0} failed to cache assembly {1}", typeof(AttributeUtils).Name,
 					                assembly.GetName().Name);
 				}
+
+				return;
+			}
+#endif
+			catch (TypeLoadException e)
+			{
+#if SIMPLSHARP
+				Logger.AddEntry(eSeverity.Error, e, "{0} failed to cache assembly {1}", typeof(PluginFactory).Name,
+								assembly.GetName().Name);
+#else
+				Logger.AddEntry(eSeverity.Error, e, "{0} failed to cache assembly {1} - could not load type {2}",
+								typeof(AttributeUtils).Name, assembly.GetName().Name, e.TypeName);
+#endif
+				return;
 			}
 
-			foreach (KrangSettingsAttribute attribute in
-					AttributeUtils.GetClassAttributes<KrangSettingsAttribute>().OrderBy(a => a.FactoryName))
+			foreach (Type type in types)
+				CacheType(type);
+
+			Logger.AddEntry(eSeverity.Informational, "Loaded plugin {0}", assembly.GetName().Name);
+		}
+
+		/// <summary>
+		/// Pre-emptively caches the given type for lookup.
+		/// </summary>
+		/// <param name="type"></param>
+		private static void CacheType(Type type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+
+			try
 			{
-				Logger.AddEntry(eSeverity.Informational, "Loaded type {0}", attribute.FactoryName);
-
-				string name = attribute.FactoryName;
-				Type type = AttributeUtils.GetClass(attribute);
-
-				Type existingType;
-				if (s_FactoryNameTypeMap.TryGetValue(name, out existingType))
-				{
-					Logger.AddEntry(eSeverity.Error, "Failed to cache type {0} - Shares duplicate factory name {1} with type {2}",
-					                type.AssemblyQualifiedName, StringUtils.ToRepresentation(name), existingType.AssemblyQualifiedName);
-					continue;
-				}
-
-				s_FactoryNameTypeMap.Add(name, type);
+				KrangSettingsAttribute attribute = AttributeUtils.GetClassAttribute<KrangSettingsAttribute>(type, false);
+				if (attribute != null)
+					s_FactoryNameTypeMap.Add(attribute.FactoryName, type);
+			}
+			// GetMethods for Open Generic Types is not supported.
+			catch (NotSupportedException)
+			{
+			}
+			// Not sure why this happens :/
+			catch (InvalidProgramException)
+			{
 			}
 		}
 
