@@ -142,12 +142,36 @@ namespace ICD.Connect.Settings.Migration.Migrators
 								? new IcdUriBuilder()
 								: new IcdUriBuilder(node.Value);
 
-						uriElement.Add(new XElement("Scheme") {Value = uriBuilder.Scheme});
-						uriElement.Add(new XElement("Host") {Value = uriBuilder.Host});
-						uriElement.Add(new XElement("Port") {Value = uriBuilder.Port.ToString()});
-						uriElement.Add(new XElement("Path") {Value = uriBuilder.Path});
-						uriElement.Add(new XElement("Query") {Value = uriBuilder.Query});
-						uriElement.Add(new XElement("Fragment") {Value = uriBuilder.Fragment});
+						XElement scheme = new XElement("Scheme");
+						if (uriBuilder.Scheme != null)
+							scheme.Value = uriBuilder.Scheme;
+
+						XElement host = new XElement("Host");
+						if (uriBuilder.Host != null)
+							host.Value = uriBuilder.Host;
+
+						XElement port = new XElement("Port");
+						if (uriBuilder.Port != 0)
+							port.Value = uriBuilder.Port.ToString();
+
+						XElement path = new XElement("Path");
+						if (uriBuilder.Path != null)
+							path.Value = uriBuilder.Path;
+
+						XElement query = new XElement("Query");
+						if (uriBuilder.Query != null)
+							query.Value = uriBuilder.Query;
+
+						XElement fragment = new XElement("Fragment");
+						if (uriBuilder.Fragment != null)
+							fragment.Value = uriBuilder.Fragment;
+
+						uriElement.Add(scheme);
+						uriElement.Add(host);
+						uriElement.Add(port);
+						uriElement.Add(path);
+						uriElement.Add(query);
+						uriElement.Add(fragment);
 
 						break;
 
