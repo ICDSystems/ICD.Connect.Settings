@@ -137,7 +137,10 @@ namespace ICD.Connect.Settings.Migration.Migrators
 						break;
 
 					case "Address":
-						IcdUriBuilder uriBuilder = new IcdUriBuilder(node.Value);
+						IcdUriBuilder uriBuilder =
+							string.IsNullOrEmpty(node.Value)
+								? new IcdUriBuilder()
+								: new IcdUriBuilder(node.Value);
 
 						uriElement.Add(new XElement("Scheme") {Value = uriBuilder.Scheme});
 						uriElement.Add(new XElement("Host") {Value = uriBuilder.Host});
