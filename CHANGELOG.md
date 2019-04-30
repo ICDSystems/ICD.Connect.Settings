@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
  - Slightly faster plugin caching
+ - Fixed bug where empty/null URLs would break migration
+ - Clarifying migration exceptions
 
 ## [8.1.0] - 2019-03-13
 ### Added
