@@ -139,7 +139,7 @@ namespace ICD.Connect.Settings.Migration.Migrators
 					case "Address":
 						IcdUriBuilder uriBuilder =
 							string.IsNullOrEmpty(node.Value)
-								? new IcdUriBuilder()
+								? new IcdUriBuilder { Host = null }
 								: new IcdUriBuilder(node.Value);
 
 						XElement scheme = new XElement("Scheme");
