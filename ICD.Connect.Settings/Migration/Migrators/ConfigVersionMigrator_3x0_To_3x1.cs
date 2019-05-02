@@ -139,7 +139,7 @@ namespace ICD.Connect.Settings.Migration.Migrators
 					case "Address":
 						IcdUriBuilder uriBuilder =
 							string.IsNullOrEmpty(node.Value)
-								? new IcdUriBuilder { Host = null }
+								? new IcdUriBuilder { Host = null, Scheme = null, Port = 0 }
 								: new IcdUriBuilder(node.Value);
 
 						XElement scheme = new XElement("Scheme");
@@ -155,7 +155,7 @@ namespace ICD.Connect.Settings.Migration.Migrators
 							port.Value = uriBuilder.Port.ToString();
 
 						XElement path = new XElement("Path");
-						if (uriBuilder.Path != null)
+						if (uriBuilder.Path != null && uriBuilder.Path != "/")
 							path.Value = uriBuilder.Path;
 
 						XElement query = new XElement("Query");

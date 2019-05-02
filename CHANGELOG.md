@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Fixed migration issues with URI defaults (host, scheme, port and path)
+
 ## [8.1.1] - 2019-04-30
 ### Changed
  - Slightly faster plugin caching
