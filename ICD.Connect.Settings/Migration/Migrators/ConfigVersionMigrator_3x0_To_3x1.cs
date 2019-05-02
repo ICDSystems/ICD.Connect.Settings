@@ -108,7 +108,7 @@ namespace ICD.Connect.Settings.Migration.Migrators
 				<Password>xhTg3CUAv5Y2</Password>
 				<Host>10.58.88.215</Host>
 				<Port>4001</Port>
-				<Path>/</Path>
+				<Path />
 				<Query />
 				<Fragment />
 			  </Uri>
@@ -138,16 +138,16 @@ namespace ICD.Connect.Settings.Migration.Migrators
 
 					case "Address":
 						IcdUriBuilder uriBuilder =
-							string.IsNullOrEmpty(node.Value)
-								? new IcdUriBuilder { Host = null, Scheme = null, Port = 0 }
+							StringUtils.IsNullOrWhitespace(node.Value)
+								? new IcdUriBuilder {Host = null, Scheme = null, Port = 0}
 								: new IcdUriBuilder(node.Value);
 
 						XElement scheme = new XElement("Scheme");
-						if (uriBuilder.Scheme != null)
+						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Scheme))
 							scheme.Value = uriBuilder.Scheme;
 
 						XElement host = new XElement("Host");
-						if (uriBuilder.Host != null)
+						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Host))
 							host.Value = uriBuilder.Host;
 
 						XElement port = new XElement("Port");
@@ -155,15 +155,15 @@ namespace ICD.Connect.Settings.Migration.Migrators
 							port.Value = uriBuilder.Port.ToString();
 
 						XElement path = new XElement("Path");
-						if (uriBuilder.Path != null && uriBuilder.Path != "/")
+						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Path) && uriBuilder.Path != "/")
 							path.Value = uriBuilder.Path;
 
 						XElement query = new XElement("Query");
-						if (uriBuilder.Query != null)
+						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Query))
 							query.Value = uriBuilder.Query;
 
 						XElement fragment = new XElement("Fragment");
-						if (uriBuilder.Fragment != null)
+						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Fragment))
 							fragment.Value = uriBuilder.Fragment;
 
 						uriElement.Add(scheme);
