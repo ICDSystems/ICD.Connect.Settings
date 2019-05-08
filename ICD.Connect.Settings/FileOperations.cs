@@ -215,7 +215,7 @@ namespace ICD.Connect.Settings
 				}
 				catch (Exception e)
 				{
-					Logger.AddEntry(eSeverity.Error, "Failed to migrate configuration - {0}", e.Message);
+					Logger.AddEntry(eSeverity.Error, e, "Failed to migrate configuration - {0}", e.Message);
 				}
 			}
 

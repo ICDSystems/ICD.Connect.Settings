@@ -62,14 +62,18 @@ namespace ICD.Connect.Settings.Migration.Migrators
 			Dictionary<int, string> oldVolumePoints = new Dictionary<int, string>();
 
 			// Replace the existing old-style volume points
+			string xmlCopy = xml;
 			Func<Match, string> replacement =
 				match =>
 				{
 					// Make a new id and keep track of the volume point contents
 					int newId = IdUtils.GetNewId(ids, IdUtils.SUBSYSTEM_POINTS, 0);
 
+					string elements = match.Groups["elements"].Value;
+					elements = FixDisplayVolumeControlId(xmlCopy, elements);
+
 					ids.Add(newId);
-					oldVolumePoints.Add(newId, match.Groups["elements"].Value);
+					oldVolumePoints.Add(newId, elements);
 
 					return newId.ToString();
 				};
@@ -98,6 +102,54 @@ namespace ICD.Connect.Settings.Migration.Migrators
 			}
 
 			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Display volume control ids changed from 1 to 2.
+		/// </summary>
+		/// <param name="configXml"></param>
+		/// <param name="volumePointElements"></param>
+		/// <returns></returns>
+		private static string FixDisplayVolumeControlId(string configXml, string volumePointElements)
+		{
+			const string controlIdRegex = @"<Control>(?'id'\d+)<\/Control>";
+			const string deviceIdRegex = @"<Device>(?'id'\d+)<\/Device>";
+			const string deviceAttributesRegex = @"<Device\s+id=""{0}""\s+type=""(?'type'[^""]+)"">";
+
+			// Get the control id
+			Match controlMatch;
+			if (!RegexUtils.Matches(volumePointElements, controlIdRegex, out controlMatch))
+				return volumePointElements;
+
+			int controlId = int.Parse(controlMatch.Groups["id"].Value);
+			if (controlId != 1)
+				return volumePointElements;
+
+			// Get the device id
+			Match deviceMatch;
+			if (!RegexUtils.Matches(volumePointElements, deviceIdRegex, out deviceMatch))
+				return volumePointElements;
+
+			int deviceId = int.Parse(deviceMatch.Groups["id"].Value);
+
+			// Is the device a display?
+			string regex = string.Format(deviceAttributesRegex, deviceId);
+			Match deviceTypeMatch;
+			if (!RegexUtils.Matches(configXml, regex, out deviceTypeMatch))
+				return volumePointElements;
+
+			string deviceType = deviceTypeMatch.Groups["type"].Value;
+			if (!DeviceTypeIsDisplay(deviceType))
+				return volumePointElements;
+
+			// Replace the control id
+			return RegexUtils.ReplaceGroup(volumePointElements, controlIdRegex, "id", "2");
+		}
+
+		private static bool DeviceTypeIsDisplay(string deviceType)
+		{
+			// Lucky, this actually covers everything!
+			return deviceType.Contains("Display");
 		}
 
 		/// <summary>

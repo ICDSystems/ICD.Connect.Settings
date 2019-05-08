@@ -5,8 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [8.1.2] - 2019-05-08
+### Changed
+ - Fixed migration issues with URI defaults (host, scheme, port and path)
+ - Fixed migration issue where Crestron was serializing newlines into empty elements
+
+## [8.1.1] - 2019-04-30
 ### Changed
  - Slightly faster plugin caching
+ - Fixed bug where empty/null URLs would break migration
+ - Clarifying migration exceptions
 
 ## [8.1.0] - 2019-03-13
 ### Added
@@ -23,6 +32,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
  - Moving originators and settings classes into subdirectories
  - Incremented config version from 3.0 to 3.1
+
+## [7.3.2] - 2019-04-03
+### Changed
+ - Fixed config migration issue where display volume control id changed between v2 and v3
 
 ## [7.3.1] - 2019-03-13
 ### Changed

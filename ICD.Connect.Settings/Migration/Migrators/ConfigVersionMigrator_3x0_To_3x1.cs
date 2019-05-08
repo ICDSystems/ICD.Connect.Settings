@@ -108,7 +108,7 @@ namespace ICD.Connect.Settings.Migration.Migrators
 				<Password>xhTg3CUAv5Y2</Password>
 				<Host>10.58.88.215</Host>
 				<Port>4001</Port>
-				<Path>/</Path>
+				<Path />
 				<Query />
 				<Fragment />
 			  </Uri>
@@ -137,14 +137,41 @@ namespace ICD.Connect.Settings.Migration.Migrators
 						break;
 
 					case "Address":
-						IcdUriBuilder uriBuilder = new IcdUriBuilder(node.Value);
+						IcdUriBuilder uriBuilder =
+							StringUtils.IsNullOrWhitespace(node.Value)
+								? new IcdUriBuilder {Host = null, Scheme = null, Port = 0}
+								: new IcdUriBuilder(node.Value);
 
-						uriElement.Add(new XElement("Scheme") {Value = uriBuilder.Scheme});
-						uriElement.Add(new XElement("Host") {Value = uriBuilder.Host});
-						uriElement.Add(new XElement("Port") {Value = uriBuilder.Port.ToString()});
-						uriElement.Add(new XElement("Path") {Value = uriBuilder.Path});
-						uriElement.Add(new XElement("Query") {Value = uriBuilder.Query});
-						uriElement.Add(new XElement("Fragment") {Value = uriBuilder.Fragment});
+						XElement scheme = new XElement("Scheme");
+						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Scheme))
+							scheme.Value = uriBuilder.Scheme;
+
+						XElement host = new XElement("Host");
+						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Host))
+							host.Value = uriBuilder.Host;
+
+						XElement port = new XElement("Port");
+						if (uriBuilder.Port != 0)
+							port.Value = uriBuilder.Port.ToString();
+
+						XElement path = new XElement("Path");
+						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Path) && uriBuilder.Path != "/")
+							path.Value = uriBuilder.Path;
+
+						XElement query = new XElement("Query");
+						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Query))
+							query.Value = uriBuilder.Query;
+
+						XElement fragment = new XElement("Fragment");
+						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Fragment))
+							fragment.Value = uriBuilder.Fragment;
+
+						uriElement.Add(scheme);
+						uriElement.Add(host);
+						uriElement.Add(port);
+						uriElement.Add(path);
+						uriElement.Add(query);
+						uriElement.Add(fragment);
 
 						break;
 
