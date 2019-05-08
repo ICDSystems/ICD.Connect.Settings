@@ -22,6 +22,7 @@ namespace ICD.Connect.Settings.Migration
 			RegisterMigrator(new ConfigVersionMigrator_2x0_To_3x0());
 			RegisterMigrator(new ConfigVersionMigrator_3x0_To_3x1());
 			RegisterMigrator(new ConfigVersionMigrator_3x1_To_4x0());
+			RegisterMigrator(new ConfigVersionMigrator_4x0_To_5x0());
 		}
 
 		/// <summary>

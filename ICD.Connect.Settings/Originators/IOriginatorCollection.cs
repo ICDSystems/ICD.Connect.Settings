@@ -33,13 +33,13 @@ namespace ICD.Connect.Settings.Originators
 		/// Clears and sets the children.
 		/// </summary>
 		/// <returns></returns>
-		void SetChildren(IEnumerable<TChild> children);
+		void SetChildren<T>(IEnumerable<T> children) where T : TChild;
 
 		/// <summary>
 		/// Adds the given children to the collection.
 		/// </summary>
 		/// <param name="children"></param>
-		void AddChildren(IEnumerable<TChild> children);
+		void AddChildren<T>(IEnumerable<T> children) where T : TChild;
 
 		/// <summary>
 		/// Adds the child to the core.
@@ -52,7 +52,7 @@ namespace ICD.Connect.Settings.Originators
 		/// Removes the given children from the collection.
 		/// </summary>
 		/// <param name="children"></param>
-		void RemoveChildren(IEnumerable<TChild> children);
+		void RemoveChildren<T>(IEnumerable<T> children) where T : TChild;
 
 		/// <summary>
 		/// Removes the child from the core.
