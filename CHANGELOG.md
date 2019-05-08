@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.1.2] - 2019-05-08
 ### Changed
  - Fixed migration issues with URI defaults (host, scheme, port and path)
  - Fixed migration issue where Crestron was serializing newlines into empty elements
