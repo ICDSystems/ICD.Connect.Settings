@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using ICD.Common.Utils.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronXmlLinq;
 #else
@@ -188,9 +189,9 @@ namespace ICD.Connect.Settings.Migration
 			{
 				XAttribute attribute = element.Attribute("id");
 				if (attribute == null)
-					throw new FormatException("No id attribute found on destnation element. Cannot migrate an invalid configuration");
+					throw new FormatException("No id attribute found on destination element. Cannot migrate an invalid configuration");
 
-				if (string.IsNullOrWhiteSpace(attribute.Value))
+				if (string.IsNullOrEmpty(attribute.Value))
 					throw new FormatException("Invalid id attribute on destination element. Cannot migrate an invalid configuration");
 
 				removedIds.Add(attribute.Value);
