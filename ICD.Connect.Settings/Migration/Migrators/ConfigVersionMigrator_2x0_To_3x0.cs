@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+#if SIMPLSHARP
+using Crestron.SimplSharp.CrestronXmlLinq;
+#else
+using System.Xml.Linq;
+#endif
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 
@@ -14,9 +20,6 @@ namespace ICD.Connect.Settings.Migration.Migrators
 	public sealed class ConfigVersionMigrator_2x0_To_3x0 : AbstractConfigVersionMigrator
 	{
 		private const string ID_REGEX = @"id=\""(?'id'\d+)\""";
-
-		private const string ADDRESS_REGEX =
-			@"<(Source|Destination)(.*)(?'addressElement'<Address>(?'address'\d+)<\/Address>)(.*)<\/(Source|Destination)>";
 
 		private const string VOLUMEPOINT_REGEX = @"<VolumePoint>(?'elements'.*?)<\/VolumePoint>";
 
@@ -159,16 +162,188 @@ namespace ICD.Connect.Settings.Migration.Migrators
 		/// <returns></returns>
 		private static string MigrateSourcesDestinations(string xml)
 		{
-			Func<Match, string> replacement =
-				match =>
-				{
-					int address;
-					return StringUtils.TryParse(match.Groups["address"].Value, out address)
-						? string.Format("<Addresses><Address>{0}</Address></Addresses>", address)
-						: string.Empty;
-				};
+			XDocument document = XDocument.Parse(xml);
 
-			return RegexUtils.ReplaceGroup(xml, ADDRESS_REGEX, "addressElement", replacement, RegexOptions.Singleline);
+			XElement root = document.Root;
+			if (root == null)
+				throw new FormatException();
+
+			IEnumerable<XElement> destinationNodes = root.Elements("Routing")
+			                                             .SelectMany(r => r.Elements("Destinations"))
+			                                             .SelectMany(d => d.Elements("Destination"));
+
+			Dictionary<XElement, IcdHashSet<XElement>> destinationMatches = GetMatchingDestinations(destinationNodes);
+
+			foreach (KeyValuePair<XElement, IcdHashSet<XElement>> kvp in destinationMatches)
+			{
+				IcdHashSet<string> addresses = GetAddressesForDestinations(kvp.Value.Prepend(kvp.Key));
+
+				foreach (XElement destination in kvp.Value)
+					destination.Remove();
+
+				MigrateAddressToAddressesElement(kvp.Key);
+
+				AddAddressesToDestination(kvp.Key, addresses);
+			}
+
+			IEnumerable<XElement> removedElements = destinationMatches.Values.SelectMany(d => d);
+			IcdHashSet<string> removedIds = new IcdHashSet<string>();
+			foreach (XElement element in removedElements)
+			{
+				XAttribute attribute = element.Attribute("id");
+				if (attribute == null)
+					throw new FormatException("No id attribute found on destnation element. Cannot migrate an invalid configuration");
+
+				if (string.IsNullOrWhiteSpace(attribute.Value))
+					throw new FormatException("Invalid id attribute on destination element. Cannot migrate an invalid configuration");
+
+				removedIds.Add(attribute.Value);
+			}
+
+			RemoveDestinationsFromDevices(root, removedIds);
+
+			return document.ToString();
+		}
+
+		private static void AddAddressesToDestination(XElement element, IEnumerable<string> addresses)
+		{
+			XElement addressesElement = element.Elements("Addresses").FirstOrDefault();
+			if (addressesElement == null)
+				throw new InvalidOperationException();
+
+			foreach (string address in addresses)
+				addressesElement.Add(new XElement("Address", address));
+		}
+
+		private static void RemoveDestinationsFromDevices(XElement root, IcdHashSet<string> destinationIds)
+		{
+			IEnumerable<XElement> roomDestinations = root.Elements("Rooms")
+			                                             .SelectMany(r => r.Elements("Room"))
+			                                             .SelectMany(r => r.Elements("Destinations"))
+			                                             .SelectMany(r => r.Elements("Destination"));
+
+			foreach (XElement destination in roomDestinations)
+			{
+				if (destinationIds.Contains(destination.Value))
+					destination.Remove();
+			}
+		}
+
+		private static void MigrateAddressToAddressesElement(XElement element)
+		{
+			XElement addressElement = element.Elements("Address").FirstOrDefault();
+			if (addressElement != null)
+				addressElement.Remove();
+
+			XElement addressesElement = element.Elements("Addresses").FirstOrDefault();
+			if (addressesElement == null)
+			{
+				addressesElement = new XElement("Addresses");
+				element.Add(addressesElement);
+			}
+		}
+
+		private static IcdHashSet<string> GetAddressesForDestinations(IEnumerable<XElement> elements)
+		{
+			IcdHashSet<string> addresses = new IcdHashSet<string>();
+
+			foreach (XElement value in elements)
+				addresses.AddRange(GetAllAddressesForDestination(value));
+
+			return addresses;
+		}
+
+		private static IcdHashSet<string> GetAllAddressesForDestination(XElement dest)
+		{
+			IcdHashSet<string> addresses = new IcdHashSet<string>();
+			XElement addressElement = dest.Elements("Address").FirstOrDefault();
+			if (addressElement != null)
+				addresses.Add(addressElement.Value);
+
+			XElement addressesElement = dest.Elements("Addresses").FirstOrDefault();
+			if (addressesElement != null)
+			{
+				foreach (XElement childAddress in addressesElement.Elements("Address"))
+					addresses.Add(childAddress.Value);
+			}
+
+			return addresses;
+		}
+
+		private static Dictionary<XElement, IcdHashSet<XElement>> GetMatchingDestinations(
+			IEnumerable<XElement> destinationNodes)
+		{
+			Dictionary<XElement, IcdHashSet<XElement>> destinationMatches = new Dictionary<XElement, IcdHashSet<XElement>>();
+			IcdHashSet<XElement> processedDestinations = new IcdHashSet<XElement>();
+
+			foreach (XElement destination in destinationNodes)
+			{
+				if (processedDestinations.Contains(destination))
+					continue;
+
+				foreach (XElement potentialMatch in destinationMatches.Keys)
+				{
+					if (!CheckDestinationTypeMatch(destination, potentialMatch))
+						continue;
+
+					if (!CheckDestinationDeviceMatch(destination, potentialMatch))
+						continue;
+
+					if (!CheckDestinationControlMatch(destination, potentialMatch))
+						continue;
+
+					destinationMatches[potentialMatch].Add(destination);
+					processedDestinations.Add(destination);
+					break;
+				}
+
+				if (processedDestinations.Contains(destination))
+					continue;
+
+				destinationMatches.Add(destination, new IcdHashSet<XElement>());
+				processedDestinations.Add(destination);
+			}
+
+			return destinationMatches;
+		}
+
+		private static bool CheckDestinationTypeMatch(XElement destination, XElement potentialMatch)
+		{
+			XAttribute destinationTypeAttribute = destination.Attribute("type");
+			if (destinationTypeAttribute == null)
+				return false;
+
+			XAttribute potentialMatchTypeAttribute = potentialMatch.Attribute("type");
+			if (potentialMatchTypeAttribute == null)
+				return false;
+
+			return destinationTypeAttribute.Value == potentialMatchTypeAttribute.Value;
+		}
+
+		private static bool CheckDestinationDeviceMatch(XElement destination, XElement potentialMatch)
+		{
+			XElement destinationDeviceNode = destination.Elements("Device").FirstOrDefault();
+			if (destinationDeviceNode == null)
+				return false;
+
+			XElement potentialMatchDeviceNode = potentialMatch.Elements("Device").FirstOrDefault();
+			if (potentialMatchDeviceNode == null)
+				return false;
+
+			return destinationDeviceNode.Value == potentialMatchDeviceNode.Value;
+		}
+
+		private static bool CheckDestinationControlMatch(XElement destination, XElement potentialMatch)
+		{
+			XElement destinationControlNode = destination.Elements("Control").FirstOrDefault();
+			if (destinationControlNode == null)
+				return false;
+
+			XElement potentialMatchControlNode = potentialMatch.Elements("Control").FirstOrDefault();
+			if (potentialMatchControlNode == null)
+				return false;
+
+			return destinationControlNode.Value == potentialMatchControlNode.Value;
 		}
 	}
 }
