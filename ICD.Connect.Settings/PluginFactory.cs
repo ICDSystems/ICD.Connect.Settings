@@ -79,7 +79,7 @@ namespace ICD.Connect.Settings
 					string name = XmlUtils.ReadElementName(element);
 					string id = XmlUtils.HasAttribute(element, "id") ? XmlUtils.GetAttributeAsString(element, "id") : "NULL";
 
-					Logger.AddEntry(eSeverity.Error, "Skipping settings element {0} id {1} - {2}", name, id, e.Message);
+					Logger.AddEntry(eSeverity.Error, e, "Skipping settings element {0} id {1} - {2}", name, id, e.Message);
 					continue;
 				}
 
