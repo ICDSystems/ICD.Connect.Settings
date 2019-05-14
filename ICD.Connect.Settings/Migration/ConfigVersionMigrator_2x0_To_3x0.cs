@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using ICD.Common.Utils.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronXmlLinq;
 #else
@@ -17,9 +16,6 @@ namespace ICD.Connect.Settings.Migration
 	public sealed class ConfigVersionMigrator_2x0_To_3x0 : AbstractConfigVersionMigrator
 	{
 		private const string ID_REGEX = @"id=\""(?'id'\d+)\""";
-
-		private const string ADDRESS_REGEX =
-			@"<(Source|Destination)(.*)(?'addressElement'<Address>(?'address'\d+)<\/Address>)(.*)<\/(Source|Destination)>";
 
 		private const string VOLUMEPOINT_REGEX = @"<VolumePoint>(?'elements'.*?)<\/VolumePoint>";
 
@@ -154,7 +150,7 @@ namespace ICD.Connect.Settings.Migration
 			// Lucky, this actually covers everything!
 			return deviceType.Contains("Display");
 		}
-		
+
 		/// <summary>
 		/// Moves Source/Destination addresses into a child Addresses element.
 		/// </summary>
@@ -163,32 +159,23 @@ namespace ICD.Connect.Settings.Migration
 		private static string MigrateSourcesDestinations(string xml)
 		{
 			XDocument document = XDocument.Parse(xml);
+
 			XElement root = document.Root;
-			if(root == null)
+			if (root == null)
 				throw new FormatException();
 
-			IcdHashSet<XElement> routingNodes = root.Elements("Routing").ToIcdHashSet();
-			if (routingNodes == null || !routingNodes.Any())
-				return xml;
-
-			// add routing layer
-			IcdHashSet<XElement> destinationsNodes= routingNodes.SelectMany(r=> r.Elements("Destinations")).ToIcdHashSet();
-				
-			if (destinationsNodes == null || !destinationsNodes.Any())
-				return xml;
-
-			IcdHashSet<XElement> destinationNodes = destinationsNodes.SelectMany(d => d.Elements("Destination")).ToIcdHashSet();
+			IEnumerable<XElement> destinationNodes = root.Elements("Routing")
+			                                             .SelectMany(r => r.Elements("Destinations"))
+			                                             .SelectMany(d => d.Elements("Destination"));
 
 			Dictionary<XElement, IcdHashSet<XElement>> destinationMatches = GetMatchingDestinations(destinationNodes);
 
-			foreach (var kvp in destinationMatches)
+			foreach (KeyValuePair<XElement, IcdHashSet<XElement>> kvp in destinationMatches)
 			{
 				IcdHashSet<string> addresses = GetAddressesForDestinations(kvp.Value.Prepend(kvp.Key));
 
-				foreach (var destination in kvp.Value)
-				{
+				foreach (XElement destination in kvp.Value)
 					destination.Remove();
-				}
 
 				MigrateAddressToAddressesElement(kvp.Key);
 
@@ -197,10 +184,10 @@ namespace ICD.Connect.Settings.Migration
 
 			IEnumerable<XElement> removedElements = destinationMatches.Values.SelectMany(d => d);
 			IcdHashSet<string> removedIds = new IcdHashSet<string>();
-			foreach (var element in removedElements)
+			foreach (XElement element in removedElements)
 			{
-				var attribute = element.Attribute("id");
-				if(attribute == null)
+				XAttribute attribute = element.Attribute("id");
+				if (attribute == null)
 					throw new FormatException("No id attribute found on destnation element. Cannot migrate an invalid configuration");
 
 				if (string.IsNullOrWhiteSpace(attribute.Value))
@@ -216,50 +203,35 @@ namespace ICD.Connect.Settings.Migration
 
 		private static void AddAddressesToDestination(XElement element, IEnumerable<string> addresses)
 		{
-			var addressesElement = element.Elements("Addresses").FirstOrDefault();
-			if(addressesElement == null)
+			XElement addressesElement = element.Elements("Addresses").FirstOrDefault();
+			if (addressesElement == null)
 				throw new InvalidOperationException();
 
-			foreach (var address in addresses)
-			{
+			foreach (string address in addresses)
 				addressesElement.Add(new XElement("Address", address));
-			}
 		}
 
 		private static void RemoveDestinationsFromDevices(XElement root, IcdHashSet<string> destinationIds)
 		{
-			IcdHashSet<XElement> roomsNodes = root.Elements("Rooms").ToIcdHashSet();
-			if (roomsNodes == null || !roomsNodes.Any())
-				return;
+			IEnumerable<XElement> roomDestinations = root.Elements("Rooms")
+			                                             .SelectMany(r => r.Elements("Room"))
+			                                             .SelectMany(r => r.Elements("Destinations"))
+			                                             .SelectMany(r => r.Elements("Destination"));
 
-			IcdHashSet<XElement> roomNodes = roomsNodes.SelectMany(r => r.Elements("Room")).ToIcdHashSet();
-			if(roomNodes == null || !roomNodes.Any())
-				return;
-
-			IcdHashSet<XElement> destinationsNodes = roomNodes.SelectMany(r => r.Elements("Destinations")).ToIcdHashSet();
-			if (destinationsNodes == null || !roomNodes.Any())
-				return;
-
-			IcdHashSet<XElement> destinationNodes = destinationsNodes.SelectMany(r => r.Elements("Destination")).ToIcdHashSet();
-			if (destinationNodes == null || !destinationNodes.Any())
-				return;
-
-			foreach (var destination in destinationNodes)
+			foreach (XElement destination in roomDestinations)
 			{
 				if (destinationIds.Contains(destination.Value))
-				{
 					destination.Remove();
-				}
 			}
 		}
 
 		private static void MigrateAddressToAddressesElement(XElement element)
 		{
-			var addressElement = element.Elements("Address").FirstOrDefault();
+			XElement addressElement = element.Elements("Address").FirstOrDefault();
 			if (addressElement != null)
 				addressElement.Remove();
 
-			var addressesElement = element.Elements("Addresses").FirstOrDefault();
+			XElement addressesElement = element.Elements("Addresses").FirstOrDefault();
 			if (addressesElement == null)
 			{
 				addressesElement = new XElement("Addresses");
@@ -271,7 +243,7 @@ namespace ICD.Connect.Settings.Migration
 		{
 			IcdHashSet<string> addresses = new IcdHashSet<string>();
 
-			foreach (var value in elements)
+			foreach (XElement value in elements)
 				addresses.AddRange(GetAllAddressesForDestination(value));
 
 			return addresses;
@@ -279,22 +251,23 @@ namespace ICD.Connect.Settings.Migration
 
 		private static IcdHashSet<string> GetAllAddressesForDestination(XElement dest)
 		{
-			var addresses = new IcdHashSet<string>();
-			var addressElement = dest.Elements("Address").FirstOrDefault();
+			IcdHashSet<string> addresses = new IcdHashSet<string>();
+			XElement addressElement = dest.Elements("Address").FirstOrDefault();
 			if (addressElement != null)
-			{
 				addresses.Add(addressElement.Value);
-			}
-			var addressesElement = dest.Elements("Addresses").FirstOrDefault();
+
+			XElement addressesElement = dest.Elements("Addresses").FirstOrDefault();
 			if (addressesElement != null)
 			{
-				foreach (var childAddress in addressesElement.Elements("Address"))
+				foreach (XElement childAddress in addressesElement.Elements("Address"))
 					addresses.Add(childAddress.Value);
 			}
+
 			return addresses;
 		}
 
-		private static Dictionary<XElement, IcdHashSet<XElement>> GetMatchingDestinations(IEnumerable<XElement> destinationNodes)
+		private static Dictionary<XElement, IcdHashSet<XElement>> GetMatchingDestinations(
+			IEnumerable<XElement> destinationNodes)
 		{
 			Dictionary<XElement, IcdHashSet<XElement>> destinationMatches = new Dictionary<XElement, IcdHashSet<XElement>>();
 			IcdHashSet<XElement> processedDestinations = new IcdHashSet<XElement>();
@@ -329,14 +302,14 @@ namespace ICD.Connect.Settings.Migration
 
 			return destinationMatches;
 		}
-		
+
 		private static bool CheckDestinationTypeMatch(XElement destination, XElement potentialMatch)
 		{
-			var destinationTypeAttribute = destination.Attribute("type");
+			XAttribute destinationTypeAttribute = destination.Attribute("type");
 			if (destinationTypeAttribute == null)
 				return false;
 
-			var potentialMatchTypeAttribute = potentialMatch.Attribute("type");
+			XAttribute potentialMatchTypeAttribute = potentialMatch.Attribute("type");
 			if (potentialMatchTypeAttribute == null)
 				return false;
 
@@ -345,11 +318,11 @@ namespace ICD.Connect.Settings.Migration
 
 		private static bool CheckDestinationDeviceMatch(XElement destination, XElement potentialMatch)
 		{
-			var destinationDeviceNode = destination.Elements("Device").FirstOrDefault();
+			XElement destinationDeviceNode = destination.Elements("Device").FirstOrDefault();
 			if (destinationDeviceNode == null)
 				return false;
 
-			var potentialMatchDeviceNode = potentialMatch.Elements("Device").FirstOrDefault();
+			XElement potentialMatchDeviceNode = potentialMatch.Elements("Device").FirstOrDefault();
 			if (potentialMatchDeviceNode == null)
 				return false;
 
@@ -358,11 +331,11 @@ namespace ICD.Connect.Settings.Migration
 
 		private static bool CheckDestinationControlMatch(XElement destination, XElement potentialMatch)
 		{
-			var destinationControlNode = destination.Elements("Control").FirstOrDefault();
+			XElement destinationControlNode = destination.Elements("Control").FirstOrDefault();
 			if (destinationControlNode == null)
 				return false;
 
-			var potentialMatchControlNode = potentialMatch.Elements("Control").FirstOrDefault();
+			XElement potentialMatchControlNode = potentialMatch.Elements("Control").FirstOrDefault();
 			if (potentialMatchControlNode == null)
 				return false;
 
