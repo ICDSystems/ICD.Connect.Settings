@@ -1,8 +1,8 @@
 ﻿using ICD.Common.Utils.Xml;
-using ICD.Connect.Settings.Migration;
+using ICD.Connect.Settings.Migration.Migrators;
 using NUnit.Framework;
 
-namespace ICD.Connect.Settings.Tests.Migration
+namespace ICD.Connect.Settings.Tests.Migration.Migrators
 {
 	public abstract class AbstractConfigVersionMigratorTest
 	{

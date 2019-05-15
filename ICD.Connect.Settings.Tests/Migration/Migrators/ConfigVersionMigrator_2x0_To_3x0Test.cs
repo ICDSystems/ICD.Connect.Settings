@@ -1,7 +1,7 @@
-﻿using ICD.Connect.Settings.Migration;
+﻿using ICD.Connect.Settings.Migration.Migrators;
 using NUnit.Framework;
 
-namespace ICD.Connect.Settings.Tests.Migration
+namespace ICD.Connect.Settings.Tests.Migration.Migrators
 {
 	[TestFixture]
 	public sealed class ConfigVersionMigrator_2x0_To_3x0Test : AbstractConfigVersionMigratorTest
