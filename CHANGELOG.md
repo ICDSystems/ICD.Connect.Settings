@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.4.0] - 2019-05-16
+### Added
+ - Added cyclic dependency validation when loading core settings
+
+### Changed
+ - Potential fix for various shutdown exceptions, don't clear originator ID on dispose
+
 ## [7.3.3] - 2019-05-14
 ### Changed
  - v2 to v3 config migration now combines multiple destinations into a single destination with multiple addresses
