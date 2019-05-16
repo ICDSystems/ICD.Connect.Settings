@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+ - Added telemetry features to originators
+
 ## [7.4.0] - 2019-05-16
 ### Added
  - Added cyclic dependency validation when loading core settings
