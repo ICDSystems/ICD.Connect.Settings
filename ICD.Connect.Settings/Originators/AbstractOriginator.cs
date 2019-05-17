@@ -8,6 +8,7 @@ using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Telemetry;
 
 namespace ICD.Connect.Settings.Originators
 {
@@ -29,10 +30,18 @@ namespace ICD.Connect.Settings.Originators
 		/// </summary>
 		public event EventHandler OnSettingsApplied;
 
+		/// <summary>
+		/// Raised when the name changes.
+		/// </summary>
+		public event EventHandler OnNameChanged;
+
+		public event EventHandler OnRequestTelemetryRebuild;
+
 		private readonly List<Permission> m_Permissions;
 
 		private ILoggerService m_CachedLogger;
 		private PermissionsManager m_CachedPermissionsManager;
+		private string m_Name;
 
 		#region Properties
 
@@ -44,7 +53,16 @@ namespace ICD.Connect.Settings.Originators
 		/// <summary>
 		/// The name of the originator.
 		/// </summary>
-		public string Name { get; set; }
+		public string Name { get { return m_Name; }
+			set
+			{
+				if (m_Name == value)
+					return;
+
+				m_Name = value; 
+				
+				OnNameChanged.Raise(this);
+			} }
 
 		/// <summary>
 		/// The name that is used for the originator while in a combine space.
@@ -285,6 +303,8 @@ namespace ICD.Connect.Settings.Originators
 
 			ApplySettingsFinal(settings, factory);
 
+			TelemetryUtils.InstantiateTelemetry(this);
+
 			OnSettingsApplied.Raise(this);
 		}
 
@@ -306,7 +326,9 @@ namespace ICD.Connect.Settings.Originators
 
 			ClearSettingsFinal();
 
-			Id = 0;
+			// Don't clear ID - Causes lookup problems
+			//Id = 0;
+
 			Name = null;
 			CombineName = null;
 			Description = null;
@@ -380,7 +402,11 @@ namespace ICD.Connect.Settings.Originators
 		/// <returns></returns>
 		public virtual IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
-			return OriginatorConsole.GetConsoleNodes(this);
+			foreach (var node in OriginatorConsole.GetConsoleNodes(this))
+				yield return node;
+
+			foreach (var node in TelemetryConsole.GetConsoleNodes(this))
+				yield return node;
 		}
 
 		/// <summary>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ICD.Common.Properties;
+using ICD.Common.Utils.EventArguments;
 
 namespace ICD.Connect.Settings.Originators
 {
@@ -11,6 +12,9 @@ namespace ICD.Connect.Settings.Originators
 		/// Raised when children are added/removed to/from the collection.
 		/// </summary>
 		event EventHandler OnChildrenChanged;
+
+		event EventHandler<GenericEventArgs<IOriginator>> OnOriginatorAdded;
+		event EventHandler<GenericEventArgs<IOriginator>> OnOriginatorRemoved; 
 
 		/// <summary>
 		/// Gets the number of children in this collection.
