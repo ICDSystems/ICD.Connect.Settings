@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Utils;
+using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
@@ -11,6 +12,7 @@ using ICD.Connect.API.Info;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.API.Proxies;
 using ICD.Connect.Settings.Originators;
+using ICD.Connect.Telemetry;
 
 namespace ICD.Connect.Settings.Proxies
 {
@@ -32,6 +34,8 @@ namespace ICD.Connect.Settings.Proxies
 		/// This means the originator has finished loading.
 		/// </summary>
 		public event EventHandler OnSettingsApplied;
+		public event EventHandler OnNameChanged;
+		public event EventHandler OnRequestTelemetryRebuild;
 
 		private ILoggerService m_CachedLogger;
 
@@ -86,6 +90,9 @@ namespace ICD.Connect.Settings.Proxies
 		/// Gets the help information for the node.
 		/// </summary>
 		public virtual string ConsoleHelp { get { return string.Empty; } }
+
+		
+		public ITelemetryCollection Telemetry { get; [UsedImplicitly] set; }
 
 		#endregion
 

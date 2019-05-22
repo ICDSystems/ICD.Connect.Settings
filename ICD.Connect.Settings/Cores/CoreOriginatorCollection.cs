@@ -10,17 +10,9 @@ namespace ICD.Connect.Settings.Cores
 		/// Constructor.
 		/// </summary>
 		public CoreOriginatorCollection()
-			: this(Enumerable.Empty<IOriginator>())
+			: base(Enumerable.Empty<IOriginator>())
 		{
-		}
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="children"></param>
-		public CoreOriginatorCollection(IEnumerable<IOriginator> children)
-			: base(children)
-		{
 		}
 	}
 }

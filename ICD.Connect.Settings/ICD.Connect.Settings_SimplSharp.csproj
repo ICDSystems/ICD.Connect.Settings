@@ -86,6 +86,7 @@
     <Compile Include="Migration\ConfigMigrator.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_2x0_To_3x0.cs" />
     <Compile Include="Migration\Migrators\IConfigVersionMigrator.cs" />
+    <Compile Include="OriginatorTelemetryNames.cs" />
     <Compile Include="Proxies\AbstractProxyOriginator.cs" />
     <Compile Include="Attributes\KrangPluginAttribute.cs" />
     <Compile Include="Attributes\KrangSettingsAttribute.cs" />
@@ -160,6 +161,10 @@
     <ProjectReference Include="..\..\ICD.Connect.API\ICD.Connect.API\ICD.Connect.API_SimplSharp.csproj">
       <Project>{727F5820-5A61-440D-8899-E454FE8238D7}</Project>
       <Name>ICD.Connect.API_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Telemetry\ICD.Connect.Telemetry\ICD.Connect.Telemetry_SimplSharp.csproj">
+      <Project>{9512C0A5-F966-4AC6-9668-62C6F343B0CD}</Project>
+      <Name>ICD.Connect.Telemetry_SimplSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />

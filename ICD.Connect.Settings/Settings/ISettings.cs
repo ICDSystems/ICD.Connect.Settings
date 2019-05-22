@@ -4,7 +4,6 @@ using ICD.Common.Permissions;
 using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings
 {
@@ -88,13 +87,6 @@ namespace ICD.Connect.Settings
 		/// <param name="writer"></param>
 		/// <param name="element"></param>
 		void ToXml(IcdXmlTextWriter writer, string element);
-
-		/// <summary>
-		/// Creates a new originator instance from the settings.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		IOriginator ToOriginator(IDeviceFactory factory);
 
 		/// <summary>
 		/// Returns true if the settings depend on a device with the given ID.
