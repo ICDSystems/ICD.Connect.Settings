@@ -6,7 +6,7 @@ namespace ICD.Connect.Settings.Attributes.SettingsProperties
 {
 	[AttributeUsage(AttributeTargets.Property)]
 	[MeansImplicitUse]
-	public abstract class AbstractSettingsPropertyAttribute : AbstractIcdAttribute
+	public abstract class AbstractSettingsPropertyAttribute : AbstractIcdAttribute, ISettingsPropertyAttribute
 	{
 	}
 }
