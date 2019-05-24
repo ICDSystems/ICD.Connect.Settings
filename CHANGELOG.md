@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+ - Added CardAddressSettingsPropertyAttribute
+ - Added CardParentSettingsPropertyAttribute
+ - Added settings property attribute abstractions and interfaces
+
 ## [7.4.0] - 2019-05-16
 ### Added
  - Added cyclic dependency validation when loading core settings

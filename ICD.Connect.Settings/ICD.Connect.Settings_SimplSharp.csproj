@@ -71,7 +71,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractOriginatorCollection.cs" />
+    <Compile Include="Attributes\SettingsProperties\AbstractOriginatorIdSettingsPropertyAttribute.cs" />
+    <Compile Include="Attributes\SettingsProperties\CardAddressSettingsPropertyAttribute.cs" />
+    <Compile Include="Attributes\SettingsProperties\CardParentSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\ControlPortParentSettingsPropertyAttribute.cs" />
+    <Compile Include="Attributes\SettingsProperties\IOriginatorIdSettingsPropertyAttribute.cs" />
+    <Compile Include="Attributes\SettingsProperties\ISettingsPropertyAttribute.cs" />
     <Compile Include="Comparers\UndefinedVersionComparer.cs" />
     <Compile Include="Comparers\UndefinedVersionEqualityComparer.cs" />
     <Compile Include="Migration\AbstractConfigVersionMigrator.cs" />
