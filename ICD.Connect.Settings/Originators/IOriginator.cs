@@ -7,6 +7,8 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Proxies;
+using ICD.Connect.Telemetry;
+using ICD.Connect.Telemetry.Attributes;
 
 namespace ICD.Connect.Settings.Originators
 {
@@ -14,7 +16,7 @@ namespace ICD.Connect.Settings.Originators
 	/// IOriginator represents an object that has settings.
 	/// </summary>
 	[ApiClass(typeof(ProxyOriginator))]
-	public interface IOriginator : IConsoleNode
+	public interface IOriginator : IConsoleNode, ITelemetryProvider
 	{
 		/// <summary>
 		/// Called when the settings start clearing.
@@ -35,18 +37,27 @@ namespace ICD.Connect.Settings.Originators
 		[PublicAPI]
 		event EventHandler OnSettingsApplied;
 
+		/// <summary>
+		/// Called when this originator changes names.
+		/// </summary>
+		[PublicAPI]
+		[EventTelemetry(OriginatorTelemetryNames.NAME_CHANGED)]
+		event EventHandler OnNameChanged;
+
 		#region Properties
 
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_ID, OriginatorApi.HELP_PROPERTY_ID)]
+		[StaticPropertyTelemetry(OriginatorTelemetryNames.ID)]
 		int Id { get; set; }
 
 		/// <summary>
 		/// The name of the originator.
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_NAME, OriginatorApi.HELP_PROPERTY_NAME)]
+		[DynamicPropertyTelemetry(OriginatorTelemetryNames.NAME, OriginatorTelemetryNames.NAME_CHANGED)]
 		string Name { get; set; }
 
 		/// <summary>

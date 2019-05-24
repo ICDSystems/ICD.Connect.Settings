@@ -37,6 +37,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Moving originators and settings classes into subdirectories
  - Incremented config version from 3.0 to 3.1
 
+## [7.5.0] - 2019-05-16
+### Added
+ - Added telemetry features to originators
+
+## [7.4.1] - 2019-05-24
+### Added
+ - Added CardAddressSettingsPropertyAttribute
+ - Added CardParentSettingsPropertyAttribute
+ - Added settings property attribute abstractions and interfaces
+
+## [7.4.0] - 2019-05-16
+### Added
+ - Added cyclic dependency validation when loading core settings
+
+### Changed
+ - Potential fix for various shutdown exceptions, don't clear originator ID on dispose
+
 ## [7.3.3] - 2019-05-14
 ### Changed
  - v2 to v3 config migration now combines multiple destinations into a single destination with multiple addresses

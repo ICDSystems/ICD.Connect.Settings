@@ -10,7 +10,6 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
-using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings
 {
@@ -188,28 +187,6 @@ namespace ICD.Connect.Settings
 		/// <param name="writer"></param>
 		protected virtual void WriteElements(IcdXmlTextWriter writer)
 		{
-		}
-
-		/// <summary>
-		/// Creates a new originator instance from the settings.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public IOriginator ToOriginator(IDeviceFactory factory)
-		{
-			if (!OriginatorType.IsAssignableTo(typeof(IOriginator)))
-			{
-				throw new InvalidOperationException(string.Format("{0} is not assignable to {1}", OriginatorType.Name,
-				                                                  typeof(IOriginator).Name));
-			}
-
-			IOriginator output = (IOriginator)ReflectionUtils.CreateInstance(OriginatorType);
-
-		    // This instance came from settings, so we want to store it back to settings.
-		    output.Serialize = true;
-
-			output.ApplySettings(this, factory);
-			return output;
 		}
 
 		/// <summary>

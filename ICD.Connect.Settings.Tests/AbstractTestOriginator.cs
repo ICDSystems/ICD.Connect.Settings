@@ -14,6 +14,8 @@ namespace ICD.Connect.Settings.Tests
 		public event EventHandler OnSettingsClearing;
 		public event EventHandler OnSettingsCleared;
 		public event EventHandler OnSettingsApplied;
+		public event EventHandler OnNameChanged;
+		public event EventHandler OnRequestTelemetryRebuild;
 
 		public int Id { get; set; }
 
