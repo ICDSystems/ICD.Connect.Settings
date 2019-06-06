@@ -84,6 +84,7 @@
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
     <Compile Include="Cores\ICoreSettings.cs" />
     <Compile Include="IDeviceFactory.cs" />
+    <Compile Include="Utils\ConfigUtils.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x0_To_3x1.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x1_To_4x0.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_4x0_To_5x0.cs" />
