@@ -7,6 +7,7 @@ namespace ICD.Connect.Settings.Tests.Migration.Migrators
 	public abstract class AbstractConfigVersionMigratorTest
 	{
 		protected abstract string BeforeConfig { get; }
+
 		protected abstract string AfterConfig { get; }
 
 		[Test]
