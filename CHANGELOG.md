@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.2.0] - 2019-06-06
 ### Added
  - Added v4.0 to v5.0 config migration for converting to new room combine structure
  - Added ConfigUtils class
