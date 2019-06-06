@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - SPlus Shim Request Resync with API
  - SPlusSafeString for safely sending strings to S+
 
+## [8.2.0] - 2019-06-06
+### Added
+ - Added v4.0 to v5.0 config migration for converting to new room combine structure
+ - Added ConfigUtils class
+ 
+### Changed
+ - Moved util classes into Utils directory
+
 ## [8.1.2] - 2019-05-08
 ### Changed
  - Fixed migration issues with URI defaults (host, scheme, port and path)

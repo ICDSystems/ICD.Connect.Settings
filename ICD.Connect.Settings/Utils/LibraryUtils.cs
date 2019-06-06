@@ -18,7 +18,7 @@ using Crestron.SimplSharp.Reflection;
 using System.Reflection;
 #endif
 
-namespace ICD.Connect.Settings
+namespace ICD.Connect.Settings.Utils
 {
 	/// <summary>
 	/// Utility methods for working with reflection.

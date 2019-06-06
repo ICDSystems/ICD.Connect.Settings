@@ -1,6 +1,7 @@
-﻿using NUnit.Framework;
+﻿using ICD.Connect.Settings.Utils;
+using NUnit.Framework;
 
-namespace ICD.Connect.Settings.Tests
+namespace ICD.Connect.Settings.Tests.Utils
 {
 	[TestFixture]
     public sealed class IdUtilsTest

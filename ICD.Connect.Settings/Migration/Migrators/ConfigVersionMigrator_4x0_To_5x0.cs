@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.Extensions;
+using ICD.Connect.Settings.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronXmlLinq;
 #else
@@ -149,24 +152,90 @@ namespace ICD.Connect.Settings.Migration.Migrators
 
 			XElement partitioning = root.Element("Partitioning");
 			if (partitioning == null)
+				return xml;
+
+			XElement partitions = partitioning.Element("Partitions");
+			if (partitions == null)
+				return xml;
+
+			// Get all of the existing partition elements
+			XElement[] partitionElements = partitions.Elements("Partition").ToArray();
+			if (partitionElements.Length == 0)
+				return xml;
+
+			// Known ids
+			IcdHashSet<int> ids = ConfigUtils.GetIdsInDocument(xml).ToIcdHashSet();
+			IcdHashSet<int> roomIds = GetPartitionRoomIds(partitionElements).ToIcdHashSet();
+
+			// Build the cells
+			XElement cells = new XElement("Cells");
+			partitioning.AddFirst(cells);
+
+			Dictionary<int, int> roomToCell = new Dictionary<int, int>();
+
+			int cellIndex = 0;
+			foreach (int roomId in roomIds.Order())
 			{
-				partitioning = new XElement("Partitioning");
-				root.Add(partitioning);
+				int cellSubsystemId = IdUtils.GetSubsystemId(IdUtils.SUBSYSTEM_PARTITIONS);
+				int cellId = IdUtils.GetNewId(ids, cellSubsystemId, 0);
+
+				XElement cell = new XElement("Cell");
+				cell.Add(new XAttribute("id", cellId));
+				cell.Add(new XAttribute("type", "Cell"));
+
+				cell.Add(new XElement("Name", string.Format("Cell {0}", ++cellIndex)));
+				cell.Add(new XElement("Room", roomId));
+
+				cells.Add(cell);
+				ids.Add(cellId);
+				roomToCell.Add(roomId, cellId);
 			}
 
-			// Put each room in a cell
-			XElement rooms = root.Element("Rooms");
-			int[] roomIds = GetRoomIds(rooms).ToArray();
+			// Update the partitions to refer to cells instead of rooms
+			foreach (XElement partition in partitionElements)
+			{
+				XElement rooms = partition.Element("Rooms");
+				if (rooms == null)
+				{
+					partition.Remove();
+					continue;
+				}
 
-			// Add cells to partitions
+				rooms.Remove();
 
-			// TODO
-			return xml;
+				int[] partitionRoomIds = rooms.Elements("Room")
+				                              .Select(e => int.Parse(e.Value))
+				                              .Distinct()
+				                              .ToArray();
+
+				if (partitionRoomIds.Length < 2)
+				{
+					partition.Remove();
+					continue;
+				}
+
+				int room1 = partitionRoomIds[0];
+				int room2 = partitionRoomIds[1];
+
+				XElement cell1 = new XElement("Cell1", roomToCell[room1]);
+				XElement cell2 = new XElement("Cell2", roomToCell[room2]);
+
+				partition.Add(cell1);
+				partition.Add(cell2);
+			}
+
+			return document.ToString();
 		}
 
-		private static IEnumerable<int> GetRoomIds(XElement rooms)
+		private static IEnumerable<int> GetPartitionRoomIds(IEnumerable<XElement> partitionElements)
 		{
-			return rooms.Elements("Room").Select(room => int.Parse(room.Attribute("id").Value));
+			if (partitionElements == null)
+				throw new ArgumentNullException("partitionElements");
+
+			return partitionElements.Select(element => element.Element("Rooms"))
+			                        .Where(rooms => rooms != null)
+			                        .SelectMany(rooms => rooms.Elements("Room"))
+			                        .Select(room => int.Parse(room.Value));
 		}
 	}
 }

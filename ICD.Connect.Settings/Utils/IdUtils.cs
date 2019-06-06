@@ -5,7 +5,7 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 
-namespace ICD.Connect.Settings
+namespace ICD.Connect.Settings.Utils
 {
 	public static class IdUtils
 	{

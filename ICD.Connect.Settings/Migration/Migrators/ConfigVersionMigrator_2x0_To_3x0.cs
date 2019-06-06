@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Settings.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronXmlLinq;
 #else

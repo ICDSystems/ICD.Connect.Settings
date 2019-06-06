@@ -84,6 +84,7 @@
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
     <Compile Include="Cores\ICoreSettings.cs" />
     <Compile Include="IDeviceFactory.cs" />
+    <Compile Include="Utils\ConfigUtils.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x0_To_3x1.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x1_To_4x0.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_4x0_To_5x0.cs" />
@@ -109,12 +110,12 @@
     <Compile Include="Cores\CoreSettings.cs" />
     <Compile Include="Cores\ICore.cs" />
     <Compile Include="FileOperations.cs" />
-    <Compile Include="IdUtils.cs" />
+    <Compile Include="Utils\IdUtils.cs" />
     <Compile Include="Originators\IOriginatorCollection.cs" />
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="Proxies\AbstractProxySettings.cs" />
     <Compile Include="Proxies\IProxyOriginator.cs" />
-    <Compile Include="LibraryUtils.cs" />
+    <Compile Include="Utils\LibraryUtils.cs" />
     <Compile Include="Originators\OriginatorApi.cs" />
     <Compile Include="OriginatorPermissable.cs" />
     <Compile Include="PluginFactory.cs" />
