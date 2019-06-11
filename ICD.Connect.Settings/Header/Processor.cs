@@ -10,6 +10,7 @@ namespace ICD.Connect.Settings.Header
 		private const string MODEL_ELEMENT = "Model";
 		private const string FIRMWARE_ELEMENT = "Firmware";
 		private const string NETWORK_ADDRESS_ELEMENT = "NetworkAddress";
+		private const string MAC_ADDRESS_ELEMENT = "MacAddress";
 
 		#region Properties
 
@@ -18,6 +19,8 @@ namespace ICD.Connect.Settings.Header
 		public Version Firmware { get; set; }
 
 		public string NetworkAddress { get; set; }
+
+		public string MacAddress { get; set; }
 
 		#endregion
 
@@ -46,6 +49,7 @@ namespace ICD.Connect.Settings.Header
 			Model = ProcessorUtils.ModelName;
 			Firmware = ProcessorUtils.ModelVersion;
 			NetworkAddress = IcdEnvironment.NetworkAddresses.FirstOrDefault() ?? "127.0.0.1";
+			MacAddress = IcdEnvironment.MacAddresses.FirstOrDefault();
 		}
 
 		#region Methods
@@ -55,6 +59,7 @@ namespace ICD.Connect.Settings.Header
 			Model = string.Empty;
 			Firmware = new Version(0, 0);
 			NetworkAddress = string.Empty;
+			MacAddress = string.Empty;
 		}
 
 		/// <summary>
@@ -69,6 +74,7 @@ namespace ICD.Connect.Settings.Header
 				writer.WriteElementString(MODEL_ELEMENT, Model);
 				writer.WriteElementString(FIRMWARE_ELEMENT, Firmware.ToString());
 				writer.WriteElementString(NETWORK_ADDRESS_ELEMENT, NetworkAddress);
+				writer.WriteElementString(MAC_ADDRESS_ELEMENT, MacAddress);
 			}
 			writer.WriteEndElement();
 		}
@@ -80,6 +86,7 @@ namespace ICD.Connect.Settings.Header
 			Model = XmlUtils.TryReadChildElementContentAsString(xml, MODEL_ELEMENT) ?? string.Empty;
 			Firmware = new Version(XmlUtils.TryReadChildElementContentAsString(xml, FIRMWARE_ELEMENT) ?? "0.0.0.0");
 			NetworkAddress = XmlUtils.TryReadChildElementContentAsString(xml, NETWORK_ADDRESS_ELEMENT);
+			MacAddress = XmlUtils.TryReadChildElementContentAsString(xml, MAC_ADDRESS_ELEMENT);
 		}
 
 		#endregion
