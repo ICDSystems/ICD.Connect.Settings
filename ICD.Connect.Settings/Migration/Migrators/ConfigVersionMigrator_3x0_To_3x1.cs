@@ -160,7 +160,7 @@ namespace ICD.Connect.Settings.Migration.Migrators
 
 						XElement query = new XElement("Query");
 						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Query))
-							query.Value = uriBuilder.Query;
+							query.Value = uriBuilder.Query.TrimStart('?');
 
 						XElement fragment = new XElement("Fragment");
 						if (!StringUtils.IsNullOrWhitespace(uriBuilder.Fragment))
