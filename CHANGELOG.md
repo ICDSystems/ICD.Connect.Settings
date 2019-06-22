@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Fixed migration issue with URIs gaining additional '?' characters in the query
+
 ## [8.1.2] - 2019-05-08
 ### Changed
  - Fixed migration issues with URI defaults (host, scheme, port and path)
