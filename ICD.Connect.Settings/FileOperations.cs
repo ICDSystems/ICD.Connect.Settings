@@ -157,6 +157,18 @@ namespace ICD.Connect.Settings
 				configXml = IcdFile.ReadToEnd(IcdConfigPath, new UTF8Encoding(false));
 				configXml = EncodingUtils.StripUtf8Bom(configXml);
 
+				try
+				{
+					if (!string.IsNullOrEmpty(configXml))
+						new IcdXmlDocument().LoadXml(configXml);
+				}
+				catch (IcdXmlException e)
+				{
+					Logger.AddEntry(eSeverity.Error, "Failed to load settings - Error reading XML at line {0} position {1}",
+					                e.LineNumber, e.LinePosition);
+					return;
+				}
+
 				Logger.AddEntry(eSeverity.Notice, "Finished reading settings");
 			}
 			else
