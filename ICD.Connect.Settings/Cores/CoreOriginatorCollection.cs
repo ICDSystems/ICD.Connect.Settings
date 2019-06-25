@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings.Cores
