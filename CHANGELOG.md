@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.5.2] - 2019-07-31
+### Changed
+ - Small performance improvement in plugin discovery
+ - Telemetry service is optional
+
 ## [7.5.1] - 2019-06-24
 ### Changed
  - LoadCore will fail if the XML configuration is not valid XML
