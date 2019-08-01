@@ -24,19 +24,25 @@ namespace ICD.Connect.Settings.Cores
 			m_Originators = new CoreOriginatorCollection();
 			m_Originators.OnOriginatorAdded += OriginatorsOnOriginatorAdded;
 			m_Originators.OnOriginatorRemoved += OriginatorsOnOriginatorRemoved;
-			ServiceProvider.GetService<ITelemetryService>().AddTelemetryProvider(this);
+			var telemetry = ServiceProvider.TryGetService<ITelemetryService>();
+			if (telemetry != null)
+				telemetry.AddTelemetryProvider(this);
 		}
 
 		#region Originator Collection Callbacks
 
 		private static void OriginatorsOnOriginatorAdded(object sender, GenericEventArgs<IOriginator> args)
 		{
-			ServiceProvider.GetService<ITelemetryService>().AddTelemetryProvider(args.Data);
+			var telemetry = ServiceProvider.TryGetService<ITelemetryService>();
+			if (telemetry != null)
+				telemetry.AddTelemetryProvider(args.Data);
 		}
 
 		private static void OriginatorsOnOriginatorRemoved(object sender, GenericEventArgs<IOriginator> args)
 		{
-			ServiceProvider.GetService<ITelemetryService>().RemoveTelemetryProvider(args.Data);
+			var telemetry = ServiceProvider.TryGetService<ITelemetryService>();
+			if (telemetry != null)
+				telemetry.RemoveTelemetryProvider(args.Data);
 		}
 
 		#endregion
