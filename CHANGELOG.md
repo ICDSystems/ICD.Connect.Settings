@@ -37,6 +37,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Moving originators and settings classes into subdirectories
  - Incremented config version from 3.0 to 3.1
 
+## [7.5.2] - 2019-07-31
+### Changed
+ - Small performance improvement in plugin discovery
+ - Telemetry service is optional
+
 ## [7.5.1] - 2019-06-24
 ### Changed
  - LoadCore will fail if the XML configuration is not valid XML
