@@ -163,7 +163,8 @@ namespace ICD.Connect.Settings.Cores
 		private void PushDependency(int id)
 		{
 			if (m_Dependencies.Contains(id))
-				throw new InvalidOperationException("Cyclic dependency detected");
+				throw new InvalidOperationException(string.Format("Cyclic dependency detected - {0}",
+																  string.Join(" -> ", m_Dependencies.Reverse().Append(id).Select(n => n.ToString()).ToArray())));
 
 			m_Dependencies.Push(id);
 		}
