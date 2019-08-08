@@ -25,8 +25,6 @@ namespace ICD.Connect.Settings.Utils
 	/// </summary>
 	public static class LibraryUtils
 	{
-		private const string DLL_EXT = ".dll";
-
 		private static readonly string[] s_ArchiveExtensions =
 		{
 			".CPZ",
@@ -105,7 +103,7 @@ namespace ICD.Connect.Settings.Utils
 
 			return
 				IcdZip.GetFileNames(path)
-				      .Where(f => IcdPath.GetExtension(f).Equals(DLL_EXT, StringComparison.OrdinalIgnoreCase));
+				      .Where(f => IcdPath.GetExtension(f).Equals(".dll", StringComparison.OrdinalIgnoreCase));
 		}
 
 		#endregion
@@ -202,7 +200,11 @@ namespace ICD.Connect.Settings.Utils
 		/// <returns></returns>
 		private static IEnumerable<string> GetAssemblyPaths()
 		{
+#if SIMPLSHARP
+			return GetLibAssemblyPaths();
+#else
 			return GetBuildAssemblyPaths().Concat(GetLibAssemblyPaths());
+#endif
 		}
 
 		/// <summary>
@@ -215,9 +217,17 @@ namespace ICD.Connect.Settings.Utils
 		/// <returns></returns>
 		private static IEnumerable<string> GetLibAssemblyPaths()
 		{
-			return s_LibDirectories.SelectMany(d => PathUtils.RecurseFilePaths(d)).Where(IsAssembly);
+			return s_LibDirectories.Where(p => IcdDirectory.Exists(p))
+			                       .SelectMany(d => GetLibAssemblyPaths(d));
 		}
 
+		private static IEnumerable<string> GetLibAssemblyPaths(string root)
+		{
+			return RecursionUtils.BreadthFirstSearch(root, p => IcdDirectory.GetDirectories(p))
+			                     .SelectMany(p => IcdDirectory.GetFiles(p, "*.dll"));
+		}
+
+#if !SIMPLSHARP
 		/// <summary>
 		/// If the program is being run from a build directory, finds assemblies from sibling projects
 		/// that are part of the same solution.
@@ -225,33 +235,40 @@ namespace ICD.Connect.Settings.Utils
 		/// <returns></returns>
 		private static IEnumerable<string> GetBuildAssemblyPaths()
 		{
-#if !SIMPLSHARP
 			string path = typeof(LibraryUtils).GetAssembly().GetPath();
+			bool foundSln = false;
 
 			// Find the .sln
-			while (path != null)
+			while (path != null && !foundSln)
 			{
 				path = IcdPath.GetDirectoryName(path);
-				bool foundSln = !string.IsNullOrEmpty(path) && IcdDirectory
-									.GetFiles(path).Any(p => IcdPath.GetExtension(p).Equals(".sln", StringComparison.OrdinalIgnoreCase));
-
-				if (foundSln)
-					return PathUtils.RecurseFilePaths(path)
-					                .Where(p => p.Contains("bin"))
-					                .Where(IsAssembly)
-					                .Where(p =>
-					                       {
-						                       // Avoid loading any SimplSharp assemblies
-						                       string dir = IcdPath.GetDirectoryName(p);
-						                       string[] files = IcdDirectory.GetFiles(dir);
-
-						                       return files.All(f => !f.EndsWith("SimplSharpData.dat"));
-					                       });
+				foundSln = !string.IsNullOrEmpty(path) && IcdDirectory.GetFiles(path, "*.sln").Any();
 			}
-#endif
 
-			return Enumerable.Empty<string>();
+			if (!foundSln)
+				return Enumerable.Empty<string>();
+
+			// Find the assemblies
+			return RecursionUtils.BreadthFirstSearch(path,
+			                                         parent =>
+			                                         {
+				                                         return IcdDirectory
+					                                         .GetDirectories(parent)
+					                                         .Where(child =>
+					                                         {
+						                                         // Skip "hidden" directories (.git, .vs)
+						                                         string folderName = IcdPath.GetFileName(child);
+						                                         if (folderName == null || folderName.StartsWith("."))
+							                                         return false;
+
+						                                         // Skip SimplSharp bin directories
+						                                         return !IcdDirectory.GetFiles(child, "*.dat").Any();
+					                                         });
+			                                         })
+			                     .Where(p => p.Contains("bin")) // Only want assemblies from bin directories
+			                     .SelectMany(p => IcdDirectory.GetFiles(p, "*.dll")); // Only care about .dll files
 		}
+#endif
 
 		/// <summary>
 		/// Gets the paths to archives stored in lib directories.
@@ -260,7 +277,7 @@ namespace ICD.Connect.Settings.Utils
 		private static IEnumerable<string> GetArchivePaths()
 		{
 			return s_LibDirectories.SelectMany(d => PathUtils.RecurseFilePaths(d))
-								   .Where(IsArchive);
+			                       .Where(IsArchive);
 		}
 
 		/// <summary>
@@ -272,16 +289,6 @@ namespace ICD.Connect.Settings.Utils
 		{
 			return IcdPath.GetExtension(path).Equals(".CPZ", StringComparison.OrdinalIgnoreCase) &&
 			       path.Contains(IcdDirectory.GetApplicationDirectory());
-		}
-
-		/// <summary>
-		/// Returns true if the file at the given path is an assembly.
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
-		private static bool IsAssembly(string path)
-		{
-			return string.Equals(IcdPath.GetExtension(path), DLL_EXT, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>

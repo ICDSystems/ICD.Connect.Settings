@@ -251,11 +251,11 @@ namespace ICD.Connect.Settings
 			catch (TypeLoadException e)
 			{
 #if SIMPLSHARP
-				Logger.AddEntry(eSeverity.Error, e, "{0} failed to cache assembly {1}", typeof(PluginFactory).Name,
+				Logger.AddEntry(eSeverity.Error, "{0} failed to cache assembly {1}", typeof(PluginFactory).Name,
 								assembly.GetName().Name);
 #else
-				Logger.AddEntry(eSeverity.Error, e, "{0} failed to cache assembly {1} - could not load type {2}",
-								typeof(AttributeUtils).Name, assembly.GetName().Name, e.TypeName);
+				Logger.AddEntry(eSeverity.Error, "{0} failed to cache assembly {1} - could not load type {2}",
+								typeof(PluginFactory).Name, assembly.GetName().Name, e.TypeName);
 #endif
 				return;
 			}
@@ -278,8 +278,16 @@ namespace ICD.Connect.Settings
 			try
 			{
 				KrangSettingsAttribute attribute = AttributeUtils.GetClassAttribute<KrangSettingsAttribute>(type, false);
-				if (attribute != null)
-					s_FactoryNameTypeMap.Add(attribute.FactoryName, type);
+				if (attribute == null)
+					return;
+
+				if (s_FactoryNameTypeMap.ContainsKey(attribute.FactoryName))
+				{
+					Logger.AddEntry(eSeverity.Error, "Failed to cache {0} - Duplicate factory name {1}", type.Name, attribute.FactoryName);
+					return;
+				}
+
+				s_FactoryNameTypeMap.Add(attribute.FactoryName, type);
 			}
 			// GetMethods for Open Generic Types is not supported.
 			catch (NotSupportedException)
