@@ -28,11 +28,16 @@ namespace ICD.Connect.Settings
 
 		private const string CONFIG_LOCAL_PATH = "RoomConfig-Base.xml";
 		private const string LICENSE_LOCAL_PATH = "license";
+		private const string SYSTEM_KEY_LOCAL_PATH = "systemkey";
 
 		#region Properties
 
 		public static string IcdConfigPath { get { return PathUtils.GetProgramConfigPath(CONFIG_LOCAL_PATH); } }
+
+		[Obsolete("Use systemkey instead")]
 		public static string LicensePath { get { return PathUtils.GetProgramConfigPath(LICENSE_LOCAL_PATH); } }
+
+		public static string SystemKeyPath { get { return PathUtils.GetProgramConfigPath(SYSTEM_KEY_LOCAL_PATH); } }
 
 		public static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
