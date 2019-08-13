@@ -3,8 +3,14 @@ using System.Collections.Generic;
 
 namespace ICD.Connect.Settings.Groups
 {
-	public interface IGroup<TOriginator> where TOriginator : IOriginator
+	public interface IGroup<TOriginator> : IGroup
+		where TOriginator : IOriginator
 	{
-		IEnumerable<TOriginator> GroupItems { get; }
+		new IEnumerable<TOriginator> GroupItems { get; }
+	}
+
+	public interface IGroup : IOriginator
+	{
+		IEnumerable<IOriginator> GroupItems { get; }
 	}
 }

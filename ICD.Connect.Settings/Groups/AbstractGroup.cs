@@ -16,6 +16,8 @@ namespace ICD.Connect.Settings.Groups
 
 		public IEnumerable<TOriginator> GroupItems { get { return m_GroupSection.Execute(() => m_GroupItems.ToList()); } }
 
+		IEnumerable<IOriginator> IGroup.GroupItems { get { return GroupItems.Cast<IOriginator>(); } }
+
 		protected AbstractGroup()
 		{
 			m_GroupItems = new List<TOriginator>();
