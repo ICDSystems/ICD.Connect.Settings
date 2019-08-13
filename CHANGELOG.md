@@ -37,6 +37,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Moving originators and settings classes into subdirectories
  - Incremented config version from 3.0 to 3.1
 
+## [7.6.0] - 2019-08-13
+### Changed
+ - Marked LicensePath as obsolete in favor of SystemKeyPath
+
 ## [7.5.2] - 2019-07-31
 ### Changed
  - Small performance improvement in plugin discovery
