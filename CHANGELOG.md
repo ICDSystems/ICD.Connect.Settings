@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-### Added 
+## [8.2.1] - 2019-08-15
+### Changed 
  - Failing more gracefully when a duplicate settings factory name is cached.
 
 ## [8.2.0] - 2019-06-06
