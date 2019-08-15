@@ -6,11 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [9.0.0] - 2019-08-15
+### Added
+ - SPlus Shim Request Resync with API
+ - SPlusSafeString for safely sending strings to S+
+
+### Changed
+ - Better logging for cyclic dependency detection
+
 ## [8.2.1] - 2019-08-15
 ### Changed 
  - Failing more gracefully when a duplicate settings factory name is cached.
- - SPlus Shim Request Resync with API
- - SPlusSafeString for safely sending strings to S+
 
 ## [8.2.0] - 2019-06-06
 ### Added
