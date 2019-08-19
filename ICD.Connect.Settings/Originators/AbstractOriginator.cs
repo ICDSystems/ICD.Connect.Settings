@@ -153,7 +153,9 @@ namespace ICD.Connect.Settings.Originators
 		public override string ToString()
 		{
 			ReprBuilder builder = new ReprBuilder(this);
-			BuildStringRepresentationProperties((n, v) => builder.AppendProperty(n, v));
+			{
+				BuildStringRepresentationProperties((n, v) => builder.AppendProperty(n, v));
+			}
 			return builder.ToString();
 		}
 
@@ -167,7 +169,12 @@ namespace ICD.Connect.Settings.Originators
 				addPropertyAndValue("Id", Id);
 
 			if (!string.IsNullOrEmpty(Name) && Name != GetType().Name)
+			{
 				addPropertyAndValue("Name", Name);
+
+				if (!string.IsNullOrEmpty(CombineName) && CombineName != Name)
+					addPropertyAndValue("CombineName", CombineName);
+			}
 		}
 
 		/// <summary>

@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Originator logging includes the CombineName
+
 ## [9.0.0] - 2019-08-15
 ### Added
  - SPlus Shim Request Resync with API
