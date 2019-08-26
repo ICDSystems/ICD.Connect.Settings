@@ -237,11 +237,11 @@ namespace ICD.Connect.Settings
 					{
 						Logger.AddEntry(eSeverity.Error,
 						                "{0} failed to cache assembly {1} - Could not find one or more dependencies by path",
-						                typeof(AttributeUtils).Name, assembly.GetName().Name);
+						                typeof(PluginFactory).Name, assembly.GetName().Name);
 						continue;
 					}
 
-					Logger.AddEntry(eSeverity.Error, inner, "{0} failed to cache assembly {1}", typeof(AttributeUtils).Name,
+					Logger.AddEntry(eSeverity.Error, inner, "{0} failed to cache assembly {1}", typeof(PluginFactory).Name,
 					                assembly.GetName().Name);
 				}
 
