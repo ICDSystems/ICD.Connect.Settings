@@ -261,6 +261,10 @@ namespace ICD.Connect.Settings.Utils
 						                                         if (folderName == null || folderName.StartsWith("."))
 							                                         return false;
 
+																 // Skip obj directories
+																 if (folderName == "obj")
+																	 return false;
+
 						                                         // Skip SimplSharp bin directories
 						                                         return !IcdDirectory.GetFiles(child, "*.dat").Any();
 					                                         });
