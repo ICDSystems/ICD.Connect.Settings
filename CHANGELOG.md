@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
  - Better logging for cyclic dependency detection
 
+## [8.2.2] - 2019-08-27
+### Changed
+ - Changed logging to be more accurate for when an assembly fails to be cached.
+ - Skipping obj directories when looking for dependencies.
+
 ## [8.2.1] - 2019-08-15
 ### Changed 
  - Failing more gracefully when a duplicate settings factory name is cached.
