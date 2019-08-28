@@ -37,7 +37,7 @@ namespace ICD.Connect.Settings.Groups
 		{
 			base.ParseXml(xml);
 
-			Ids = XmlUtils.ReadListFromXml(xml, RootElement, ChildElement, XmlUtils.ReadElementContentAsInt);
+			Ids = XmlUtils.ReadListFromXml(xml, RootElement, ChildElement, e => XmlUtils.ReadElementContentAsInt(e));
 		}
 	}
 }

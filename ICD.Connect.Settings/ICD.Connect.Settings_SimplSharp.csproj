@@ -85,6 +85,10 @@
     <Compile Include="Cores\ICoreSettings.cs" />
     <Compile Include="Localization\Localization.cs" />
     <Compile Include="Localization\LocalizationSettings.cs" />
+    <Compile Include="Groups\AbstractGroup.cs" />
+    <Compile Include="Groups\AbstractGroupSettings.cs" />
+    <Compile Include="Groups\IGroup.cs" />
+    <Compile Include="Groups\IGroupSettings.cs" />
     <Compile Include="IDeviceFactory.cs" />
     <Compile Include="Utils\ConfigUtils.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x0_To_3x1.cs" />
