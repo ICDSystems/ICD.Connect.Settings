@@ -10,11 +10,21 @@ namespace ICD.Connect.Settings.Cores
 		where TSettings : class, ICoreSettings, new()
 	{
 		private readonly CoreOriginatorCollection m_Originators;
+		private readonly Localization.Localization m_Localization;
+
+		#region Properties
 
 		/// <summary>
 		/// Gets the originators contained in the core.
 		/// </summary>
 		public IOriginatorCollection<IOriginator> Originators { get { return m_Originators; } }
+
+		/// <summary>
+		/// Gets the configured localization.
+		/// </summary>
+		public Localization.Localization Localization { get { return m_Localization; } }
+
+		#endregion
 
 		/// <summary>
 		/// Constructor.
@@ -24,23 +34,36 @@ namespace ICD.Connect.Settings.Cores
 			m_Originators = new CoreOriginatorCollection();
 			m_Originators.OnOriginatorAdded += OriginatorsOnOriginatorAdded;
 			m_Originators.OnOriginatorRemoved += OriginatorsOnOriginatorRemoved;
-			var telemetry = ServiceProvider.TryGetService<ITelemetryService>();
+
+			m_Localization = new Localization.Localization();
+
+			ITelemetryService telemetry = ServiceProvider.TryGetService<ITelemetryService>();
 			if (telemetry != null)
 				telemetry.AddTelemetryProvider(this);
 		}
 
 		#region Originator Collection Callbacks
 
+		/// <summary>
+		/// Called when an originator is added to the collection.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
 		private static void OriginatorsOnOriginatorAdded(object sender, GenericEventArgs<IOriginator> args)
 		{
-			var telemetry = ServiceProvider.TryGetService<ITelemetryService>();
+			ITelemetryService telemetry = ServiceProvider.TryGetService<ITelemetryService>();
 			if (telemetry != null)
 				telemetry.AddTelemetryProvider(args.Data);
 		}
 
+		/// <summary>
+		/// Called when an originator is removed from the collection.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
 		private static void OriginatorsOnOriginatorRemoved(object sender, GenericEventArgs<IOriginator> args)
 		{
-			var telemetry = ServiceProvider.TryGetService<ITelemetryService>();
+			ITelemetryService telemetry = ServiceProvider.TryGetService<ITelemetryService>();
 			if (telemetry != null)
 				telemetry.RemoveTelemetryProvider(args.Data);
 		}

@@ -10,10 +10,10 @@ namespace ICD.Connect.Settings.Cores
 		SettingsCollection OriginatorSettings { get; }
 
 		/// <summary>
-		/// Parses and returns only the header portion from the full XML config.
+		/// Parses and returns only the header portion from the full config.
 		/// </summary>
-		/// <param name="configXml"></param>
+		/// <param name="config"></param>
 		/// <returns></returns>
-		ConfigurationHeader GetHeader(string configXml);
+		ConfigurationHeader GetHeader(string config);
 	}
 }
