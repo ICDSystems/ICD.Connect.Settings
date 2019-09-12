@@ -11,49 +11,79 @@ namespace ICD.Connect.Settings.Groups
 		where TSettings : IGroupSettings, new()
 		where TOriginator : class, IOriginator
 	{
-		private readonly List<TOriginator> m_GroupItems;
-		private readonly SafeCriticalSection m_GroupSection;
+		private readonly List<TOriginator> m_Items;
+		private readonly SafeCriticalSection m_ItemsSection;
 
-		public IEnumerable<TOriginator> GroupItems { get { return m_GroupSection.Execute(() => m_GroupItems.ToList()); } }
+		#region Properties
 
-		IEnumerable<IOriginator> IGroup.GroupItems { get { return GroupItems.Cast<IOriginator>(); } }
+		/// <summary>
+		/// Gets the number of items in the group.
+		/// </summary>
+		public int Count { get { return m_ItemsSection.Execute(() => m_Items.Count); } }
 
+		/// <summary>
+		/// Gets the items in the group.
+		/// </summary>
+		public IEnumerable<TOriginator> Items { get { return m_ItemsSection.Execute(() => m_Items.ToList()); } }
+
+		/// <summary>
+		/// Gets the items in the group.
+		/// </summary>
+		IEnumerable<IOriginator> IGroup.Items { get { return Items.Cast<IOriginator>(); } }
+
+		#endregion
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
 		protected AbstractGroup()
 		{
-			m_GroupItems = new List<TOriginator>();
-			m_GroupSection = new SafeCriticalSection();
+			m_Items = new List<TOriginator>();
+			m_ItemsSection = new SafeCriticalSection();
 		}
 
 		#region Settings
 
+		/// <summary>
+		/// Override to clear the instance settings.
+		/// </summary>
 		protected override void ClearSettingsFinal()
 		{
 			base.ClearSettingsFinal();
 
-			m_GroupSection.Execute(() => m_GroupItems.Clear());
+			m_ItemsSection.Execute(() => m_Items.Clear());
 		}
 
+		/// <summary>
+		/// Override to apply properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
 		protected override void CopySettingsFinal(TSettings settings)
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.Ids = m_GroupSection.Execute(() => m_GroupItems.Select(i => i.Id).ToList());
+			settings.Ids = m_ItemsSection.Execute(() => m_Items.Select(i => i.Id).ToList());
 		}
 
+		/// <summary>
+		/// Override to apply settings to the instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			m_GroupSection.Enter();
+			m_ItemsSection.Enter();
 			try
 			{
-				m_GroupItems.Clear();
+				m_Items.Clear();
 				IEnumerable<TOriginator> items = GetOriginatorsSkipExceptions(settings.Ids, factory);
-				m_GroupItems.AddRange(items);
+				m_Items.AddRange(items);
 			}
 			finally
 			{
-				m_GroupSection.Leave();
+				m_ItemsSection.Leave();
 			}
 		}
 
