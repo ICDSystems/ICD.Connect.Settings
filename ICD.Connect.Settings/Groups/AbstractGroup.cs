@@ -23,16 +23,6 @@ namespace ICD.Connect.Settings.Groups
 		/// </summary>
 		public int Count { get { return m_ItemsSection.Execute(() => m_Items.Count); } }
 
-		/// <summary>
-		/// Gets the items in the group.
-		/// </summary>
-		public IEnumerable<TOriginator> Items { get { return m_ItemsSection.Execute(() => m_Items.ToList()); } }
-
-		/// <summary>
-		/// Gets the items in the group.
-		/// </summary>
-		IEnumerable<IOriginator> IGroup.Items { get { return Items.Cast<IOriginator>(); } }
-
 		#endregion
 
 		/// <summary>
@@ -43,6 +33,26 @@ namespace ICD.Connect.Settings.Groups
 			m_Items = new List<TOriginator>();
 			m_ItemsSection = new SafeCriticalSection();
 		}
+
+		#region Methods
+
+		/// <summary>
+		/// Gets the items in the group.
+		/// </summary>
+		public IEnumerable<TOriginator> GetItems()
+		{
+			return m_ItemsSection.Execute(() => m_Items.ToList());
+		}
+
+		/// <summary>
+		/// Gets the items in the group.
+		/// </summary>
+		IEnumerable<IOriginator> IGroup.GetItems()
+		{
+			return GetItems().Cast<IOriginator>();
+		}
+
+		#endregion
 
 		#region Settings
 

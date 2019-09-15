@@ -18,7 +18,7 @@ namespace ICD.Connect.Settings.Groups
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 
-			return instance.Items.Cast<IConsoleNodeBase>();
+			return instance.GetItems().Cast<IConsoleNodeBase>();
 		}
 
 		/// <summary>

@@ -13,7 +13,7 @@ namespace ICD.Connect.Settings.Groups
 		/// <summary>
 		/// Gets the items in the group.
 		/// </summary>
-		IEnumerable<IOriginator> Items { get; }
+		IEnumerable<IOriginator> GetItems();
 	}
 
 	public interface IGroup<TOriginator> : IGroup
@@ -22,6 +22,6 @@ namespace ICD.Connect.Settings.Groups
 		/// <summary>
 		/// Gets the items in the group.
 		/// </summary>
-		new IEnumerable<TOriginator> Items { get; }
+		new IEnumerable<TOriginator> GetItems();
 	}
 }
