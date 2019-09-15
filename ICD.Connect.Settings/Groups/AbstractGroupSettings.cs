@@ -39,5 +39,10 @@ namespace ICD.Connect.Settings.Groups
 
 			Ids = XmlUtils.ReadListFromXml(xml, RootElement, ChildElement, e => XmlUtils.ReadElementContentAsInt(e));
 		}
+
+		public override bool HasDependency(int id)
+		{
+			return m_Ids.Contains(id) || base.HasDependency(id);
+		}
 	}
 }
