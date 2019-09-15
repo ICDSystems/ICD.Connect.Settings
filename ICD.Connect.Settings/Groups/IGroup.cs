@@ -14,6 +14,13 @@ namespace ICD.Connect.Settings.Groups
 		/// Gets the items in the group.
 		/// </summary>
 		IEnumerable<IOriginator> GetItems();
+
+		/// <summary>
+		/// Returns true if the group contains the given item.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		bool Contains(IOriginator item);
 	}
 
 	public interface IGroup<TOriginator> : IGroup
@@ -23,5 +30,12 @@ namespace ICD.Connect.Settings.Groups
 		/// Gets the items in the group.
 		/// </summary>
 		new IEnumerable<TOriginator> GetItems();
+
+		/// <summary>
+		/// Returns true if the group contains the given item.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		bool Contains(TOriginator item);
 	}
 }

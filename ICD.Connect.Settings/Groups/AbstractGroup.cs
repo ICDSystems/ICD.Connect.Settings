@@ -1,4 +1,5 @@
 ﻿using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
@@ -14,6 +15,7 @@ namespace ICD.Connect.Settings.Groups
 		where TOriginator : class, IOriginator
 	{
 		private readonly List<TOriginator> m_Items;
+		private readonly IcdHashSet<TOriginator> m_ItemsSet; 
 		private readonly SafeCriticalSection m_ItemsSection;
 
 		#region Properties
@@ -31,6 +33,7 @@ namespace ICD.Connect.Settings.Groups
 		protected AbstractGroup()
 		{
 			m_Items = new List<TOriginator>();
+			m_ItemsSet = new IcdHashSet<TOriginator>();
 			m_ItemsSection = new SafeCriticalSection();
 		}
 
@@ -42,6 +45,33 @@ namespace ICD.Connect.Settings.Groups
 		public IEnumerable<TOriginator> GetItems()
 		{
 			return m_ItemsSection.Execute(() => m_Items.ToList());
+		}
+
+		/// <summary>
+		/// Returns true if the group contains the given item.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public bool Contains(TOriginator item)
+		{
+			if (item == null)
+				throw new ArgumentNullException("item");
+
+			return m_ItemsSection.Execute(() => m_ItemsSet.Contains(item));
+		}
+
+		/// <summary>
+		/// Returns true if the group contains the given item.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		bool IGroup.Contains(IOriginator item)
+		{
+			if (item == null)
+				throw new ArgumentNullException("item");
+
+			TOriginator cast = item as TOriginator;
+			return cast != null && Contains(cast);
 		}
 
 		/// <summary>
@@ -87,11 +117,16 @@ namespace ICD.Connect.Settings.Groups
 			base.ApplySettingsFinal(settings, factory);
 
 			m_ItemsSection.Enter();
+
 			try
 			{
 				m_Items.Clear();
+				m_ItemsSet.Clear();
+
 				IEnumerable<TOriginator> items = GetOriginatorsSkipExceptions(settings.Ids, factory);
+
 				m_Items.AddRange(items);
+				m_ItemsSet.AddRange(m_Items);
 			}
 			finally
 			{
