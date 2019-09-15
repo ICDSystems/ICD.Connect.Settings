@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.API.Nodes;
@@ -43,6 +44,11 @@ namespace ICD.Connect.Settings.Originators
 		[PublicAPI]
 		[EventTelemetry(OriginatorTelemetryNames.NAME_CHANGED)]
 		event EventHandler OnNameChanged;
+
+		/// <summary>
+		/// Raised when the disable state changes.
+		/// </summary>
+		event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
 		#region Properties
 

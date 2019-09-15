@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Utils;
 using ICD.Common.Properties;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
@@ -34,9 +35,20 @@ namespace ICD.Connect.Settings.Proxies
 		/// This means the originator has finished loading.
 		/// </summary>
 		public event EventHandler OnSettingsApplied;
+
+		/// <summary>
+		/// Called when this originator changes names.
+		/// </summary>
 		public event EventHandler OnNameChanged;
 
+		/// <summary>
+		/// Raised when the disable state changes.
+		/// </summary>
+		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
+
 		private ILoggerService m_CachedLogger;
+		private string m_Name;
+		private bool m_Disable;
 
 		#region Properties
 
@@ -48,7 +60,19 @@ namespace ICD.Connect.Settings.Proxies
 		/// <summary>
 		/// The name of the originator.
 		/// </summary>
-		public string Name { get; set; }
+		public string Name
+		{
+			get { return m_Name; }
+			set
+			{
+				if (value == m_Name)
+					return;
+
+				m_Name = value;
+
+				OnNameChanged.Raise(this);
+			}
+		}
 
 		/// <summary>
 		/// The name that is used for the originator while in a combine space.
@@ -69,7 +93,19 @@ namespace ICD.Connect.Settings.Proxies
 		/// <summary>
 		/// Shorthand for disabling an instance in the system.
 		/// </summary>
-		public bool Disable { get; set; }
+		public bool Disable
+		{
+			get { return m_Disable; }
+			set
+			{
+				if (value == m_Disable)
+					return;
+
+				m_Disable = value;
+
+				OnDisableStateChanged.Raise(this, new BoolEventArgs(m_Disable));
+			}
+		}
 
 		/// <summary>
 		/// Specifies custom ordering of the instance to the end user.
@@ -267,6 +303,8 @@ namespace ICD.Connect.Settings.Proxies
 			OnSettingsApplied = null;
 			OnSettingsCleared = null;
 			OnSettingsClearing = null;
+			OnNameChanged = null;
+			OnDisableStateChanged = null;
 
 			base.DisposeFinal(disposing);
 		}
