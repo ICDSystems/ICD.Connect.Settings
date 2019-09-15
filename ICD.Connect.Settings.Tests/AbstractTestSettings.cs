@@ -30,6 +30,9 @@ namespace ICD.Connect.Settings.Tests
 	    /// </summary>
 	    public bool Hide { get; set; }
 
+	    public bool Disable { get; set; }
+	    public int Order { get; set; }
+
 	    public string FactoryName { get { throw new NotImplementedException(); } }
 
 	    public Type OriginatorType { get { throw new NotImplementedException(); } }

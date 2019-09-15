@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Permissions;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
@@ -15,7 +16,7 @@ namespace ICD.Connect.Settings.Tests
 		public event EventHandler OnSettingsCleared;
 		public event EventHandler OnSettingsApplied;
 		public event EventHandler OnNameChanged;
-		public event EventHandler OnRequestTelemetryRebuild;
+		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
 		public int Id { get; set; }
 
@@ -33,6 +34,10 @@ namespace ICD.Connect.Settings.Tests
 		/// Useful for hiding logical switchers, duplicate sources, etc.
 		/// </summary>
 		public bool Hide { get; set; }
+
+		public bool Disable { get; set; }
+
+		public int Order { get; set; }
 
 		public IEnumerable<Permission> GetPermissions()
 		{
