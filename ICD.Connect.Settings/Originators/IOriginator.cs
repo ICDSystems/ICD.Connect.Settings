@@ -80,6 +80,16 @@ namespace ICD.Connect.Settings.Originators
 		bool Hide { get; set; }
 
 		/// <summary>
+		/// Shorthand for disabling an instance in the system.
+		/// </summary>
+		bool Disable { get; set; }
+
+		/// <summary>
+		/// Specifies custom ordering of the instance to the end user.
+		/// </summary>
+		int Order { get; set; }
+
+		/// <summary>
 		/// When true this instance is serialized to the system config.
 		/// </summary>
 		bool Serialize { get; set; }

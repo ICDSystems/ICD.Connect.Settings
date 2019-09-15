@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Permissions;
 using ICD.Common.Utils;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
@@ -35,13 +36,17 @@ namespace ICD.Connect.Settings.Originators
 		/// </summary>
 		public event EventHandler OnNameChanged;
 
-		public event EventHandler OnRequestTelemetryRebuild;
+		/// <summary>
+		/// Raised when the disable state changes.
+		/// </summary>
+		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
 		private readonly List<Permission> m_Permissions;
 
 		private ILoggerService m_CachedLogger;
 		private PermissionsManager m_CachedPermissionsManager;
 		private string m_Name;
+		private bool m_Disable;
 
 		#region Properties
 
@@ -79,6 +84,28 @@ namespace ICD.Connect.Settings.Originators
 		/// Useful for hiding logical switchers, duplicate sources, etc.
 		/// </summary>
 		public bool Hide { get; set; }
+
+		/// <summary>
+		/// Shorthand for disabling an instance in the system.
+		/// </summary>
+		public bool Disable
+		{
+			get { return m_Disable; }
+			set
+			{
+				if (value == m_Disable)
+					return;
+
+				m_Disable = value;
+
+				OnDisableStateChanged.Raise(this, new BoolEventArgs(m_Disable));
+			}
+		}
+
+		/// <summary>
+		/// Specifies custom ordering of the instance to the end user.
+		/// </summary>
+		public int Order { get; set; }
 
 		/// <summary>
 		/// Returns true if this instance has been disposed.
@@ -222,6 +249,8 @@ namespace ICD.Connect.Settings.Originators
 			OnSettingsClearing = null;
 			OnSettingsCleared = null;
 			OnSettingsApplied = null;
+			OnNameChanged = null;
+			OnDisableStateChanged = null;
 
 			if (!IsDisposed)
 				DisposeFinal(disposing);

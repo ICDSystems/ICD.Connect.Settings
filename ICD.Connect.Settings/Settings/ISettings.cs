@@ -57,6 +57,16 @@ namespace ICD.Connect.Settings
 		bool Hide { get; set; }
 
 		/// <summary>
+		/// Shorthand for disabling an instance in the system.
+		/// </summary>
+		bool Disable { get; set; }
+
+		/// <summary>
+		/// Specifies custom ordering of the instance to the end user.
+		/// </summary>
+		int Order { get; set; }
+
+		/// <summary>
 		/// The lookup name for the settings (typically the name of the originator).
 		/// </summary>
 		string FactoryName { get; }

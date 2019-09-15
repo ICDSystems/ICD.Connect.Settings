@@ -35,7 +35,6 @@ namespace ICD.Connect.Settings.Proxies
 		/// </summary>
 		public event EventHandler OnSettingsApplied;
 		public event EventHandler OnNameChanged;
-		public event EventHandler OnRequestTelemetryRebuild;
 
 		private ILoggerService m_CachedLogger;
 
@@ -66,6 +65,16 @@ namespace ICD.Connect.Settings.Proxies
 		/// Useful for hiding logical switchers, duplicate sources, etc.
 		/// </summary>
 		public bool Hide { get; set; }
+
+		/// <summary>
+		/// Shorthand for disabling an instance in the system.
+		/// </summary>
+		public bool Disable { get; set; }
+
+		/// <summary>
+		/// Specifies custom ordering of the instance to the end user.
+		/// </summary>
+		public int Order { get; set; }
 
 		/// <summary>
 		/// When true this instance is serialized to the system config.

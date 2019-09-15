@@ -18,23 +18,32 @@ namespace ICD.Connect.Settings
 	/// </summary>
 	public abstract class AbstractSettings : ISettings
 	{
-		public const string ID_ATTRIBUTE = "id";
 		public const string TYPE_ATTRIBUTE = "type";
-		public const string NAME_ELEMENT = "Name";
-		public const string COMBINE_NAME_ELEMENT = "CombineName";
-		private const string HIDE_ELEMENT = "Hide";
-		private const string DESCRIPTION_ELEMENT = "Description";
 
-		protected ILoggerService Logger {get { return ServiceProvider.TryGetService<ILoggerService>(); }}
+		private const string ID_ATTRIBUTE = "id";
+		private const string NAME_ELEMENT = "Name";
+		private const string COMBINE_NAME_ELEMENT = "CombineName";
+		private const string HIDE_ELEMENT = "Hide";
+		private const string DISABLE_ELEMENT = "Disable";
+		private const string ORDER_ELEMENT = "Order";
+		private const string DESCRIPTION_ELEMENT = "Description";
 
 		private const string PERMISSION_ELEMENT = "Permission";
 		private const string PERMISSIONS_ELEMENT = PERMISSION_ELEMENT + "s";
 
+		/// <summary>
+		/// Raised when the id is changed.
+		/// </summary>
 		public event EventHandler<IntEventArgs> OnIdChanged;
+
+		/// <summary>
+		/// Raised when the name is changed.
+		/// </summary>
 		public event EventHandler<StringEventArgs> OnNameChanged;
 
 		private string m_Name;
 		private int m_Id;
+		private int m_Order = int.MaxValue;
 
 		#region Properties
 
@@ -90,6 +99,16 @@ namespace ICD.Connect.Settings
 		public bool Hide { get; set; }
 
 		/// <summary>
+		/// Shorthand for disabling an instance in the system.
+		/// </summary>
+		public bool Disable { get; set; }
+
+		/// <summary>
+		/// Specifies custom ordering of the instance to the end user.
+		/// </summary>
+		public int Order { get { return m_Order; } set { m_Order = value; } }
+
+		/// <summary>
 		/// Gets the originator factory name.
 		/// </summary>
 		public virtual string FactoryName
@@ -125,10 +144,16 @@ namespace ICD.Connect.Settings
 		[HiddenSettingsProperty]
 		public IEnumerable<Permission> Permissions { get; set; }
 
+		protected ILoggerService Logger {get { return ServiceProvider.TryGetService<ILoggerService>(); }}
+
 		#endregion
 
 		#region Methods
 
+		/// <summary>
+		/// Gets the string representation for this instance.
+		/// </summary>
+		/// <returns></returns>
 		public override string ToString()
 		{
 			ReprBuilder builder = new ReprBuilder(this);
@@ -137,7 +162,12 @@ namespace ICD.Connect.Settings
 				builder.AppendProperty("Id", Id);
 
 			if (!string.IsNullOrEmpty(Name) && Name != GetType().Name)
+			{
 				builder.AppendProperty("Name", Name);
+
+				if (!string.IsNullOrEmpty(CombineName) && CombineName != Name)
+					builder.AppendProperty("CombineName", CombineName);
+			}
 
 			return builder.ToString();
 		}
@@ -153,6 +183,8 @@ namespace ICD.Connect.Settings
 			CombineName = XmlUtils.TryReadChildElementContentAsString(xml, COMBINE_NAME_ELEMENT);
 			Description = XmlUtils.TryReadChildElementContentAsString(xml, DESCRIPTION_ELEMENT);
 			Hide = XmlUtils.TryReadChildElementContentAsBoolean(xml, HIDE_ELEMENT) ?? false;
+			Disable = XmlUtils.TryReadChildElementContentAsBoolean(xml, DISABLE_ELEMENT) ?? false;
+			Order = XmlUtils.TryReadChildElementContentAsInt(xml, ORDER_ELEMENT) ?? 0;
 			Permissions = XmlUtils.ReadListFromXml(xml, PERMISSIONS_ELEMENT, PERMISSION_ELEMENT, e => Permission.FromXml(e));
 		}
 
@@ -177,6 +209,12 @@ namespace ICD.Connect.Settings
 				WriteElements(writer);
 
 				writer.WriteElementString(HIDE_ELEMENT, IcdXmlConvert.ToString(Hide));
+
+				if (Disable)
+					writer.WriteElementString(DISABLE_ELEMENT, IcdXmlConvert.ToString(Disable));
+
+				if (Order != int.MaxValue)
+					writer.WriteElementString(ORDER_ELEMENT, IcdXmlConvert.ToString(Order));
 			}
 			writer.WriteEndElement();
 		}
@@ -195,7 +233,7 @@ namespace ICD.Connect.Settings
 		/// belongs to will need to be instantiated first.
 		/// </summary>
 		/// <returns></returns>
-		public bool HasDependency(int id)
+		public virtual bool HasDependency(int id)
 		{
 			return AttributeUtils.GetProperties<OriginatorIdSettingsPropertyAttribute>(this, true)
 			                     .Any(p => p.GetValue(this, null) as int? == id);
