@@ -4,6 +4,7 @@ namespace ICD.Connect.Settings.Groups
 {
 	public interface IGroupSettings : ISettings
 	{
-		IEnumerable<int> Ids { get; set; }
+		void SetIds(IEnumerable<int> value);
+		IEnumerable<int> GetIds();
 	}
 }

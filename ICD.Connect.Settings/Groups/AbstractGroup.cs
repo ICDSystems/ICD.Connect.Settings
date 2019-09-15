@@ -104,7 +104,7 @@ namespace ICD.Connect.Settings.Groups
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.Ids = m_ItemsSection.Execute(() => m_Items.Select(i => i.Id).ToList());
+			settings.SetIds(m_ItemsSection.Execute(() => m_Items.Select(i => i.Id).ToList()));
 		}
 
 		/// <summary>
@@ -123,7 +123,7 @@ namespace ICD.Connect.Settings.Groups
 				m_Items.Clear();
 				m_ItemsSet.Clear();
 
-				IEnumerable<TOriginator> items = GetOriginatorsSkipExceptions(settings.Ids, factory);
+				IEnumerable<TOriginator> items = GetOriginatorsSkipExceptions(settings.GetIds(), factory);
 
 				m_Items.AddRange(items);
 				m_ItemsSet.AddRange(m_Items);
@@ -135,9 +135,9 @@ namespace ICD.Connect.Settings.Groups
 		}
 
 		private IEnumerable<TOriginator> GetOriginatorsSkipExceptions(IEnumerable<int> ids,
-		                                                       IDeviceFactory factory)
+		                                                              IDeviceFactory factory)
 		{
-			foreach (int id in ids)
+			foreach (int id in ids.Distinct())
 			{
 				TOriginator output;
 
