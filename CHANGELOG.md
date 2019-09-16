@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [9.1.0] - 2019-09-16
 ### Added
  - Added originator groups
+ - Moved Order and Disable properties and events from Source/Destination to Originator
+ - Added localization settings
 
 ### Changed
  - Originator logging includes the CombineName
