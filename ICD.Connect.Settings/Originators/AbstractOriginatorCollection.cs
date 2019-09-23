@@ -196,7 +196,7 @@ namespace ICD.Connect.Settings.Originators
 					{
 						if (!m_TypeToChildren.ContainsKey(type))
 							m_TypeToChildren[type] = new List<TChild>();
-						m_TypeToChildren[type].AddSorted(child, m_ChildIdComparer);
+						m_TypeToChildren[type].InsertSorted(child, m_ChildIdComparer);
 					}
 
 					m_Children.Add(child.Id, child);

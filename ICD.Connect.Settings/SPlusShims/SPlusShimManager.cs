@@ -26,7 +26,7 @@ namespace ICD.Connect.Settings.SPlusShims
 				if (m_Shims.Contains(shim))
 					return;
 
-				m_Shims.AddSorted(shim, s => s.Location);
+				m_Shims.InsertSorted(shim, s => s.Location);
 			}
 			finally
 			{
