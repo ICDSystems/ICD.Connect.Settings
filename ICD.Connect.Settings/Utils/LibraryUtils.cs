@@ -253,21 +253,25 @@ namespace ICD.Connect.Settings.Utils
 			                                         parent =>
 			                                         {
 				                                         return IcdDirectory
-				                                                .GetDirectories(parent)
-				                                                .Where(child =>
-				                                                       {
-					                                                       // Skip "hidden" directories (.git, .vs)
-					                                                       string folderName = IcdPath.GetFileName(child);
-					                                                       if (folderName == null || folderName.StartsWith("."))
-						                                                       return false;
+					                                         .GetDirectories(parent)
+					                                         .Where(child =>
+					                                         {
+						                                         // Skip "hidden" directories (.git, .vs)
+						                                         string folderName = IcdPath.GetFileName(child);
+						                                         if (folderName == null || folderName.StartsWith("."))
+							                                         return false;
 
-					                                                       // Skip obj directories
-					                                                       if (folderName == "obj")
-						                                                       return false;
+						                                         // Skip Test projects
+						                                         if (folderName.Contains(".Test"))
+							                                         return false;
 
-					                                                       // Skip SimplSharp bin directories
-					                                                       return !IcdDirectory.GetFiles(child, "*.dat").Any();
-				                                                       });
+						                                         // Skip obj directories
+						                                         if (folderName == "obj")
+							                                         return false;
+
+						                                         // Skip SimplSharp bin directories
+						                                         return !IcdDirectory.GetFiles(child, "*.dat").Any();
+					                                         });
 			                                         })
 			                     .Where(p => p.Contains("bin")) // Only want assemblies from bin directories
 			                     .SelectMany(p => IcdDirectory.GetFiles(p, "*.dll")); // Only care about .dll files
