@@ -136,6 +136,7 @@ namespace ICD.Connect.Settings
 
 			Logger.AddEntry(eSeverity.Notice, "Creating settings backup of {0} at {1}", IcdConfigPath, newPath);
 
+			IcdDirectory.CreateDirectory(PathUtils.ProgramDataPath);
 			IcdFile.Copy(IcdConfigPath, newPath);
 
 			Logger.AddEntry(eSeverity.Notice, "Finished settings backup");
