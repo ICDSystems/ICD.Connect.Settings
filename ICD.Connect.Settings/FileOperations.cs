@@ -32,6 +32,9 @@ namespace ICD.Connect.Settings
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the path to the configuration file.
+		/// </summary>
 		public static string IcdConfigPath { get { return PathUtils.GetProgramConfigPath(CONFIG_LOCAL_PATH); } }
 
 		[Obsolete("Use systemkey instead")]
@@ -128,8 +131,8 @@ namespace ICD.Connect.Settings
 			                            .ToString("s")
 			                            .Replace(':', '-') + 'Z';
 
-			string newName = string.Format("{0}_Backup_{1}", name, date);
-			string newPath = PathUtils.ChangeFilenameWithoutExt(IcdConfigPath, newName);
+			string newName = string.Format("{0}_Backup_{1}.xml", name, date);
+			string newPath = PathUtils.GetProgramDataPath(newName);
 
 			Logger.AddEntry(eSeverity.Notice, "Creating settings backup of {0} at {1}", IcdConfigPath, newPath);
 
@@ -191,6 +194,8 @@ namespace ICD.Connect.Settings
 
 			if (save)
 				SaveSettings(settings, true);
+			else
+				BackupSettings();
 
 			ApplyCoreSettings(core, settings);
 		}
