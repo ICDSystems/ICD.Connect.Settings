@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [9.3.0] - 2019-11-20
+### Changed
+ - Settings backups are now stored in the ProgramXXData directory.
+
 ## [9.2.0] - 2019-11-20
 ### Added
  - Added a MAC Address element for the processor in the configuration header
