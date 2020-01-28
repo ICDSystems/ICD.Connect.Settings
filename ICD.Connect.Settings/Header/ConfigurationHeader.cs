@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 
@@ -31,7 +30,7 @@ namespace ICD.Connect.Settings.Header
 		public Version ConfigVersion { get; private set; }
 
 		/// <summary>
-		/// Gets the date that the config was generated on.
+		/// Gets the date that the config was generated on in UTC.
 		/// </summary>
 		public DateTime GeneratedOn { get; private set; }
 
@@ -67,7 +66,7 @@ namespace ICD.Connect.Settings.Header
 			if (currentSettings)
 			{
 				ConfigVersion = s_CurrentConfigVersion;
-				GeneratedOn = IcdEnvironment.GetLocalTime();
+				GeneratedOn = IcdEnvironment.GetUtcTime();
 			}
 			else
 			{
@@ -103,7 +102,7 @@ namespace ICD.Connect.Settings.Header
 			writer.WriteStartElement(elementName);
 			{
 				writer.WriteElementString(CONFIG_VERSION_ELEMENT, ConfigVersion.ToString());
-				writer.WriteElementString(GENERATED_ON_ELEMENT, GeneratedOn.ToString("G"));
+				writer.WriteElementString(GENERATED_ON_ELEMENT, IcdXmlConvert.ToString(GeneratedOn));
 
 				m_Program.ToXml(writer, PROGRAM_ELEMENT);
 				m_Processor.ToXml(writer, PROCESSOR_ELEMENT);
@@ -145,11 +144,10 @@ namespace ICD.Connect.Settings.Header
 
 			try
 			{
-				DateTime.ParseExact(date, "G", CultureInfo.CurrentCulture);
+				return IcdXmlConvert.ToDateTime(date);
 			}
 			catch (FormatException)
 			{
-				return DateTime.MinValue;
 			}
 
 			return DateTime.MinValue;
