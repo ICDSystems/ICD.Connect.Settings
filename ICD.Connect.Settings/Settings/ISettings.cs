@@ -4,6 +4,8 @@ using ICD.Common.Permissions;
 using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Settings.Cores;
+using ICD.Connect.Settings.Validation;
 
 namespace ICD.Connect.Settings
 {
@@ -74,11 +76,13 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
+		[NotNull]
 		Type OriginatorType { get; }
 
 		/// <summary>
 		/// Gets the list of permissions
 		/// </summary>
+		[NotNull]
 		IEnumerable<Permission> Permissions { get; set; }
 
 		#endregion
@@ -89,14 +93,14 @@ namespace ICD.Connect.Settings
 		/// Updates the settings from xml.
 		/// </summary>
 		/// <param name="xml"></param>
-		void ParseXml(string xml);
+		void ParseXml([NotNull] string xml);
 
 		/// <summary>
 		/// Writes the settings to xml.
 		/// </summary>
 		/// <param name="writer"></param>
 		/// <param name="element"></param>
-		void ToXml(IcdXmlTextWriter writer, string element);
+		void ToXml([NotNull] IcdXmlTextWriter writer, string element);
 
 		/// <summary>
 		/// Returns true if the settings depend on a device with the given ID.
@@ -105,6 +109,14 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		/// <returns></returns>
 		bool HasDependency(int id);
+
+		/// <summary>
+		/// Validates this settings instance against the core settings as a whole.
+		/// </summary>
+		/// <param name="coreSettings"></param>
+		/// <returns></returns>
+		[NotNull]
+		IEnumerable<SettingsValidationResult> Validate([NotNull] ICoreSettings coreSettings);
 
 		#endregion
 	}

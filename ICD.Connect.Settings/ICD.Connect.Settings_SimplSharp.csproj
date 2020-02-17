@@ -158,6 +158,7 @@
     <Compile Include="SPlusShims\SPlusShimCore.cs" />
     <Compile Include="SPlusShims\SPlusShimManager.cs" />
     <Compile Include="SPlusShims\GlobalEvents\SPlusGlobalEvents.cs" />
+    <Compile Include="Validation\SettingsValidationResult.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>

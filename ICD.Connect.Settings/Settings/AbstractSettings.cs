@@ -10,6 +10,8 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
+using ICD.Connect.Settings.Cores;
+using ICD.Connect.Settings.Validation;
 
 namespace ICD.Connect.Settings
 {
@@ -237,6 +239,16 @@ namespace ICD.Connect.Settings
 		{
 			return AttributeUtils.GetProperties<OriginatorIdSettingsPropertyAttribute>(this, true)
 			                     .Any(p => p.GetValue(this, null) as int? == id);
+		}
+
+		/// <summary>
+		/// Validates this settings instance against the core settings as a whole.
+		/// </summary>
+		/// <param name="coreSettings"></param>
+		/// <returns></returns>
+		public virtual IEnumerable<SettingsValidationResult> Validate(ICoreSettings coreSettings)
+		{
+			yield break;
 		}
 
 		#endregion

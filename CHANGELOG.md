@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+ - Added validation methods to settings
+
+### Changed
+ - Settings will be validated before being applied. Critical (or worse) errors will prevent settings being applied.
+
 ## [9.3.0] - 2019-11-20
 ### Changed
  - Settings backups are now stored in the ProgramXXData directory.

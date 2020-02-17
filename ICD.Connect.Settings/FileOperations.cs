@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
@@ -10,6 +14,7 @@ using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Header;
 using ICD.Connect.Settings.Migration;
 using ICD.Connect.Settings.Utils;
+using ICD.Connect.Settings.Validation;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronIO;
 using Activator = Crestron.SimplSharp.Reflection.Activator;
@@ -193,12 +198,61 @@ namespace ICD.Connect.Settings
 			else
 				ParseXml(settings, configXml, out save);
 
+			SettingsValidationResult critical;
+			if (!ValidateSettings(settings, out critical))
+			{
+				Logger.AddEntry(eSeverity.Critical, "Aborting load of settings - {0} failed to validate - {1}", critical.Source,
+				                critical.Message);
+				return;
+			}
+
 			if (save)
 				SaveSettings(settings, true);
 			else
 				BackupSettings();
 
 			ApplyCoreSettings(core, settings);
+		}
+
+		/// <summary>
+		/// Returns false if there is a critical error (or worse) during settings validation.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="critical"></param>
+		/// <returns></returns>
+		private static bool ValidateSettings([NotNull] ICoreSettings settings, out SettingsValidationResult critical)
+		{
+			Logger.AddEntry(eSeverity.Notice, "Validating settings");
+
+			critical = null;
+			bool output = true;
+
+			Dictionary<eSeverity, int> severityCount = new Dictionary<eSeverity, int>();
+
+			foreach (SettingsValidationResult result in settings.Validate())
+			{
+				Logger.AddEntry(result.Severity, "{0} - {1}", result.Source, result.Message);
+
+				severityCount[result.Severity] = severityCount.GetDefault(result.Severity) + 1;
+				if (result.Severity > eSeverity.Critical)
+					continue;
+
+				critical = critical ?? result;
+				output = false;
+			}
+
+			// Lower is worse
+			eSeverity min = severityCount.Count > 0 ? (eSeverity)severityCount.Keys.Cast<int>().Min() : eSeverity.Notice;
+			min = min < eSeverity.Notice ? min : eSeverity.Notice;
+			Logger.AddEntry(min,
+			                "Finished validating settings ({0} emergency, {1} alert, {2} critical, {3} error, {4} warning)",
+			                severityCount.GetDefault(eSeverity.Emergency),
+			                severityCount.GetDefault(eSeverity.Alert),
+			                severityCount.GetDefault(eSeverity.Critical),
+			                severityCount.GetDefault(eSeverity.Error),
+			                severityCount.GetDefault(eSeverity.Warning));
+
+			return output;
 		}
 
 		#endregion

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using ICD.Common.Permissions;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Originators;
+using ICD.Connect.Settings.Validation;
 
 namespace ICD.Connect.Settings.Tests
 {
@@ -71,5 +73,15 @@ namespace ICD.Connect.Settings.Tests
 	    {
 		    throw new NotImplementedException();
 	    }
+
+	    /// <summary>
+	    /// Validates this settings instance against the core settings as a whole.
+	    /// </summary>
+	    /// <param name="coreSettings"></param>
+	    /// <returns></returns>
+	    public IEnumerable<SettingsValidationResult> Validate(ICoreSettings coreSettings)
+	    {
+			throw new NotImplementedException();
+		}
     }
 }
