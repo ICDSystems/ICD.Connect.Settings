@@ -335,7 +335,7 @@ namespace ICD.Connect.Settings.Originators
 			Description = settings.Description;
 			Hide = settings.Hide;
 
-			SetPermissions(settings.Permissions ?? Enumerable.Empty<Permission>());
+			SetPermissions(settings.Permissions);
 
 			ApplySettingsFinal(settings, factory);
 
