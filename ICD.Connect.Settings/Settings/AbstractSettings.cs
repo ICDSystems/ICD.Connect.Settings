@@ -146,9 +146,17 @@ namespace ICD.Connect.Settings
 		[HiddenSettingsProperty]
 		public IEnumerable<Permission> Permissions { get; set; }
 
-		protected ILoggerService Logger {get { return ServiceProvider.TryGetService<ILoggerService>(); }}
+		protected ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
 		#endregion
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractSettings()
+		{
+			Permissions = Enumerable.Empty<Permission>();
+		}
 
 		#region Methods
 
