@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
  - Added validation methods to settings
+ - Permissions are serialized back to XML
 
 ### Changed
  - Settings will be validated before being applied. Critical (or worse) errors will prevent settings being applied.

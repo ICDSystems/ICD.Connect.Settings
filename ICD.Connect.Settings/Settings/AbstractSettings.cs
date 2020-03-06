@@ -217,6 +217,8 @@ namespace ICD.Connect.Settings
 
 				if (Order != int.MaxValue)
 					writer.WriteElementString(ORDER_ELEMENT, IcdXmlConvert.ToString(Order));
+
+				XmlUtils.WriteListToXml(writer, Permissions, PERMISSIONS_ELEMENT, (w, p) => p.ToXml(w, PERMISSION_ELEMENT));
 			}
 			writer.WriteEndElement();
 		}
