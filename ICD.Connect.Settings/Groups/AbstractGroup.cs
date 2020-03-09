@@ -75,11 +75,99 @@ namespace ICD.Connect.Settings.Groups
 		}
 
 		/// <summary>
+		/// Adds an item to the group
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns>true if item was added, false if item was already in the group</returns>
+		public bool AddItem(IOriginator item)
+		{
+			if (item == null)
+				throw new ArgumentNullException("item");
+
+			TOriginator itemCast = item as TOriginator;
+
+			if (itemCast == null)
+				throw new ArgumentException(string.Format("Item is not of type {0}",typeof(TOriginator)),"item");
+
+			return AddItem(itemCast);
+		}
+
+		/// <summary>
+		/// Adds items to the group if they aren't already in the group
+		/// </summary>
+		/// <param name="items"></param>
+		public void AddItems(IEnumerable<IOriginator> items)
+		{
+			if (items == null)
+				throw new ArgumentNullException("items");
+
+			try
+			{
+				IEnumerable<TOriginator> itemsCast = items.Cast<TOriginator>();
+				AddItems(itemsCast);
+			}
+			catch (InvalidCastException e)
+			{
+				throw new ArgumentException(string.Format("One or more items not of type {0}", typeof(TOriginator)), "items");
+			}
+		}
+
+		/// <summary>
 		/// Gets the items in the group.
 		/// </summary>
 		IEnumerable<IOriginator> IGroup.GetItems()
 		{
 			return GetItems().Cast<IOriginator>();
+		}
+
+		/// <summary>
+		/// Adds an item to the group
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns>true if item was added, false if item was already in the group</returns>
+		public bool AddItem(TOriginator item)
+		{
+			if (item == null)
+				throw new ArgumentNullException("item");
+
+			m_ItemsSection.Enter();
+
+			try
+			{
+				if (m_ItemsSet.Contains(item))
+					return false;
+
+				m_Items.Add(item);
+				m_ItemsSet.Add(item);
+			}
+			finally
+			{
+				m_ItemsSection.Leave();
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Adds items to the group if they aren't already in the group
+		/// </summary>
+		/// <param name="items"></param>
+		public void AddItems(IEnumerable<TOriginator> items)
+		{
+			if (items == null)
+				throw new ArgumentNullException("items");
+
+			m_ItemsSection.Enter();
+
+			try
+			{
+				foreach (TOriginator item in items)
+					AddItem(item);
+			}
+			finally
+			{
+				m_ItemsSection.Leave();
+			}
 		}
 
 		#endregion
