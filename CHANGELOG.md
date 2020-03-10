@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
  - Settings will be validated before being applied. Critical (or worse) errors will prevent settings being applied.
  - Fixed potential null reference exception when loading permissions
+ - Changed IdUtils to use enum for Subsystems, and generate DAV-style ID's
 
 ## [9.3.0] - 2019-11-20
 ### Changed
