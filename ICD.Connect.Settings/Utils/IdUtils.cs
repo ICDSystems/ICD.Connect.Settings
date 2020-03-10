@@ -7,25 +7,42 @@ using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings.Utils
 {
+	public enum eSubsystems
+	{
+		Ports = 1,
+		Devices = 2,
+		Connections = 3,
+		StaticRoutes = 4,
+		Sources = 5,
+		Destinations = 6,
+		Partitions = 7,
+		Rooms = 8,
+		VolumePoints = 9,
+		ConferencePoints = 10,
+		Cells = 11
+	}
+
 	public static class IdUtils
 	{
+
+
 		public const int ID_CORE = 1;
 
 		public const int ID_THEME = 100;
 		public const int ID_ROUTING_GRAPH = 200;
-		public const int ID_PARTITION_MANAGER = 300;
+		public const int ID_PARTITION_MANAGER = 400;
 
-		public const int SUBSYSTEM_PORTS = 1;
-		public const int SUBSYSTEM_DEVICES = 2;
-		public const int SUBSYSTEM_PANELS = 3;
-		public const int SUBSYSTEM_CONNECTIONS = 4;
-		public const int SUBSYSTEM_SOURCES = 6;
-		public const int SUBSYSTEM_DESTINATIONS = 7;
-		public const int SUBSYSTEM_PARTITIONS = 8;
-		public const int SUBSYSTEM_POINTS = 9;
+		private const int MULTIPLIER_SUBSYSTEM = 10 * 1000 * 1000;
 
-		private const int MULTIPLIER_ROOM = 1000;
-		private const int MULTIPLIER_SUBSYSTEM = 100 * 1000;
+		/// <summary>
+		/// Gets the subsystem id start from the subsystem
+		/// </summary>
+		/// <param name="subsystem"></param>
+		/// <returns></returns>
+		public static int GetSubsystemId(eSubsystems subsystem)
+		{
+			return (int)subsystem * MULTIPLIER_SUBSYSTEM;
+		}
 
 		/// <summary>
 		/// Gets a new, unique id given a sequence of existing ids.
@@ -59,29 +76,17 @@ namespace ICD.Connect.Settings.Utils
 		}
 
 		/// <summary>
-		/// Gets a new, unique id given a sequence of existing ids, a subsystem id and a room id.
+		/// Gets a new, unique id given a squence of existing ids and a subsystem
 		/// </summary>
 		/// <param name="existingIds"></param>
-		/// <param name="subsystemId"></param>
-		/// <param name="roomId"></param>
+		/// <param name="subsystem"></param>
 		/// <returns></returns>
-		public static int GetNewId(IEnumerable<int> existingIds, int subsystemId, int roomId)
+		public static int GetNewId(IEnumerable<int> existingIds, eSubsystems subsystem)
 		{
 			if (existingIds == null)
 				throw new ArgumentNullException("existingIds");
 
-			int start = subsystemId + roomId;
-			return GetNewId(existingIds, start);
-		}
-
-		public static int GetSubsystemId(int subsystemNumber)
-		{
-			return subsystemNumber * MULTIPLIER_SUBSYSTEM;
-		}
-
-		public static int GetRoomId(int roomNumber)
-		{
-			return roomNumber * MULTIPLIER_ROOM;
+			return GetNewId(existingIds, GetSubsystemId(subsystem));
 		}
 
 		public static int GetNewRoomId(IEnumerable<int> existingRoomIds)
@@ -89,11 +94,7 @@ namespace ICD.Connect.Settings.Utils
 			if (existingRoomIds == null)
 				throw new ArgumentNullException("existingRoomIds");
 
-			IcdHashSet<int> existing = existingRoomIds.ToIcdHashSet();
-
-			return Enumerable.Range(1, int.MaxValue)
-			                 .Select(i => GetRoomId(i))
-			                 .First(i => !existing.Contains(i));
+			return GetNewId(existingRoomIds, eSubsystems.Rooms);
 		}
 	}
 }

@@ -18,30 +18,22 @@ namespace ICD.Connect.Settings.Tests.Utils
 			Assert.AreEqual(expected, IdUtils.GetNewId(existing, start));
 		}
 
-		[TestCase(201002, 200000, 1000, 201000, 201001, 201003)]
-		public void GetNewIdSubsystemRoomTest(int expected, int subsystemId, int roomId, params int[] existing)
+		[TestCase(20000002, eSubsystems.Devices, 1000, 20000000, 20000001, 20000003)]
+		public void GetNewIdSubsystemRoomTest(int expected, eSubsystems subsystem, params int[] existing)
 		{
-			Assert.AreEqual(expected, IdUtils.GetNewId(existing, subsystemId, roomId));
+			Assert.AreEqual(expected, IdUtils.GetNewId(existing, subsystem));
 		}
 
-		[TestCase(1, 100000)]
-		[TestCase(2, 200000)]
-		[TestCase(10, 1000000)]
-		public void GetSubsystemIdTest(int subsystemNumber, int expected)
+		[TestCase(eSubsystems.Ports, 10000000)]
+		[TestCase(eSubsystems.Devices, 20000000)]
+		[TestCase(eSubsystems.Cells, 110000000)]
+		public void GetSubsystemIdTest(eSubsystems subsystem, int expected)
 		{
-			Assert.AreEqual(expected, IdUtils.GetSubsystemId(subsystemNumber));
+			Assert.AreEqual(expected, IdUtils.GetSubsystemId(subsystem));
 		}
 
-		[TestCase(1, 1000)]
-		[TestCase(2, 2000)]
-		[TestCase(10, 10000)]
-		public void GetRoomIdTest(int roomNumber, int expected)
-		{
-			Assert.AreEqual(expected, IdUtils.GetRoomId(roomNumber));
-		}
-
-		[TestCase(1000)]
-		[TestCase(3000, 1000, 2000, 4000)]
+		[TestCase(80000000)]
+		[TestCase(80000004, 80000000, 80000001, 80000002, 80000003, 80000005)]
 		public void GetNewRoomIdTest(int expected, params int[] existing)
 		{
 			Assert.AreEqual(expected, IdUtils.GetNewRoomId(existing));
