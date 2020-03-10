@@ -72,7 +72,7 @@ namespace ICD.Connect.Settings.Migration.Migrators
 				match =>
 				{
 					// Make a new id and keep track of the volume point contents
-					int newId = IdUtils.GetNewId(ids, eSubsystems.VolumePoints);
+					int newId = IdUtils.GetNewId(ids, eSubsystem.VolumePoints);
 
 					string elements = match.Groups["elements"].Value;
 					elements = FixDisplayVolumeControlId(xmlCopy, elements);

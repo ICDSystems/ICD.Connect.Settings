@@ -167,7 +167,7 @@ namespace ICD.Connect.Settings.Migration.Migrators
 			                                     .Where(a => a != null)
 			                                     .Select(a => int.Parse(a.Value));
 
-			id = IdUtils.GetNewId(ids, eSubsystems.ConferencePoints);
+			id = IdUtils.GetNewId(ids, eSubsystem.ConferencePoints);
 
 			// Build the conference point
 			XElement conferencePoint = new XElement("ConferencePoint");

@@ -176,7 +176,7 @@ namespace ICD.Connect.Settings.Migration.Migrators
 			int cellIndex = 0;
 			foreach (int roomId in roomIds.Order())
 			{
-				int cellId = IdUtils.GetNewId(ids, eSubsystems.Cells);
+				int cellId = IdUtils.GetNewId(ids, eSubsystem.Cells);
 
 				XElement cell = new XElement("Cell");
 				cell.Add(new XAttribute("id", cellId));

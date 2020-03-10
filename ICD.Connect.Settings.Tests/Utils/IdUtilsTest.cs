@@ -18,16 +18,16 @@ namespace ICD.Connect.Settings.Tests.Utils
 			Assert.AreEqual(expected, IdUtils.GetNewId(existing, start));
 		}
 
-		[TestCase(20000002, eSubsystems.Devices, 1000, 20000000, 20000001, 20000003)]
-		public void GetNewIdSubsystemRoomTest(int expected, eSubsystems subsystem, params int[] existing)
+		[TestCase(20000002, eSubsystem.Devices, 1000, 20000000, 20000001, 20000003)]
+		public void GetNewIdSubsystemRoomTest(int expected, eSubsystem subsystem, params int[] existing)
 		{
 			Assert.AreEqual(expected, IdUtils.GetNewId(existing, subsystem));
 		}
 
-		[TestCase(eSubsystems.Ports, 10000000)]
-		[TestCase(eSubsystems.Devices, 20000000)]
-		[TestCase(eSubsystems.Cells, 110000000)]
-		public void GetSubsystemIdTest(eSubsystems subsystem, int expected)
+		[TestCase(eSubsystem.Ports, 10000000)]
+		[TestCase(eSubsystem.Devices, 20000000)]
+		[TestCase(eSubsystem.Cells, 110000000)]
+		public void GetSubsystemIdTest(eSubsystem subsystem, int expected)
 		{
 			Assert.AreEqual(expected, IdUtils.GetSubsystemId(subsystem));
 		}

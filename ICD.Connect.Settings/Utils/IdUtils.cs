@@ -7,7 +7,7 @@ using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings.Utils
 {
-	public enum eSubsystems
+	public enum eSubsystem
 	{
 		Ports = 1,
 		Devices = 2,
@@ -39,7 +39,7 @@ namespace ICD.Connect.Settings.Utils
 		/// </summary>
 		/// <param name="subsystem"></param>
 		/// <returns></returns>
-		public static int GetSubsystemId(eSubsystems subsystem)
+		public static int GetSubsystemId(eSubsystem subsystem)
 		{
 			return (int)subsystem * MULTIPLIER_SUBSYSTEM;
 		}
@@ -81,7 +81,7 @@ namespace ICD.Connect.Settings.Utils
 		/// <param name="existingIds"></param>
 		/// <param name="subsystem"></param>
 		/// <returns></returns>
-		public static int GetNewId(IEnumerable<int> existingIds, eSubsystems subsystem)
+		public static int GetNewId(IEnumerable<int> existingIds, eSubsystem subsystem)
 		{
 			if (existingIds == null)
 				throw new ArgumentNullException("existingIds");
@@ -94,7 +94,7 @@ namespace ICD.Connect.Settings.Utils
 			if (existingRoomIds == null)
 				throw new ArgumentNullException("existingRoomIds");
 
-			return GetNewId(existingRoomIds, eSubsystems.Rooms);
+			return GetNewId(existingRoomIds, eSubsystem.Rooms);
 		}
 	}
 }
