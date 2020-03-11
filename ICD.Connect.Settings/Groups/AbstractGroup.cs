@@ -109,8 +109,7 @@ namespace ICD.Connect.Settings.Groups
 			}
 			catch (InvalidCastException e)
 			{
-				throw new ArgumentException(string.Format("One or more items not of type {0}", typeof(TOriginator)),
-				                            "items", e);
+				throw new ArgumentException(string.Format("One or more items not of type {0}", typeof(TOriginator)), e);
 			}
 		}
 
