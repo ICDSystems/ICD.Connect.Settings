@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Settings.Originators;
+﻿using System;
+using ICD.Connect.Settings.Originators;
 using System.Collections.Generic;
 using ICD.Common.Properties;
 
@@ -6,6 +7,8 @@ namespace ICD.Connect.Settings.Groups
 {
 	public interface IGroup : IOriginator
 	{
+		event EventHandler OnItemsChanged;
+
 		/// <summary>
 		/// Gets the number of items in the group.
 		/// </summary>

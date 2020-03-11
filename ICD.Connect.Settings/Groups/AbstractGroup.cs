@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
+using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings.Groups
 {
@@ -18,6 +19,12 @@ namespace ICD.Connect.Settings.Groups
 		private readonly List<TOriginator> m_Items;
 		private readonly IcdHashSet<TOriginator> m_ItemsSet; 
 		private readonly SafeCriticalSection m_ItemsSection;
+
+		#region Events
+
+		public event EventHandler OnItemsChanged;
+
+		#endregion
 
 		#region Properties
 
@@ -146,6 +153,8 @@ namespace ICD.Connect.Settings.Groups
 				m_ItemsSection.Leave();
 			}
 
+			OnItemsChanged.Raise(this);
+
 			return true;
 		}
 
@@ -158,17 +167,51 @@ namespace ICD.Connect.Settings.Groups
 			if (items == null)
 				throw new ArgumentNullException("items");
 
+			bool itemAdded = false;
+
 			m_ItemsSection.Enter();
 
 			try
 			{
 				foreach (TOriginator item in items)
-					AddItem(item);
+				{
+					if (m_ItemsSet.Contains(item))
+						continue;
+
+					m_Items.Add(item);
+					m_ItemsSet.Add(item);
+					itemAdded = true;
+				}
 			}
 			finally
 			{
 				m_ItemsSection.Leave();
 			}
+
+			if (itemAdded)
+				OnItemsChanged.Raise(this);
+		}
+
+		private void ClearItems()
+		{
+			m_ItemsSection.Enter();
+
+			bool hadItems;
+
+			try
+			{
+				hadItems = m_Items.Count > 0;
+
+				m_Items.Clear();
+				m_ItemsSet.Clear();
+			}
+			finally
+			{
+				m_ItemsSection.Leave();
+			}
+
+			if (hadItems)
+				OnItemsChanged.Raise(this);
 		}
 
 		#endregion
@@ -182,7 +225,7 @@ namespace ICD.Connect.Settings.Groups
 		{
 			base.ClearSettingsFinal();
 
-			m_ItemsSection.Execute(() => m_Items.Clear());
+			ClearItems();
 		}
 
 		/// <summary>
@@ -205,22 +248,7 @@ namespace ICD.Connect.Settings.Groups
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			m_ItemsSection.Enter();
-
-			try
-			{
-				m_Items.Clear();
-				m_ItemsSet.Clear();
-
-				IEnumerable<TOriginator> items = GetOriginatorsSkipExceptions(settings.GetIds(), factory);
-
-				m_Items.AddRange(items);
-				m_ItemsSet.AddRange(m_Items);
-			}
-			finally
-			{
-				m_ItemsSection.Leave();
-			}
+			AddItems(GetOriginatorsSkipExceptions(settings.GetIds(), factory));
 		}
 
 		private IEnumerable<TOriginator> GetOriginatorsSkipExceptions(IEnumerable<int> ids,
