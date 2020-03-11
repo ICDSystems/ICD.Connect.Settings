@@ -79,7 +79,7 @@ namespace ICD.Connect.Settings.Groups
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns>true if item was added, false if item was already in the group</returns>
-		public bool AddItem(IOriginator item)
+		bool IGroup.AddItem(IOriginator item)
 		{
 			if (item == null)
 				throw new ArgumentNullException("item");
@@ -96,7 +96,7 @@ namespace ICD.Connect.Settings.Groups
 		/// Adds items to the group if they aren't already in the group
 		/// </summary>
 		/// <param name="items"></param>
-		public void AddItems(IEnumerable<IOriginator> items)
+		void IGroup.AddItems(IEnumerable<IOriginator> items)
 		{
 			if (items == null)
 				throw new ArgumentNullException("items");
