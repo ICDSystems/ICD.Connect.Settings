@@ -7,6 +7,7 @@ using ICD.Connect.Settings.Originators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Properties;
 
 namespace ICD.Connect.Settings.Groups
 {
@@ -52,7 +53,7 @@ namespace ICD.Connect.Settings.Groups
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>
-		public bool Contains(TOriginator item)
+		public bool Contains([NotNull] TOriginator item)
 		{
 			if (item == null)
 				throw new ArgumentNullException("item");
@@ -65,7 +66,7 @@ namespace ICD.Connect.Settings.Groups
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>
-		bool IGroup.Contains(IOriginator item)
+		bool IGroup.Contains([NotNull] IOriginator item)
 		{
 			if (item == null)
 				throw new ArgumentNullException("item");
@@ -79,7 +80,7 @@ namespace ICD.Connect.Settings.Groups
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns>true if item was added, false if item was already in the group</returns>
-		bool IGroup.AddItem(IOriginator item)
+		bool IGroup.AddItem([NotNull] IOriginator item)
 		{
 			if (item == null)
 				throw new ArgumentNullException("item");
@@ -96,7 +97,7 @@ namespace ICD.Connect.Settings.Groups
 		/// Adds items to the group if they aren't already in the group
 		/// </summary>
 		/// <param name="items"></param>
-		void IGroup.AddItems(IEnumerable<IOriginator> items)
+		void IGroup.AddItems([NotNull] IEnumerable<IOriginator> items)
 		{
 			if (items == null)
 				throw new ArgumentNullException("items");
@@ -126,7 +127,7 @@ namespace ICD.Connect.Settings.Groups
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns>true if item was added, false if item was already in the group</returns>
-		public bool AddItem(TOriginator item)
+		public bool AddItem([NotNull] TOriginator item)
 		{
 			if (item == null)
 				throw new ArgumentNullException("item");
@@ -153,7 +154,7 @@ namespace ICD.Connect.Settings.Groups
 		/// Adds items to the group if they aren't already in the group
 		/// </summary>
 		/// <param name="items"></param>
-		public void AddItems(IEnumerable<TOriginator> items)
+		public void AddItems([NotNull] IEnumerable<TOriginator> items)
 		{
 			if (items == null)
 				throw new ArgumentNullException("items");
