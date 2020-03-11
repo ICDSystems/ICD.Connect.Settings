@@ -131,8 +131,7 @@ namespace ICD.Connect.Settings
 
 			string name = IcdPath.GetFileNameWithoutExtension(IcdConfigPath);
 
-			string date = IcdEnvironment.GetLocalTime()
-			                            .ToUniversalTime()
+			string date = IcdEnvironment.GetUtcTime()
 			                            .ToString("s")
 			                            .Replace(':', '-') + 'Z';
 
