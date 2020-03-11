@@ -1,5 +1,6 @@
 ﻿using ICD.Connect.Settings.Originators;
 using System.Collections.Generic;
+using ICD.Common.Properties;
 
 namespace ICD.Connect.Settings.Groups
 {
@@ -20,20 +21,20 @@ namespace ICD.Connect.Settings.Groups
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>
-		bool Contains(IOriginator item);
+		bool Contains([NotNull] IOriginator item);
 
 		/// <summary>
 		/// Adds an item to the group
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns>true if item was added, false if item was already in the group</returns>
-		bool AddItem(IOriginator item);
+		bool AddItem([NotNull] IOriginator item);
 
 		/// <summary>
 		/// Adds items to the group if they aren't already in the group
 		/// </summary>
 		/// <param name="items"></param>
-		void AddItems(IEnumerable<IOriginator> items);
+		void AddItems([NotNull] IEnumerable<IOriginator> items);
 	}
 
 	public interface IGroup<TOriginator> : IGroup
@@ -49,19 +50,19 @@ namespace ICD.Connect.Settings.Groups
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>
-		bool Contains(TOriginator item);
+		bool Contains([NotNull] TOriginator item);
 
 		/// <summary>
 		/// Adds an item to the group
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns>true if item was added, false if item was already in the group</returns>
-		bool AddItem(TOriginator item);
+		bool AddItem([NotNull] TOriginator item);
 
 		/// <summary>
 		/// Adds items to the group if they aren't already in the group
 		/// </summary>
 		/// <param name="items"></param>
-		void AddItems(IEnumerable<TOriginator> items);
+		void AddItems([NotNull] IEnumerable<TOriginator> items);
 	}
 }
