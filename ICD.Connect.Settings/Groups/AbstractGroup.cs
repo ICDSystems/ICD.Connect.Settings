@@ -106,9 +106,10 @@ namespace ICD.Connect.Settings.Groups
 				IEnumerable<TOriginator> itemsCast = items.Cast<TOriginator>();
 				AddItems(itemsCast);
 			}
-			catch (InvalidCastException)
+			catch (InvalidCastException e)
 			{
-				throw new ArgumentException(string.Format("One or more items not of type {0}", typeof(TOriginator)), "items");
+				throw new ArgumentException(string.Format("One or more items not of type {0}", typeof(TOriginator)),
+				                            "items", e);
 			}
 		}
 
