@@ -192,7 +192,7 @@ namespace ICD.Connect.Settings.Groups
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.SetIds(m_ItemsSection.Execute(() => m_Items.Select(i => i.Id).ToList()));
+			settings.SetIds(m_ItemsSection.Execute(() => m_Items.Where(i => i.Serialize).Select(i => i.Id).ToList()));
 		}
 
 		/// <summary>
