@@ -15,12 +15,6 @@ using ICD.Connect.Settings.Header;
 using ICD.Connect.Settings.Migration;
 using ICD.Connect.Settings.Utils;
 using ICD.Connect.Settings.Validation;
-#if SIMPLSHARP
-using Crestron.SimplSharp.CrestronIO;
-using Activator = Crestron.SimplSharp.Reflection.Activator;
-#else
-using System.IO;
-#endif
 
 namespace ICD.Connect.Settings
 {
@@ -105,7 +99,7 @@ namespace ICD.Connect.Settings
 
 			Logger.AddEntry(eSeverity.Notice, "Saving settings to {0}", path);
 
-			using (IcdFileStream stream = IcdFile.Open(path, FileMode.Create))
+			using (IcdFileStream stream = IcdFile.Open(path, eIcdFileMode.Create))
 			{
 				using (IcdXmlTextWriter writer = new IcdXmlTextWriter(stream, new UTF8Encoding(false)))
 				{
