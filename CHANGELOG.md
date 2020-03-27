@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - RoomConfig-Base.xml deprecated in favor of SystemConfig.xml
+
 ## [10.0.0] - 2020-03-20
 ### Added
  - Added validation methods to settings

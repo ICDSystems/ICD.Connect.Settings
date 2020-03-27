@@ -23,9 +23,10 @@ namespace ICD.Connect.Settings
 	/// </summary>
 	public static class FileOperations
 	{
-		private const string ROOT_ELEMENT = "IcdConfig";
+		private const string ROOT_ELEMENT = "SystemConfig";
 
-		private const string CONFIG_LOCAL_PATH = "RoomConfig-Base.xml";
+		private const string CONFIG_LOCAL_PATH = "SystemConfig.xml";
+		private const string CONFIG_LOCAL_PATH_OLD = "RoomConfig-Base.xml";
 		private const string LICENSE_LOCAL_PATH = "license";
 		private const string SYSTEM_KEY_LOCAL_PATH = "systemkey";
 
@@ -34,14 +35,20 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Gets the path to the configuration file.
 		/// </summary>
-		public static string IcdConfigPath { get { return PathUtils.GetProgramConfigPath(CONFIG_LOCAL_PATH); } }
+		public static string SystemConfigPath { get { return PathUtils.GetProgramConfigPath(CONFIG_LOCAL_PATH); } }
 
-		[Obsolete("Use systemkey instead")]
+		/// <summary>
+		/// Backwards compatibility.
+		/// </summary>
+		[Obsolete("Use SystemConfigPath instead")]
+		private static string RoomConfigPath { get { return PathUtils.GetProgramConfigPath(CONFIG_LOCAL_PATH_OLD); } }
+
+		[Obsolete("Use SystemKeyPath instead")]
 		public static string LicensePath { get { return PathUtils.GetProgramConfigPath(LICENSE_LOCAL_PATH); } }
 
 		public static string SystemKeyPath { get { return PathUtils.GetProgramConfigPath(SYSTEM_KEY_LOCAL_PATH); } }
 
-		public static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
+		private static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
 
 		#endregion
 
@@ -93,7 +100,7 @@ namespace ICD.Connect.Settings
 			if (backup)
 				BackupSettings();
 
-			string path = IcdConfigPath;
+			string path = SystemConfigPath;
 			string directory = IcdPath.GetDirectoryName(path);
 			IcdDirectory.CreateDirectory(directory);
 
@@ -116,31 +123,6 @@ namespace ICD.Connect.Settings
 		}
 
 		/// <summary>
-		/// Copies the existing settings to a new path with the current date.
-		/// </summary>
-		public static void BackupSettings()
-		{
-			if (!IcdFile.Exists(IcdConfigPath))
-				return;
-
-			string name = IcdPath.GetFileNameWithoutExtension(IcdConfigPath);
-
-			string date = IcdEnvironment.GetUtcTime()
-			                            .ToString("s")
-			                            .Replace(':', '-') + 'Z';
-
-			string newName = string.Format("{0}_Backup_{1}.xml", name, date);
-			string newPath = PathUtils.GetProgramDataPath(newName);
-
-			Logger.AddEntry(eSeverity.Notice, "Creating settings backup of {0} at {1}", IcdConfigPath, newPath);
-
-			IcdDirectory.CreateDirectory(PathUtils.ProgramDataPath);
-			IcdFile.Copy(IcdConfigPath, newPath);
-
-			Logger.AddEntry(eSeverity.Notice, "Finished settings backup");
-		}
-
-		/// <summary>
 		/// Loads the settings from disk to the core.
 		/// </summary>
 		public static void LoadCoreSettings<TCore, TSettings>(TCore core)
@@ -150,18 +132,27 @@ namespace ICD.Connect.Settings
 			if (core == null)
 				throw new ArgumentNullException("core");
 
-			TSettings settings = Activator.CreateInstance<TSettings>();
+			TSettings settings = ReflectionUtils.CreateInstance<TSettings>();
 
 			// Ensure the new core settings don't default to an id of 0.
 			settings.Id = IdUtils.ID_CORE;
 
+			// Backwards compatibility
+			if (!IcdFile.Exists(SystemConfigPath) &&
+			    IcdFile.Exists(RoomConfigPath))
+			{
+				BackupSettings();
+				Logger.AddEntry(eSeverity.Notice, "Renaming {0} to {1}", CONFIG_LOCAL_PATH_OLD, CONFIG_LOCAL_PATH);
+				IcdFile.Move(RoomConfigPath, SystemConfigPath);
+			}
+
 			// Load XML config into string
 			string configXml = null;
-			if (IcdFile.Exists(IcdConfigPath))
+			if (IcdFile.Exists(SystemConfigPath))
 			{
-				Logger.AddEntry(eSeverity.Notice, "Reading settings from {0}", IcdConfigPath);
+				Logger.AddEntry(eSeverity.Notice, "Reading settings from {0}", SystemConfigPath);
 
-				configXml = IcdFile.ReadToEnd(IcdConfigPath, new UTF8Encoding(false));
+				configXml = IcdFile.ReadToEnd(SystemConfigPath, new UTF8Encoding(false));
 				configXml = EncodingUtils.StripUtf8Bom(configXml);
 
 				try
@@ -180,7 +171,7 @@ namespace ICD.Connect.Settings
 			}
 			else
 			{
-				Logger.AddEntry(eSeverity.Warning, "Failed to find settings at {0}", IcdConfigPath);
+				Logger.AddEntry(eSeverity.Warning, "Failed to find settings at {0}", SystemConfigPath);
 			}
 
 			bool save;
@@ -205,6 +196,43 @@ namespace ICD.Connect.Settings
 				BackupSettings();
 
 			ApplyCoreSettings(core, settings);
+		}
+
+		#endregion
+
+		#region Private Methods
+
+		/// <summary>
+		/// Copies the existing settings to a new path with the current date.
+		/// </summary>
+		private static void BackupSettings()
+		{
+			// Backwards compatibility
+			string configPath =
+				IcdFile.Exists(SystemConfigPath)
+					? SystemConfigPath
+					: IcdFile.Exists(RoomConfigPath)
+						? RoomConfigPath
+						: SystemConfigPath;
+
+			if (!IcdFile.Exists(configPath))
+				return;
+
+			string name = IcdPath.GetFileNameWithoutExtension(configPath);
+
+			string date = IcdEnvironment.GetUtcTime()
+			                            .ToString("s")
+			                            .Replace(':', '-') + 'Z';
+
+			string newName = string.Format("{0}_Backup_{1}.xml", name, date);
+			string newPath = PathUtils.GetProgramDataPath(newName);
+
+			Logger.AddEntry(eSeverity.Notice, "Creating settings backup of {0} at {1}", configPath, newPath);
+
+			IcdDirectory.CreateDirectory(PathUtils.ProgramDataPath);
+			IcdFile.Copy(configPath, newPath);
+
+			Logger.AddEntry(eSeverity.Notice, "Finished settings backup");
 		}
 
 		/// <summary>
@@ -247,10 +275,6 @@ namespace ICD.Connect.Settings
 
 			return output;
 		}
-
-		#endregion
-
-		#region Private Methods
 
 		/// <summary>
 		/// Performs some additional validation/migration before applying XML to the given settings instance.
