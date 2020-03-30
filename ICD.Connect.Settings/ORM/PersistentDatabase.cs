@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using Crestron.SimplSharp.CrestronData;
-using Crestron.SimplSharp.SQLite;
 using ICD.Common.Utils;
 #if SIMPLSHARP
+using Crestron.SimplSharp.CrestronData;
+using Crestron.SimplSharp.SQLite;
 #else
 using System.Data;
 using SQLiteConnection = Microsoft.Data.Sqlite.SqliteConnection;
 #endif
-using ICD.Connect.Settings.ORM.DapperLite;
+using ICD.Connect.Settings.ORM.Databases;
 
 namespace ICD.Connect.Settings.ORM
 {
 	public sealed class PersistentDatabase
 	{
-		private readonly SqliteDatabase<Guid> m_Database;
+		private readonly SqliteDatabase m_Database;
 
 		/// <summary>
 		///  constructor.
@@ -25,9 +25,7 @@ namespace ICD.Connect.Settings.ORM
 			string connectionString = string.Format("Data Source={0};", path);
 
 			SQLiteConnection connection = new SQLiteConnection(connectionString);
-			m_Database = new SqliteDatabase<Guid>(connection);
-
-			m_Database.Init();
+			m_Database = new SqliteDatabase(connection);
 		}
 
 		/// <summary>

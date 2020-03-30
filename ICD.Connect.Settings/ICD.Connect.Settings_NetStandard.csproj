@@ -39,7 +39,6 @@
     <None Remove="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DapperLite\DapperLite.NETCF35\DapperLite.NETCF35_NetStandard.csproj" />
     <ProjectReference Include="..\..\ICD.Common.Logging\ICD.Common.Logging\ICD.Common.Logging_NetStandard.csproj" />
     <ProjectReference Include="..\..\ICD.Common.Permissions\ICD.Common.Permissions\ICD.Common.Permissions_NetStandard.csproj" />
     <ProjectReference Include="..\..\ICD.Common.Utils\ICD.Common.Utils\ICD.Common.Utils_NetStandard.csproj" />

@@ -96,12 +96,12 @@
     <Compile Include="Groups\IGroupSettings.cs" />
     <Compile Include="IDeviceFactory.cs" />
     <Compile Include="ORM\Attributes.cs" />
-    <Compile Include="ORM\DapperLite\Database.cs" />
-    <Compile Include="ORM\DapperLite\SqliteDatabase.cs" />
-    <Compile Include="ORM\DapperLite\SqlMapper.cs" />
-    <Compile Include="ORM\DapperLite\SqlMapperInsertUpdate.cs" />
+    <Compile Include="ORM\Databases\AbstractDatabase.cs" />
+    <Compile Include="ORM\Databases\SqliteDatabase.cs" />
+    <Compile Include="ORM\Extensions\DbConnectionExtensions.cs" />
     <Compile Include="ORM\Persistent.cs" />
     <Compile Include="ORM\PersistentDatabase.cs" />
+    <Compile Include="ORM\TypeModel.cs" />
     <Compile Include="Utils\ConfigUtils.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x0_To_3x1.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x1_To_4x0.cs" />
