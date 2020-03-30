@@ -65,6 +65,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\Crestron\SDK\SimplSharpReflectionInterface.dll</HintPath>
     </Reference>
+    <Reference Include="SimplSharpSQLHelperInterface, Version=1.0.92.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ProgramData\Crestron\SDK\SimplSharpSQLHelperInterface.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -91,6 +95,13 @@
     <Compile Include="Groups\IGroup.cs" />
     <Compile Include="Groups\IGroupSettings.cs" />
     <Compile Include="IDeviceFactory.cs" />
+    <Compile Include="ORM\Attributes.cs" />
+    <Compile Include="ORM\DapperLite\Database.cs" />
+    <Compile Include="ORM\DapperLite\SqliteDatabase.cs" />
+    <Compile Include="ORM\DapperLite\SqlMapper.cs" />
+    <Compile Include="ORM\DapperLite\SqlMapperInsertUpdate.cs" />
+    <Compile Include="ORM\Persistent.cs" />
+    <Compile Include="ORM\PersistentDatabase.cs" />
     <Compile Include="Utils\ConfigUtils.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x0_To_3x1.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x1_To_4x0.cs" />
