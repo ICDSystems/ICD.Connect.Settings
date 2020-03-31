@@ -179,7 +179,13 @@ namespace ICD.Connect.Settings.ORM.Extensions
 					param.DbType = typeModel.GetPropertyType(data, propertyName);
 					param.Value = typeModel.GetPropertyValue(data, propertyName) ?? DBNull.Value;
 				}
+
+#if SIMPLSHARP
+				// Hack - Crestron's Add(object) method doesn't do the necessary cast
+				cmd.Parameters.Add(param.InnerObject);
+#else
 				cmd.Parameters.Add(param);
+#endif
 			}
 		}
 
