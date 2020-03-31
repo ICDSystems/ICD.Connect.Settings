@@ -5,10 +5,8 @@ using System.Text;
 using ICD.Common.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronData;
-using Crestron.SimplSharp.Reflection;
 #else
 using System.Data;
-using System.Reflection;
 #endif
 
 namespace ICD.Connect.Settings.ORM.Extensions
@@ -99,10 +97,10 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		/// </summary>
 		public static void Insert(this IDbConnection connection, IDbTransaction transaction, string tableName, object param)
 		{
-			TypeModel typeModel = TypeModel.Get(param.GetType());
+			TypeModel paramModel = TypeModel.Get(param.GetType());
 
-			string cols = string.Join(",", typeModel.GetPropertyNames().ToArray());
-			string colsParams = string.Join(",", typeModel.GetPropertyNames().Select(p => "@" + p).ToArray());
+			string cols = paramModel.GetDelimitedSafeFieldList(",");
+			string colsParams = paramModel.GetDelimitedSafeParamList(",");
 			string sql = "INSERT INTO " + tableName + " (" + cols + ") VALUES (" + colsParams + ")";
 
 			int result = connection.Execute(sql, param, transaction);
@@ -114,17 +112,18 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		/// <summary>
 		/// Inspired by Dapper.Rainbow.
 		/// </summary>
-		public static void Update(this IDbConnection connection, IDbTransaction transaction, string tableName, object param)
+		public static void Update<T>(this IDbConnection connection, IDbTransaction transaction, string tableName, object param)
 		{
-			TypeModel typeModel = TypeModel.Get(param.GetType());
+			TypeModel typeModel = TypeModel.Get(typeof(T));
+			TypeModel paramModel = TypeModel.Get(param.GetType());
 
 			StringBuilder builder = new StringBuilder();
 			{
 				builder.Append("UPDATE ").Append(tableName).Append(" SET ");
-				builder.AppendLine(string.Join(",", typeModel.GetPropertyNames()
-				                                             .Where(n => n != typeModel.PrimaryKeyName)
-				                                             .Select(p => p + "= @" + p)
-				                                             .ToArray()));
+				builder.AppendLine(string.Join(",", paramModel.GetPropertyNames()
+				                                              .Where(n => n != typeModel.PrimaryKeyName)
+				                                              .Select(p => p + "= @" + p)
+				                                              .ToArray()));
 
 				builder.Append(string.Format(" WHERE {0} = @{0}", typeModel.PrimaryKeyName));
 			}
@@ -175,8 +174,11 @@ namespace ICD.Connect.Settings.ORM.Extensions
 			foreach (string propertyName in typeModel.GetPropertyNames())
 			{
 				IDbDataParameter param = cmd.CreateParameter();
-				param.ParameterName = "@" + propertyName;
-				param.Value = typeModel.GetProperty(propertyName).GetValue(data, null) ?? DBNull.Value;
+				{
+					param.ParameterName = "@" + propertyName;
+					param.DbType = typeModel.GetPropertyType(data, propertyName);
+					param.Value = typeModel.GetPropertyValue(data, propertyName) ?? DBNull.Value;
+				}
 				cmd.Parameters.Add(param);
 			}
 		}
@@ -202,7 +204,7 @@ namespace ICD.Connect.Settings.ORM.Extensions
 				if (value == DBNull.Value)
 					continue;
 
-				typeModel.SetProperty(objectClass, columnName, value);
+				typeModel.SetPropertyValue(objectClass, columnName, value);
 			}
 		}
 

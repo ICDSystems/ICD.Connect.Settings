@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ICD.Common.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronData;
@@ -64,7 +63,7 @@ namespace ICD.Connect.Settings.ORM
 		/// Gets a single instance of a type by specifying the row Id.
 		/// </summary>
 		/// <returns>A specific instance of the specified type, or the default value for the type.</returns>
-		public T Get<T>(Guid id)
+		public T Get<T>(object id)
 		{
 			return m_Database.Get<T>(id);
 		}
@@ -73,11 +72,11 @@ namespace ICD.Connect.Settings.ORM
 		/// Gets a single instance of a type. Filters by a single column.
 		/// </summary>
 		/// <param name="columnName">Used to generate a WHERE clause.</param>
-		/// <param name="data">Input parameter for the WHERE clause.</param>
+		/// <param name="columnValue">Input parameter for the WHERE clause.</param>
 		/// <returns>A specific instance of the specified type, or the default value for the type.</returns>
-		public T Get<T>(string columnName, object data)
+		public T Get<T>(string columnName, object columnValue)
 		{
-			return m_Database.Get<T>(columnName, data);
+			return m_Database.Get<T>(columnName, columnValue);
 		}
 
 		/// <summary>
@@ -85,11 +84,11 @@ namespace ICD.Connect.Settings.ORM
 		/// in a WHERE clause.
 		/// </summary>
 		/// <param name="columnName">Used to generate a WHERE clause.</param>
-		/// <param name="data">Input parameter for the WHERE clause.</param>
+		/// <param name="columnValue">Input parameter for the WHERE clause.</param>
 		/// <returns>All records in the table matching the supplied type.</returns>
-		public IEnumerable<T> All<T>(string columnName, object data)
+		public IEnumerable<T> All<T>(string columnName, object columnValue)
 		{
-			return m_Database.All<T>(columnName, data);
+			return m_Database.All<T>(columnName, columnValue);
 		}
 
 		/// <summary>
@@ -104,7 +103,7 @@ namespace ICD.Connect.Settings.ORM
 		/// <summary>
 		/// Inserts the supplied object into the database. Infers table name from type name.
 		/// </summary>
-		public void Insert(object obj)
+		public void Insert<T>(T obj)
 		{
 			m_Database.Insert(obj);
 		}
@@ -112,9 +111,9 @@ namespace ICD.Connect.Settings.ORM
 		/// <summary>
 		/// Updates the supplied object. Infers table name from type name.
 		/// </summary>
-		public void Update(object obj)
+		public void Update<T>(object obj)
 		{
-			m_Database.Update(obj);
+			m_Database.Update<T>(obj);
 		}
 	}
 }

@@ -99,8 +99,7 @@ namespace ICD.Connect.Settings.ORM.Databases
 		public IEnumerable<T> All<T>(string columnName, object data)
 		{
 			string tableName = LazyLoadTable(typeof(T));
-			string sql = String.Format("SELECT * FROM {0} WHERE {1} = @param", tableName, columnName);
-			return GetConnection().Query<T>(sql, new {param = data});
+			return GetConnection().Query<T>(string.Format("SELECT * FROM {0} WHERE {1} = @param", tableName, columnName), new {param = data});
 		}
 
 		/// <summary>
@@ -116,19 +115,19 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <summary>
 		/// Inserts the supplied object into the database. Infers table name from type name.
 		/// </summary>
-		public void Insert(object obj)
+		public void Insert<T>(T obj)
 		{
-			string tableName = LazyLoadTable(obj);
+			string tableName = LazyLoadTable(typeof(T));
 			GetConnection().Insert(null, tableName, obj);
 		}
 
 		/// <summary>
 		/// Updates the supplied object. Infers table name from type name.
 		/// </summary>
-		public void Update(object obj)
+		public void Update<T>(object obj)
 		{
-			string tableName = LazyLoadTable(obj);
-			GetConnection().Update(null, tableName, obj);
+			string tableName = LazyLoadTable(typeof(T));
+			GetConnection().Update<T>(null, tableName, obj);
 		}
 
 		#endregion
@@ -173,11 +172,6 @@ namespace ICD.Connect.Settings.ORM.Databases
 			m_TableNames.Add(tableName);
 
 			return tableName;
-		}
-
-		private string LazyLoadTable(object obj)
-		{
-			return LazyLoadTable(obj.GetType());
 		}
 
 		#endregion
