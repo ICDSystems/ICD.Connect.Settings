@@ -193,20 +193,25 @@ namespace ICD.Connect.Settings.ORM
 		/// <summary>
 		/// Gets the DbType for the given column.
 		/// </summary>
-		/// <param name="instance"></param>
 		/// <param name="columnName"></param>
 		/// <returns></returns>
-		public DbType GetPropertyType(object instance, string columnName)
+		public DbType GetPropertyDbType(string columnName)
 		{
 			PropertyInfo pi = m_Props[columnName];
-			object value = pi.GetValue(instance, null);
+			Type underlyingPropertyType = Nullable.GetUnderlyingType(pi.PropertyType) ?? pi.PropertyType;
+			return s_TypeToDbType[underlyingPropertyType];
+		}
 
-			// Can't be ternary because of CType nonsense
-			Type type = pi.PropertyType;
-			if (value != null)
-				type = value.GetType();
-
-			return GetPropertyType(type);
+		/// <summary>
+		/// Gets the SQL type for the given column.
+		/// </summary>
+		/// <param name="columnName"></param>
+		/// <returns></returns>
+		public string GetPropertySqlType(string columnName)
+		{
+			PropertyInfo pi = m_Props[columnName];
+			Type underlyingPropertyType = Nullable.GetUnderlyingType(pi.PropertyType) ?? pi.PropertyType;
+			return s_TypeToSqlType[underlyingPropertyType];
 		}
 
 		/// <summary>
@@ -255,43 +260,30 @@ namespace ICD.Connect.Settings.ORM
 
 		public string GetDelimitedCreateParamList(string delimiter)
 		{
-			return string.Join(delimiter, m_Props.Select(kvp => GetCreateParam(kvp)).ToArray());
+			return string.Join(delimiter, m_Props.Keys.Select(columnName => GetCreateParam(columnName)).ToArray());
 		}
 
 		#endregion
 
 		#region Private Methods
 
-		private string GetCreateParam(KeyValuePair<string, PropertyInfo> kvp)
+		private string GetCreateParam(string columnName)
 		{
-			Type underlyingPropertyType = Nullable.GetUnderlyingType(kvp.Value.PropertyType) ?? kvp.Value.PropertyType;
-			
 			// Name
-			StringBuilder builder = new StringBuilder(kvp.Key);
+			StringBuilder builder = new StringBuilder(columnName);
 			{
 				// Type
-				builder.AppendFormat(" {0}", s_TypeToSqlType[underlyingPropertyType]);
+				builder.AppendFormat(" {0}", GetPropertySqlType(columnName));
 
 				// Primary key
-				if (kvp.Key == m_PrimaryKeyName)
+				if (columnName == m_PrimaryKeyName)
 					builder.Append(" PRIMARY KEY");
 
 				// Auto-increment
-				if (kvp.Key == m_PrimaryKeyName && AutoIncrements)
+				if (columnName == m_PrimaryKeyName && AutoIncrements)
 					builder.Append(" AUTOINCREMENT");
 			}
 			return builder.ToString();
-		}
-
-		/// <summary>
-		/// Gets the DbType for the given C# Type.
-		/// </summary>
-		/// <param name="propertyType"></param>
-		/// <returns></returns>
-		private static DbType GetPropertyType(Type propertyType)
-		{
-			Type underlyingPropertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-			return s_TypeToDbType[underlyingPropertyType];
 		}
 
 		#endregion

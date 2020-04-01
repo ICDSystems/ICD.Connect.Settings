@@ -327,7 +327,7 @@ namespace ICD.Connect.Settings.ORM.Extensions
 				IDbDataParameter param = cmd.CreateParameter();
 				{
 					param.ParameterName = "@" + propertyName;
-					param.DbType = typeModel.GetPropertyType(data, propertyName);
+					param.DbType = typeModel.GetPropertyDbType(propertyName);
 					param.Value = typeModel.GetPropertyValue(data, propertyName) ?? DBNull.Value;
 				}
 

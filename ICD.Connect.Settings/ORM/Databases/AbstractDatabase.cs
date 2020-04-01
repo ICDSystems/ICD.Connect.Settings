@@ -139,12 +139,6 @@ namespace ICD.Connect.Settings.ORM.Databases
 		}
 
 		/// <summary>
-		/// This abstract method must be implemented by deriving types as
-		/// the implementation is specific to the SQL vendor (and possibly version).
-		/// </summary>
-		protected abstract IEnumerable<string> GetTables();
-
-		/// <summary>
 		/// Creates the table for the given type.
 		/// </summary>
 		/// <param name="type"></param>
@@ -152,20 +146,36 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <returns></returns>
 		protected abstract void CreateTable(Type type, string name);
 
+		/// <summary>
+		/// Throws an exception if the table columns do not match the type properties.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="name"></param>
+		protected abstract void ValidateTable(Type type, string name);
+
+		/// <summary>
+		/// Returns true if a table with the given name exists.
+		/// </summary>
+		/// <param name="name"></param>
+		protected abstract bool TableExists(string name);
+
 		#endregion
 
 		#region Private Methods
 
 		private string LazyLoadTable(Type type)
 		{
-			if (m_TableNames.Count == 0)
-				m_TableNames.AddRange(GetTables());
-
 			string tableName = TypeModel.Get(type).TableName;
 
 			if (!m_TableNames.Contains(tableName))
-				CreateTable(type, tableName);
-			m_TableNames.Add(tableName);
+			{
+				ValidateTable(type, tableName);
+
+				if (!TableExists(tableName))
+					CreateTable(type, tableName);
+
+				m_TableNames.Add(tableName);
+			}
 
 			return tableName;
 		}
