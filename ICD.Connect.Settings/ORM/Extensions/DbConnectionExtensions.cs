@@ -23,7 +23,7 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		/// <returns>Number of rows affected.</returns>
 		public static int Execute(this IDbConnection cnn, string sql)
 		{
-			return Execute(cnn, sql, null, null);
+			return cnn.Execute(sql, null, null);
 		}
 
 		/// <summary>
@@ -36,6 +36,20 @@ namespace ICD.Connect.Settings.ORM.Extensions
 			{
 				AddParams(cmd, param);
 				return cmd.ExecuteNonQuery();
+			}
+		}
+
+		public static object ExecuteScalar(this IDbConnection cnn, string sql)
+		{
+			return cnn.ExecuteScalar(sql, null, null);
+		}
+
+		public static object ExecuteScalar(this IDbConnection cnn, string sql, object param, IDbTransaction transaction)
+		{
+			using (IDbCommand cmd = SetupCommand(cnn, transaction, sql, null, null))
+			{
+				AddParams(cmd, param);
+				return cmd.ExecuteScalar();
 			}
 		}
 
@@ -77,51 +91,6 @@ namespace ICD.Connect.Settings.ORM.Extensions
 					return ReadReferences<T>(reader).ToArray();
 				}
 			}
-		}
-
-		/// <summary>
-		/// Inserts the given parameters into the given table.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="connection"></param>
-		/// <param name="transaction"></param>
-		/// <param name="tableName"></param>
-		/// <param name="param"></param>
-		public static void Insert<T>(this IDbConnection connection, IDbTransaction transaction, string tableName, object param)
-		{
-			TypeModel typeModel = TypeModel.Get(typeof(T));
-			TypeModel paramModel = TypeModel.Get(param.GetType());
-
-			string[] properties =
-				paramModel.GetPropertyNames()
-					// Don't try to insert the primary key if it auto-increments
-				          .Where(p => !(p == typeModel.PrimaryKeyName && typeModel.AutoIncrements))
-				          .ToArray();
-
-			// HACK - "auto-increment" behaviour for Guid ids
-			AutoIncrementGuid(typeModel, paramModel, param);
-
-			StringBuilder builder = new StringBuilder();
-			{
-				builder.Append("INSERT INTO ").Append(tableName);
-
-				// Columns
-				builder.Append("(");
-				builder.Append(string.Join(",", properties));
-				builder.Append(")");
-
-				builder.Append(" VALUES ");
-
-				// Values
-				builder.Append("(");
-				builder.Append(string.Join(",", properties.Select(p => string.Format("@{0}", p)).ToArray()));
-				builder.Append(")");
-			}
-			string sql = builder.ToString();
-
-			int result = connection.Execute(sql, param, transaction);
-			if (result <= 0)
-				throw new ApplicationException("Return value of INSERT should be greater than 0. An error has occurred with the INSERT.");
 		}
 
 		/// <summary>
@@ -172,6 +141,54 @@ namespace ICD.Connect.Settings.ORM.Extensions
 			string sql = builder.ToString();
 
 			return connection.Query<T>(sql, param);
+		}
+
+		/// <summary>
+		/// Inserts the given parameters into the given table.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="connection"></param>
+		/// <param name="transaction"></param>
+		/// <param name="tableName"></param>
+		/// <param name="param"></param>
+		public static void Insert<T>(this IDbConnection connection, IDbTransaction transaction, string tableName, object param)
+		{
+			TypeModel typeModel = TypeModel.Get(typeof(T));
+			TypeModel paramModel = TypeModel.Get(param.GetType());
+
+			string[] properties =
+				paramModel.GetPropertyNames()
+				          // Don't try to insert the primary key if it auto-increments
+				          .Where(p => !(p == typeModel.PrimaryKeyName && typeModel.AutoIncrements))
+				          .ToArray();
+
+			// "auto-increment" behaviour for Guid ids
+			AutoIncrementGuid(typeModel, paramModel, param);
+
+			StringBuilder builder = new StringBuilder();
+			{
+				builder.Append("INSERT INTO ").Append(tableName);
+
+				// Columns
+				builder.Append("(");
+				builder.Append(string.Join(",", properties));
+				builder.Append(")");
+
+				builder.Append(" VALUES ");
+
+				// Values
+				builder.Append("(");
+				builder.Append(string.Join(",", properties.Select(p => string.Format("@{0}", p)).ToArray()));
+				builder.Append(")");
+			}
+			string sql = builder.ToString();
+
+			int result = connection.Execute(sql, param, transaction);
+			if (result <= 0)
+				throw new ApplicationException("Return value of INSERT should be greater than 0. An error has occurred with the INSERT.");
+
+			// Assign the inserted ID back onto the param
+			QueryLastId(connection, tableName, typeModel, paramModel, param);
 		}
 
 		/// <summary>
@@ -371,6 +388,28 @@ namespace ICD.Connect.Settings.ORM.Extensions
 				return;
 
 			property.SetValue(param, Guid.NewGuid(), null);
+		}
+
+		/// <summary>
+		/// Called immediately after an INSERT to update the given object's primary key with the resulting key in the table.
+		/// </summary>
+		/// <param name="connection"></param>
+		/// <param name="tableName"></param>
+		/// <param name="typeModel"></param>
+		/// <param name="paramModel"></param>
+		/// <param name="param"></param>
+		private static void QueryLastId(IDbConnection connection, string tableName, TypeModel typeModel, TypeModel paramModel, object param)
+		{
+			// Does the param have an ID property?
+			if (!paramModel.GetPropertyNames().Contains(typeModel.PrimaryKeyName))
+				return;
+
+			// Get the ID from the table
+			long lastRow = (long)connection.ExecuteScalar("SELECT last_insert_rowid()");
+			object id = connection.ExecuteScalar(string.Format("SELECT {0} FROM {1} WHERE _ROWID_={2}", typeModel.PrimaryKeyName, tableName, lastRow));
+
+			// Set the ID on the original param object
+			paramModel.SetPropertyValue(param, typeModel.PrimaryKeyName, id);
 		}
 
 		#endregion
