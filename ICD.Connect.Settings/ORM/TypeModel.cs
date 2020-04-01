@@ -12,7 +12,6 @@ using System.Data;
 using System.Reflection;
 #endif
 using ICD.Common.Properties;
-using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings.ORM
@@ -155,9 +154,6 @@ namespace ICD.Connect.Settings.ORM
 				.GetProperties()
 				.Where(p => p.GetCustomAttributes(typeof(DataFieldAttribute), false).Length > 0);
 			m_Props.AddRange(properties, p => p.Name);
-
-
-			IcdConsole.PrintLine(eConsoleColor.Magenta, StringUtils.ArrayFormat(m_Props.Keys));
 		}
 
 		/// <summary>
