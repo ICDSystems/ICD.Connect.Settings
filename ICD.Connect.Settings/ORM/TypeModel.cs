@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using ICD.Common.Utils.Collections;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronData;
@@ -11,6 +12,7 @@ using System.Data;
 using System.Reflection;
 #endif
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings.ORM
@@ -23,7 +25,7 @@ namespace ICD.Connect.Settings.ORM
 			new Dictionary<Type, string>
 			{
 				{typeof(short), "smallint"},
-				{typeof(int), "int"},
+				{typeof(int), "INTEGER"},
 				{typeof(long), "bigint"},
 				{typeof(string), "NVARCHAR"},
 				{typeof(byte), "byte"},
@@ -55,17 +57,10 @@ namespace ICD.Connect.Settings.ORM
 				{typeof(float), DbType.Single}
 			};
 
-		private string m_PrimaryKeyName;
-		private IcdOrderedDictionary<string, PropertyInfo> m_Props;
+		private readonly IcdOrderedDictionary<string, PropertyInfo> m_Props;
 		private readonly Type m_Type;
 
-		/// <summary>
-		/// Static constructor.
-		/// </summary>
-		static TypeModel()
-		{
-			s_TypeModels = new Dictionary<Type, TypeModel>();
-		}
+		private string m_PrimaryKeyName;
 
 		#region Properties
 
@@ -88,9 +83,34 @@ namespace ICD.Connect.Settings.ORM
 			}
 		}
 
+		/// <summary>
+		/// Returns true if the primary key is a numeric type that should Auto-Increment.
+		/// </summary>
+		public bool AutoIncrements
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(m_PrimaryKeyName))
+					throw new InvalidOperationException("TypeModel does not represent a class with a primary key attribute");
+
+				PropertyInfo prop = m_Props[m_PrimaryKeyName];
+				Type underlyingPropertyType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+
+				return underlyingPropertyType.IsNumeric();
+			}
+		}
+
 		#endregion
 
 		#region Constructors
+
+		/// <summary>
+		/// Static constructor.
+		/// </summary>
+		static TypeModel()
+		{
+			s_TypeModels = new Dictionary<Type, TypeModel>();
+		}
 
 		/// <summary>
 		/// Constructor.
@@ -102,6 +122,7 @@ namespace ICD.Connect.Settings.ORM
 				throw new ArgumentNullException("type");
 
 			m_Type = type;
+			m_Props = new IcdOrderedDictionary<string, PropertyInfo>(new ColumnComparer(this));
 
 			if (m_Type.IsAnonymous())
 				PopulateAnonymous(m_Type);
@@ -115,17 +136,6 @@ namespace ICD.Connect.Settings.ORM
 		/// <param name="type"></param>
 		private void Populate(Type type)
 		{
-			// Get the data properties
-			IEnumerable<PropertyInfo> properties = type
-#if SIMPLSHARP
-				.GetCType()
-#endif
-				.GetProperties()
-				.Where(p => p.GetCustomAttributes(typeof(DataFieldAttribute), false).Length > 0);
-
-			m_Props = new IcdOrderedDictionary<string, PropertyInfo>();
-			m_Props.AddRange(properties, p => p.Name);
-
 			// Get the primary key property
 			PropertyInfo pkProp = type
 #if SIMPLSHARP
@@ -136,6 +146,18 @@ namespace ICD.Connect.Settings.ORM
 
 			m_PrimaryKeyName = pkProp.Name;
 			m_Props.Add(m_PrimaryKeyName, pkProp);
+
+			// Get the data properties
+			IEnumerable<PropertyInfo> properties = type
+#if SIMPLSHARP
+				.GetCType()
+#endif
+				.GetProperties()
+				.Where(p => p.GetCustomAttributes(typeof(DataFieldAttribute), false).Length > 0);
+			m_Props.AddRange(properties, p => p.Name);
+
+
+			IcdConsole.PrintLine(eConsoleColor.Magenta, StringUtils.ArrayFormat(m_Props.Keys));
 		}
 
 		/// <summary>
@@ -144,14 +166,12 @@ namespace ICD.Connect.Settings.ORM
 		/// <param name="type"></param>
 		private void PopulateAnonymous(Type type)
 		{
-			// Get the data fields
+			// Get the data properties
 			IEnumerable<PropertyInfo> properties = type
 #if SIMPLSHARP
 				.GetCType()
 #endif
 				.GetProperties();
-
-			m_Props = new IcdOrderedDictionary<string, PropertyInfo>();
 			m_Props.AddRange(properties, p => p.Name);
 		}
 
@@ -227,21 +247,6 @@ namespace ICD.Connect.Settings.ORM
 			return m_Props.Keys;
 		}
 
-		public string GetDelimitedSafeParamList(string delimiter)
-		{
-			return string.Join(delimiter, m_Props.Keys.Select(k => string.Format("@{0}", k)).ToArray());
-		}
-
-		public string GetDelimitedSafeFieldList(string delimiter)
-		{
-			return string.Join(delimiter, m_Props.Keys.Select(k => string.Format("[{0}]", k)).ToArray());
-		}
-
-		public string GetDelimitedSafeSetList(string delimiter)
-		{
-			return string.Join(delimiter, m_Props.Keys.Select(k => string.Format("[{0}] = @{0}", k)).ToArray());
-		}
-
 		public string GetDelimitedCreateParamList(string delimiter)
 		{
 			return string.Join(delimiter, m_Props.Select(kvp => GetCreateParam(kvp)).ToArray());
@@ -251,10 +256,25 @@ namespace ICD.Connect.Settings.ORM
 
 		#region Private Methods
 
-		private static string GetCreateParam(KeyValuePair<string, PropertyInfo> kvp)
+		private string GetCreateParam(KeyValuePair<string, PropertyInfo> kvp)
 		{
 			Type underlyingPropertyType = Nullable.GetUnderlyingType(kvp.Value.PropertyType) ?? kvp.Value.PropertyType;
-			return string.Format("{0} {1}", kvp.Key, s_TypeToSqlType[underlyingPropertyType]);
+			
+			// Name
+			StringBuilder builder = new StringBuilder(kvp.Key);
+			{
+				// Type
+				builder.AppendFormat(" {0}", s_TypeToSqlType[underlyingPropertyType]);
+
+				// Primary key
+				if (kvp.Key == m_PrimaryKeyName)
+					builder.Append(" PRIMARY KEY");
+
+				// Auto-increment
+				if (kvp.Key == m_PrimaryKeyName && AutoIncrements)
+					builder.Append(" AUTOINCREMENT");
+			}
+			return builder.ToString();
 		}
 
 		/// <summary>
@@ -262,12 +282,42 @@ namespace ICD.Connect.Settings.ORM
 		/// </summary>
 		/// <param name="propertyType"></param>
 		/// <returns></returns>
-		private DbType GetPropertyType(Type propertyType)
+		private static DbType GetPropertyType(Type propertyType)
 		{
 			Type underlyingPropertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
 			return s_TypeToDbType[underlyingPropertyType];
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Sorts private key to the front, otherwise alphabetical.
+		/// </summary>
+		private sealed class ColumnComparer : IComparer<string>
+		{
+			private readonly TypeModel m_TypeModel;
+
+			/// <summary>
+			/// Constructor.
+			/// </summary>
+			/// <param name="typeModel"></param>
+			public ColumnComparer(TypeModel typeModel)
+			{
+				m_TypeModel = typeModel;
+			}
+
+			public int Compare(string x, string y)
+			{
+				bool xIsPrimary = x == m_TypeModel.m_PrimaryKeyName;
+				bool yIsPrimary = y == m_TypeModel.m_PrimaryKeyName;
+
+				if (xIsPrimary && !yIsPrimary)
+					return -1;
+				if (yIsPrimary && !xIsPrimary)
+					return 1;
+
+				return string.Compare(x, y, StringComparison.Ordinal);
+			}
+		}
 	}
 }

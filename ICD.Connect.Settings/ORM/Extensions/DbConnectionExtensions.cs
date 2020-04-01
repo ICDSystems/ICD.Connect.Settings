@@ -87,11 +87,32 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		/// <param name="param"></param>
 		public static void Insert<T>(this IDbConnection connection, IDbTransaction transaction, string tableName, object param)
 		{
+			TypeModel typeModel = TypeModel.Get(typeof(T));
 			TypeModel paramModel = TypeModel.Get(param.GetType());
 
-			string cols = paramModel.GetDelimitedSafeFieldList(",");
-			string colsParams = paramModel.GetDelimitedSafeParamList(",");
-			string sql = "INSERT INTO " + tableName + " (" + cols + ") VALUES (" + colsParams + ")";
+			string[] properties =
+				paramModel.GetPropertyNames()
+					// Don't try to insert the primary key if it auto-increments
+				          .Where(p => !(p == typeModel.PrimaryKeyName && typeModel.AutoIncrements))
+				          .ToArray();
+
+			StringBuilder builder = new StringBuilder();
+			{
+				builder.Append("INSERT INTO ").Append(tableName);
+
+				// Columns
+				builder.Append("(");
+				builder.Append(string.Join(",", properties));
+				builder.Append(")");
+
+				builder.Append(" VALUES ");
+
+				// Values
+				builder.Append("(");
+				builder.Append(string.Join(",", properties.Select(p => string.Format("@{0}", p)).ToArray()));
+				builder.Append(")");
+			}
+			string sql = builder.ToString();
 
 			int result = connection.Execute(sql, param, transaction);
 			if (result <= 0)
@@ -124,6 +145,7 @@ namespace ICD.Connect.Settings.ORM.Extensions
 
 			StringBuilder builder = new StringBuilder();
 			{
+				// TODO - Select columns
 				builder.Append("SELECT * FROM ").Append(tableName);
 
 				string[] properties = paramModel.GetPropertyNames().ToArray();

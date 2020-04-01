@@ -40,9 +40,7 @@ namespace ICD.Connect.Settings.ORM.Databases
 		{
 			TypeModel typeModel = TypeModel.Get(type);
 
-			string sql = "CREATE TABLE " + name + " (" + typeModel.GetDelimitedCreateParamList(",")
-			             + ", CONSTRAINT PK_" + typeModel.PrimaryKeyName
-			             + " PRIMARY KEY(" + typeModel.PrimaryKeyName + ") )";
+			string sql = "CREATE TABLE " + name + " (" + typeModel.GetDelimitedCreateParamList(",") + ")";
 
 			GetConnection().Execute(sql);
 		}
