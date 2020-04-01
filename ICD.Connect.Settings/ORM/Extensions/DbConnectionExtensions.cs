@@ -146,12 +146,15 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		/// <returns></returns>
 		public static IEnumerable<T> All<T>(this IDbConnection connection, string tableName, object param)
 		{
+			TypeModel typeModel = TypeModel.Get(typeof(T));
 			TypeModel paramModel = TypeModel.Get(param.GetType());
 
 			StringBuilder builder = new StringBuilder();
 			{
-				// TODO - Select columns
-				builder.Append("SELECT * FROM ").Append(tableName);
+				builder.Append("SELECT ");
+				builder.Append(string.Join(",", typeModel.GetPropertyNames().ToArray()));
+				builder.Append(" FROM ");
+				builder.Append(tableName);
 
 				string[] properties = paramModel.GetPropertyNames().ToArray();
 				if (properties.Length != 0)
