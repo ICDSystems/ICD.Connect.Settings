@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using ICD.Common.Utils;
 #if SIMPLSHARP
-using Crestron.SimplSharp.CrestronData;
 using Crestron.SimplSharp.SQLite;
 #else
-using System.Data;
 using SQLiteConnection = Microsoft.Data.Sqlite.SqliteConnection;
 #endif
 using ICD.Connect.Settings.ORM.Databases;
@@ -28,72 +26,31 @@ namespace ICD.Connect.Settings.ORM
 		}
 
 		/// <summary>
-		/// A wrapper that uses the internally cached connection.
+		/// Gets the first or default item matching the given parameters.
 		/// </summary>
-		public int Execute(string sql, object param, IDbTransaction transaction)
+		/// <typeparam name="T"></typeparam>
+		/// <param name="param"></param>
+		/// <returns></returns>
+		public T Get<T>(object param)
 		{
-			return m_Database.Execute(sql, param, transaction);
+			return m_Database.Get<T>(param);
 		}
 
 		/// <summary>
-		/// A wrapper that uses the internally cached connection.
+		/// Gets all of the items matching the given parameters.
 		/// </summary>
-		public int Execute(string sql)
+		/// <typeparam name="T"></typeparam>
+		/// <param name="param"></param>
+		/// <returns></returns>
+		public IEnumerable<T> All<T>(object param)
 		{
-			return m_Database.Execute(sql);
-		}
-
-		/// <summary>
-		/// A wrapper that uses the internally cached connection.
-		/// </summary>
-		public IEnumerable<T> Query<T>(string sql, object param)
-		{
-			return m_Database.Query<T>(sql, param);
-		}
-
-		/// <summary>
-		/// A wrapper that uses the internally cached connection.
-		/// </summary>
-		public IEnumerable<T> Query<T>(string sql)
-		{
-			return m_Database.Query<T>(sql);
-		}
-
-		/// <summary>
-		/// Gets a single instance of a type by specifying the row Id.
-		/// </summary>
-		/// <returns>A specific instance of the specified type, or the default value for the type.</returns>
-		public T Get<T>(object id)
-		{
-			return m_Database.Get<T>(id);
-		}
-
-		/// <summary>
-		/// Gets a single instance of a type. Filters by a single column.
-		/// </summary>
-		/// <param name="columnName">Used to generate a WHERE clause.</param>
-		/// <param name="columnValue">Input parameter for the WHERE clause.</param>
-		/// <returns>A specific instance of the specified type, or the default value for the type.</returns>
-		public T Get<T>(string columnName, object columnValue)
-		{
-			return m_Database.Get<T>(columnName, columnValue);
-		}
-
-		/// <summary>
-		/// Gets all records in the table matching the supplied type after applying the supplied filter
-		/// in a WHERE clause.
-		/// </summary>
-		/// <param name="columnName">Used to generate a WHERE clause.</param>
-		/// <param name="columnValue">Input parameter for the WHERE clause.</param>
-		/// <returns>All records in the table matching the supplied type.</returns>
-		public IEnumerable<T> All<T>(string columnName, object columnValue)
-		{
-			return m_Database.All<T>(columnName, columnValue);
+			return m_Database.All<T>(param);
 		}
 
 		/// <summary>
 		/// Gets all records in the table matching the supplied type.
 		/// </summary>
+		/// <typeparam name="T"></typeparam>
 		/// <returns>All records in the table matching the supplied type.</returns>
 		public IEnumerable<T> All<T>()
 		{
@@ -103,17 +60,31 @@ namespace ICD.Connect.Settings.ORM
 		/// <summary>
 		/// Inserts the supplied object into the database. Infers table name from type name.
 		/// </summary>
-		public void Insert<T>(T obj)
+		/// <typeparam name="T"></typeparam>
+		/// <param name="param"></param>
+		public void Insert<T>(object param)
 		{
-			m_Database.Insert(obj);
+			m_Database.Insert<T>(param);
 		}
 
 		/// <summary>
 		/// Updates the supplied object. Infers table name from type name.
 		/// </summary>
-		public void Update<T>(object obj)
+		/// <typeparam name="T"></typeparam>
+		/// <param name="param"></param>
+		public void Update<T>(object param)
 		{
-			m_Database.Update<T>(obj);
+			m_Database.Update<T>(param);
+		}
+
+		/// <summary>
+		/// Deletes the matching objects from the table.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="param"></param>
+		public void Delete<T>(object param)
+		{
+			m_Database.Delete<T>(param);
 		}
 	}
 }

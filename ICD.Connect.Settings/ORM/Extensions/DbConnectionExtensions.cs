@@ -16,6 +16,15 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		#region Methods
 
 		/// <summary>
+		/// Overload to allow a basic execute call.
+		/// </summary>
+		/// <returns>Number of rows affected.</returns>
+		public static int Execute(this IDbConnection cnn, string sql)
+		{
+			return Execute(cnn, sql, null, null);
+		}
+
+		/// <summary>
 		/// Executes an SQL statement and returns the number of rows affected. Supports transactions.
 		/// </summary>
 		/// <returns>Number of rows affected.</returns>
@@ -29,21 +38,27 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		}
 
 		/// <summary>
-		/// Overload to allow a basic execute call.
+		/// Returns all of the rows for the given SQL query.
 		/// </summary>
-		/// <returns>Number of rows affected.</returns>
-		public static int Execute(this IDbConnection cnn, string sql)
+		/// <typeparam name="T"></typeparam>
+		/// <param name="conn"></param>
+		/// <param name="sql"></param>
+		/// <returns></returns>
+		public static IEnumerable<T> Query<T>(this IDbConnection conn, string sql)
 		{
-			return Execute(cnn, sql, null, null);
+			return Query<T>(conn, sql, null);
 		}
 
 		/// <summary>
-		/// Basically a duplication of the Dapper interface.
+		/// Returns all of the rows for the given SQL query, injecting the given parameters into the command.
 		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="conn"></param>
+		/// <param name="sql"></param>
+		/// <param name="param"></param>
+		/// <returns></returns>
 		public static IEnumerable<T> Query<T>(this IDbConnection conn, string sql, object param)
 		{
-			IList<T> list = new List<T>();
-
 			using (IDbCommand cmd = SetupCommand(conn, null, sql, null, null))
 			{
 				AddParams(cmd, param);
@@ -51,51 +66,26 @@ namespace ICD.Connect.Settings.ORM.Extensions
 				using (IDataReader reader = cmd.ExecuteReader())
 				{
 					if (reader == null)
-						return list;
+						return Enumerable.Empty<T>();
 
 					Type type = typeof(T);
 					if (type.IsValueType || type == typeof(string))
-					{
-						while (reader.Read())
-						{
-							if (reader.IsDBNull(0)) // Handles the case where the value is null.
-							{
-								list.Add(default(T));
-							}
-							else
-							{
-								list.Add((T)reader[0]);
-							}
-						}
-					}
-					else // Reference types
-					{
-						while (reader.Read())
-						{
-							T record = ReflectionUtils.CreateInstance<T>();
-							PopulateClass(record, reader);
-							list.Add(record);
-						}
-					}
+						return ReadValues<T>(reader).ToArray();
 
-					return list;
+					return ReadReferences<T>(reader).ToArray();
 				}
 			}
 		}
 
 		/// <summary>
-		/// Overload for the times when we don't require a parameter.
-		/// Because of .NET Compact Framework, we can't use optional parameters.
+		/// Inserts the given parameters into the given table.
 		/// </summary>
-		public static IEnumerable<T> Query<T>(this IDbConnection conn, string sql)
-		{
-			return Query<T>(conn, sql, null);
-		}
-
-		/// <summary>
-		/// Inspired by Dapper.Rainbow.
-		/// </summary>
-		public static void Insert(this IDbConnection connection, IDbTransaction transaction, string tableName, object param)
+		/// <typeparam name="T"></typeparam>
+		/// <param name="connection"></param>
+		/// <param name="transaction"></param>
+		/// <param name="tableName"></param>
+		/// <param name="param"></param>
+		public static void Insert<T>(this IDbConnection connection, IDbTransaction transaction, string tableName, object param)
 		{
 			TypeModel paramModel = TypeModel.Get(param.GetType());
 
@@ -104,13 +94,58 @@ namespace ICD.Connect.Settings.ORM.Extensions
 			string sql = "INSERT INTO " + tableName + " (" + cols + ") VALUES (" + colsParams + ")";
 
 			int result = connection.Execute(sql, param, transaction);
-
 			if (result <= 0)
 				throw new ApplicationException("Return value of INSERT should be greater than 0. An error has occurred with the INSERT.");
 		}
 
 		/// <summary>
-		/// Inspired by Dapper.Rainbow.
+		/// Returns all records in the given table.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="connection"></param>
+		/// <param name="tableName"></param>
+		/// <returns></returns>
+		public static IEnumerable<T> All<T>(this IDbConnection connection, string tableName)
+		{
+			return connection.All<T>(tableName, new {});
+		}
+
+		/// <summary>
+		/// Returns all of the records in the given table matching the given parameters.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="connection"></param>
+		/// <param name="tableName"></param>
+		/// <param name="param"></param>
+		/// <returns></returns>
+		public static IEnumerable<T> All<T>(this IDbConnection connection, string tableName, object param)
+		{
+			TypeModel paramModel = TypeModel.Get(param.GetType());
+
+			StringBuilder builder = new StringBuilder();
+			{
+				builder.Append("SELECT * FROM ").Append(tableName);
+
+				string[] properties = paramModel.GetPropertyNames().ToArray();
+				if (properties.Length != 0)
+					builder.Append(" WHERE ");
+
+				for (int index = 0; index < properties.Length; index++)
+				{
+					if (index != 0)
+						builder.Append(" AND ");
+
+					string property = properties[index];
+					builder.AppendFormat("{0}=@{0}", property);
+				}
+			}
+			string sql = builder.ToString();
+
+			return connection.Query<T>(sql, param);
+		}
+
+		/// <summary>
+		/// Updates the record matching the given primary key with the given parameters.
 		/// </summary>
 		public static void Update<T>(this IDbConnection connection, IDbTransaction transaction, string tableName, object param)
 		{
@@ -130,14 +165,83 @@ namespace ICD.Connect.Settings.ORM.Extensions
 			string sql = builder.ToString();
 
 			int result = connection.Execute(sql, param, transaction);
-
 			if (result <= 0)
-				throw new ApplicationException("Return value of UPDATE should be greater than 0. An error has occurred with the INSERT.");
+				throw new ApplicationException("Return value of UPDATE should be greater than 0. An error has occurred with the UPDATE.");
+		}
+
+		/// <summary>
+		/// Deletes the records matching the given parameters.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="connection"></param>
+		/// <param name="transaction"></param>
+		/// <param name="tableName"></param>
+		/// <param name="param"></param>
+		public static void Delete<T>(this IDbConnection connection, IDbTransaction transaction, string tableName, object param)
+		{
+			TypeModel paramModel = TypeModel.Get(param.GetType());
+
+			StringBuilder builder = new StringBuilder();
+			{
+				builder.Append("DELETE FROM ").Append(tableName);
+
+				string[] properties = paramModel.GetPropertyNames().ToArray();
+				if (properties.Length != 0)
+					builder.Append(" WHERE ");
+
+				for (int index = 0; index < properties.Length; index++)
+				{
+					if (index != 0)
+						builder.Append(" AND ");
+
+					string property = properties[index];
+					builder.AppendFormat("{0}=@{0}", property);
+				}
+			}
+			string sql = builder.ToString();
+
+			int result = connection.Execute(sql, param, transaction);
+			if (result < 0)
+				throw new ApplicationException("Return value of DELETE should be greater than or equal to 0. An error has occurred with the DELETE.");
 		}
 
 		#endregion
 
 		#region Private Methods
+
+		/// <summary>
+		/// Reads the rows in the reader as the given value type.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="reader"></param>
+		/// <returns></returns>
+		private static IEnumerable<T> ReadValues<T>(IDataReader reader)
+		{
+			while (reader.Read())
+			{
+				// Handles the case where the value is null.
+				if (reader.IsDBNull(0))
+					yield return default(T);
+				else
+					yield return (T)reader[0];
+			}
+		}
+
+		/// <summary>
+		/// Reads the rows in the reader as the given reference type.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="reader"></param>
+		/// <returns></returns>
+		private static IEnumerable<T> ReadReferences<T>(IDataReader reader)
+		{
+			while (reader.Read())
+			{
+				T record = ReflectionUtils.CreateInstance<T>();
+				PopulateClass(record, reader);
+				yield return record;
+			}
+		}
 
 		/// <summary>
 		/// Pulled straight from the Dapper source.
@@ -189,6 +293,11 @@ namespace ICD.Connect.Settings.ORM.Extensions
 			}
 		}
 
+		/// <summary>
+		/// Gets the column names for the given reader.
+		/// </summary>
+		/// <param name="reader"></param>
+		/// <returns></returns>
 		private static IEnumerable<string> GetColumnNames(IDataRecord reader)
 		{
 			return Enumerable.Range(0, reader.FieldCount)
@@ -207,10 +316,8 @@ namespace ICD.Connect.Settings.ORM.Extensions
 			foreach (string columnName in GetColumnNames(reader))
 			{
 				object value = reader[columnName];
-				if (value == DBNull.Value)
-					continue;
-
-				typeModel.SetPropertyValue(objectClass, columnName, value);
+				if (value != DBNull.Value)
+					typeModel.SetPropertyValue(objectClass, columnName, value);
 			}
 		}
 

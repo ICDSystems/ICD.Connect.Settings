@@ -68,38 +68,23 @@ namespace ICD.Connect.Settings.ORM.Databases
 		}
 
 		/// <summary>
-		/// Gets a single instance of a type by specifying the row Id.
+		/// Gets a single instance of a type. Filters by the given parameters.
 		/// </summary>
+		/// <param name="param"></param>
 		/// <returns>A specific instance of the specified type, or the default value for the type.</returns>
-		public T Get<T>(object id)
+		public T Get<T>(object param)
 		{
-			string primaryKey = TypeModel.Get(typeof(T)).PrimaryKeyName;
-			string tableName = LazyLoadTable(typeof(T));
-			return GetConnection().Query<T>("SELECT * FROM " + tableName + " WHERE " + primaryKey + " = @id", new {id}).FirstOrDefault();
+			return All<T>(param).FirstOrDefault();
 		}
 
 		/// <summary>
-		/// Gets a single instance of a type. Filters by a single column.
+		/// Gets all records in the table matching the given parameters.
 		/// </summary>
-		/// <param name="columnName">Used to generate a WHERE clause.</param>
-		/// <param name="data">Input parameter for the WHERE clause.</param>
-		/// <returns>A specific instance of the specified type, or the default value for the type.</returns>
-		public T Get<T>(string columnName, object data)
-		{
-			return All<T>(columnName, data).FirstOrDefault();
-		}
-
-		/// <summary>
-		/// Gets all records in the table matching the supplied type after applying the supplied filter
-		/// in a WHERE clause.
-		/// </summary>
-		/// <param name="columnName">Used to generate a WHERE clause.</param>
-		/// <param name="data">Input parameter for the WHERE clause.</param>
 		/// <returns>All records in the table matching the supplied type.</returns>
-		public IEnumerable<T> All<T>(string columnName, object data)
+		public IEnumerable<T> All<T>(object param)
 		{
 			string tableName = LazyLoadTable(typeof(T));
-			return GetConnection().Query<T>(string.Format("SELECT * FROM {0} WHERE {1} = @param", tableName, columnName), new {param = data});
+			return GetConnection().All<T>(tableName, param);
 		}
 
 		/// <summary>
@@ -109,25 +94,36 @@ namespace ICD.Connect.Settings.ORM.Databases
 		public IEnumerable<T> All<T>()
 		{
 			string tableName = LazyLoadTable(typeof(T));
-			return GetConnection().Query<T>("SELECT * FROM " + tableName);
+			return GetConnection().All<T>(tableName);
 		}
 
 		/// <summary>
 		/// Inserts the supplied object into the database. Infers table name from type name.
 		/// </summary>
-		public void Insert<T>(T obj)
+		public void Insert<T>(object param)
 		{
 			string tableName = LazyLoadTable(typeof(T));
-			GetConnection().Insert(null, tableName, obj);
+			GetConnection().Insert<T>(null, tableName, param);
 		}
 
 		/// <summary>
 		/// Updates the supplied object. Infers table name from type name.
 		/// </summary>
-		public void Update<T>(object obj)
+		public void Update<T>(object param)
 		{
 			string tableName = LazyLoadTable(typeof(T));
-			GetConnection().Update<T>(null, tableName, obj);
+			GetConnection().Update<T>(null, tableName, param);
+		}
+
+		/// <summary>
+		/// Deletes the objects in the database matching the params.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="param"></param>
+		public void Delete<T>(object param)
+		{
+			string tableName = LazyLoadTable(typeof(T));
+			GetConnection().Delete<T>(null, tableName, param);
 		}
 
 		#endregion
