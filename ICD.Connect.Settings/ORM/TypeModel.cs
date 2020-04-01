@@ -185,6 +185,16 @@ namespace ICD.Connect.Settings.ORM
 		#region Methods
 
 		/// <summary>
+		/// Gets the property info for the given column.
+		/// </summary>
+		/// <param name="columnName"></param>
+		/// <returns></returns>
+		public PropertyInfo GetProperty(string columnName)
+		{
+			return m_Props[columnName];
+		}
+
+		/// <summary>
 		/// Gets the DbType for the given column.
 		/// </summary>
 		/// <param name="instance"></param>

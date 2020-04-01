@@ -5,8 +5,10 @@ using System.Text;
 using ICD.Common.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronData;
+using Crestron.SimplSharp.Reflection;
 #else
 using System.Data;
+using System.Reflection;
 #endif
 
 namespace ICD.Connect.Settings.ORM.Extensions
@@ -95,6 +97,9 @@ namespace ICD.Connect.Settings.ORM.Extensions
 					// Don't try to insert the primary key if it auto-increments
 				          .Where(p => !(p == typeModel.PrimaryKeyName && typeModel.AutoIncrements))
 				          .ToArray();
+
+			// HACK - "auto-increment" behaviour for Guid ids
+			AutoIncrementGuid(typeModel, paramModel, param);
 
 			StringBuilder builder = new StringBuilder();
 			{
@@ -341,6 +346,28 @@ namespace ICD.Connect.Settings.ORM.Extensions
 				if (value != DBNull.Value)
 					typeModel.SetPropertyValue(objectClass, columnName, value);
 			}
+		}
+
+		/// <summary>
+		/// If the primary key is a Guid type and the value is default, assign a new Guid.
+		/// </summary>
+		/// <param name="typeModel"></param>
+		/// <param name="paramModel"></param>
+		/// <param name="param"></param>
+		private static void AutoIncrementGuid(TypeModel typeModel, TypeModel paramModel, object param)
+		{
+			if (string.IsNullOrEmpty(typeModel.PrimaryKeyName))
+				return;
+
+			PropertyInfo property = paramModel.GetProperty(typeModel.PrimaryKeyName);
+			if (property.PropertyType != typeof(Guid))
+				return;
+
+			Guid value = (Guid)property.GetValue(param, null);
+			if (value != default(Guid))
+				return;
+
+			property.SetValue(param, Guid.NewGuid(), null);
 		}
 
 		#endregion
