@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using ICD.Common.Utils.Collections;
 #if SIMPLSHARP
-using Crestron.SimplSharp.CrestronData;
 using Crestron.SimplSharp.Reflection;
 #else
-using System.Data;
 using System.Reflection;
 #endif
 using ICD.Common.Properties;
@@ -20,65 +16,38 @@ namespace ICD.Connect.Settings.ORM
 	{
 		private static readonly Dictionary<Type, TypeModel> s_TypeModels;
 
-		private static readonly Dictionary<Type, string> s_TypeToSqlType =
-			new Dictionary<Type, string>
-			{
-				{typeof(short), "smallint"},
-				{typeof(int), "INTEGER"},
-				{typeof(long), "bigint"},
-				{typeof(string), "NVARCHAR"},
-				{typeof(byte), "byte"},
-				{typeof(byte[]), "varbinary"},
-				{typeof(Guid), "NVARCHAR"},
-				{typeof(TimeSpan), "time"},
-				{typeof(decimal), "money"},
-				{typeof(bool), "bit"},
-				{typeof(DateTime), "datetime"},
-				{typeof(double), "float"},
-				{typeof(float), "single"}
-			};
-
-		private static readonly Dictionary<Type, DbType> s_TypeToDbType =
-			new Dictionary<Type, DbType>
-			{
-				{typeof(short), DbType.Int16},
-				{typeof(int), DbType.Int32},
-				{typeof(long), DbType.Int64},
-				{typeof(string), DbType.String},
-				{typeof(byte), DbType.Binary},
-				{typeof(byte[]), DbType.Binary},
-				{typeof(Guid), DbType.String},
-				{typeof(TimeSpan), DbType.Time},
-				{typeof(decimal), DbType.Currency},
-				{typeof(bool), DbType.Boolean},
-				{typeof(DateTime), DbType.DateTime},
-				{typeof(double), DbType.Double},
-				{typeof(float), DbType.Single}
-			};
-
-		private readonly IcdOrderedDictionary<string, PropertyInfo> m_Props;
+		private readonly IcdOrderedDictionary<string, PropertyModel> m_Props;
 		private readonly Type m_Type;
 
-		private string m_PrimaryKeyName;
+		private PropertyModel m_PrimaryKey;
 
 		#region Properties
 
-		public string PrimaryKeyName { get { return m_PrimaryKeyName; } }
+		/// <summary>
+		/// Returns the primary key.
+		/// </summary>
+		[CanBeNull]
+		public PropertyModel PrimaryKey { get { return m_PrimaryKey; } }
 
+		/// <summary>
+		/// Returns the name of the table for the wrapped type.
+		/// </summary>
 		public string TableName
 		{
 			get
 			{
 				string s = m_Type.Name;
-				char lastchar = s[s.Length - 1];
+				char lastChar = s[s.Length - 1];
 
-				if (lastchar == 'y')
-					return s.Remove(s.Length - 1, 1) + "ies";
-
-				if (lastchar == 's')
-					return s;
-
-				return s + "s";
+				switch (lastChar)
+				{
+					case 'y':
+						return s.Remove(s.Length - 1, 1) + "ies";
+					case 's':
+						return s;
+					default:
+						return s + "s";
+				}
 			}
 		}
 
@@ -89,13 +58,11 @@ namespace ICD.Connect.Settings.ORM
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(m_PrimaryKeyName))
-					throw new InvalidOperationException("TypeModel does not represent a class with a primary key attribute");
+				if (PrimaryKey == null)
+					throw new
+						InvalidOperationException("TypeModel does not represent a Type with a primary key property");
 
-				PropertyInfo prop = m_Props[m_PrimaryKeyName];
-				Type underlyingPropertyType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-
-				return underlyingPropertyType.IsNumeric();
+				return PrimaryKey.AutoIncrements;
 			}
 		}
 
@@ -121,7 +88,7 @@ namespace ICD.Connect.Settings.ORM
 				throw new ArgumentNullException("type");
 
 			m_Type = type;
-			m_Props = new IcdOrderedDictionary<string, PropertyInfo>(new ColumnComparer(this));
+			m_Props = new IcdOrderedDictionary<string, PropertyModel>(new ColumnComparer(this));
 
 			if (m_Type.IsAnonymous())
 				PopulateAnonymous(m_Type);
@@ -136,24 +103,16 @@ namespace ICD.Connect.Settings.ORM
 		private void Populate(Type type)
 		{
 			// Get the primary key property
-			PropertyInfo pkProp = type
-#if SIMPLSHARP
-				.GetCType()
-#endif
-				.GetProperties()
-				.Single(p => p.GetCustomAttributes(typeof(PrimaryKeyAttribute), false).Length > 0);
-
-			m_PrimaryKeyName = pkProp.Name;
-			m_Props.Add(m_PrimaryKeyName, pkProp);
+			m_PrimaryKey = GetPrimaryKey(type);
+			m_Props.Add(m_PrimaryKey.Name, m_PrimaryKey);
 
 			// Get the data properties
-			IEnumerable<PropertyInfo> properties = type
-#if SIMPLSHARP
-				.GetCType()
-#endif
-				.GetProperties()
-				.Where(p => p.GetCustomAttributes(typeof(DataFieldAttribute), false).Length > 0);
-			m_Props.AddRange(properties, p => p.Name);
+			IEnumerable<PropertyModel> dataProperties = GetData(type);
+			m_Props.AddRange(dataProperties, p => p.Name);
+
+			// Get the foreign key properties
+			IEnumerable<PropertyModel> foreignProperties = GetForeignKeys(type);
+			m_Props.AddRange(foreignProperties, p => p.Name);
 		}
 
 		/// <summary>
@@ -163,14 +122,15 @@ namespace ICD.Connect.Settings.ORM
 		private void PopulateAnonymous(Type type)
 		{
 			// Get the data properties
-			IEnumerable<PropertyInfo> properties = type
-#if SIMPLSHARP
-				.GetCType()
-#endif
-				.GetProperties();
-			m_Props.AddRange(properties, p => p.Name);
+			IEnumerable<PropertyModel> dataProperties = GetAnonymousProperties(type);
+			m_Props.AddRange(dataProperties, p => p.Name);
 		}
 
+		/// <summary>
+		/// Lazy-loads the TypeModel for the given Type.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		public static TypeModel Get(Type type)
 		{
 			return s_TypeModels.GetOrAddNew(type, () => new TypeModel(type));
@@ -181,109 +141,135 @@ namespace ICD.Connect.Settings.ORM
 		#region Methods
 
 		/// <summary>
-		/// Gets the property info for the given column.
+		/// Gets the property model for the given column.
 		/// </summary>
 		/// <param name="columnName"></param>
 		/// <returns></returns>
-		public PropertyInfo GetProperty(string columnName)
+		public PropertyModel GetProperty(string columnName)
 		{
 			return m_Props[columnName];
 		}
 
 		/// <summary>
-		/// Gets the DbType for the given column.
+		/// Gets all of the tracked columns for the wrapped type.
 		/// </summary>
-		/// <param name="columnName"></param>
 		/// <returns></returns>
-		public DbType GetPropertyDbType(string columnName)
+		public IEnumerable<PropertyModel> GetColumns()
 		{
-			PropertyInfo pi = m_Props[columnName];
-			Type underlyingPropertyType = Nullable.GetUnderlyingType(pi.PropertyType) ?? pi.PropertyType;
-			return s_TypeToDbType[underlyingPropertyType];
+			return m_Props.Values;
 		}
 
 		/// <summary>
-		/// Gets the SQL type for the given column.
+		/// Gets the SQL parameters string for creating a new table.
 		/// </summary>
-		/// <param name="columnName"></param>
+		/// <param name="delimiter"></param>
 		/// <returns></returns>
-		public string GetPropertySqlType(string columnName)
-		{
-			PropertyInfo pi = m_Props[columnName];
-			Type underlyingPropertyType = Nullable.GetUnderlyingType(pi.PropertyType) ?? pi.PropertyType;
-			return s_TypeToSqlType[underlyingPropertyType];
-		}
-
-		/// <summary>
-		/// Gets the database value for the given property name on the given instance.
-		/// </summary>
-		/// <param name="columnName"></param>
-		/// <param name="instance"></param>
-		/// <returns></returns>
-		public object GetPropertyValue(object instance, string columnName)
-		{
-			PropertyInfo pi = m_Props[columnName];
-			object value = pi.GetValue(instance, null);
-
-			// Hack - Guids are stored as strings
-			if (value is Guid)
-				value = value.ToString();
-
-			return value;
-		}
-
-		/// <summary>
-		/// Sets the database value for the given property name on the given instance.
-		/// </summary>
-		/// <param name="instance"></param>
-		/// <param name="columnName"></param>
-		/// <param name="value"></param>
-		public void SetPropertyValue(object instance, string columnName, object value)
-		{
-			PropertyInfo pi = m_Props[columnName];
-
-			// Is the property nullable?
-			Type underlying = Nullable.GetUnderlyingType(pi.PropertyType) ?? pi.PropertyType;
-
-			// Hack - Guids are stored as strings
-			if (underlying == typeof(Guid))
-				value = new Guid(value as string);
-
-			value = Convert.ChangeType(value, underlying, CultureInfo.InvariantCulture);
-			pi.SetValue(instance, value, null);
-		}
-
-		public IEnumerable<string> GetPropertyNames()
-		{
-			return m_Props.Keys;
-		}
-
 		public string GetDelimitedCreateParamList(string delimiter)
 		{
-			return string.Join(delimiter, m_Props.Keys.Select(columnName => GetCreateParam(columnName)).ToArray());
+			return string.Join(delimiter, m_Props.Values.Select(p => p.SqlCreateParam).ToArray());
+		}
+
+		/// <summary>
+		/// Gets the list of SQL column names.
+		/// </summary>
+		/// <param name="delimiter"></param>
+		/// <returns></returns>
+		public string GetDelimitedColumnNames(string delimiter)
+		{
+			return string.Join(delimiter, m_Props.Keys.ToArray());
 		}
 
 		#endregion
 
 		#region Private Methods
 
-		private string GetCreateParam(string columnName)
+		/// <summary>
+		/// Gets the property model for the primary key for the given type.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		[NotNull]
+		private static PropertyModel GetPrimaryKey([NotNull] Type type)
 		{
-			// Name
-			StringBuilder builder = new StringBuilder(columnName);
-			{
-				// Type
-				builder.AppendFormat(" {0}", GetPropertySqlType(columnName));
+			return
+				type
+#if SIMPLSHARP
+					.GetCType()
+#endif
+					.GetProperties()
+					.Select(p =>
+					{
+						PrimaryKeyAttribute attribute =
+							p.GetCustomAttributes(typeof(PrimaryKeyAttribute), true)
+							 .Cast<PrimaryKeyAttribute>()
+							 .FirstOrDefault();
 
-				// Primary key
-				if (columnName == m_PrimaryKeyName)
-					builder.Append(" PRIMARY KEY");
+						return attribute == null ? null : PropertyModel.PrimaryKey(p, attribute);
+					})
+					.Single(p => p != null);
+		}
 
-				// Auto-increment
-				if (columnName == m_PrimaryKeyName && AutoIncrements)
-					builder.Append(" AUTOINCREMENT");
-			}
-			return builder.ToString();
+		/// <summary>
+		/// Gets the property models for the data properties for the given type.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		[NotNull]
+		private static IEnumerable<PropertyModel> GetData([NotNull] Type type)
+		{
+			return
+				type
+#if SIMPLSHARP
+					.GetCType()
+#endif
+					.GetProperties()
+					.Select(p =>
+					{
+						DataFieldAttribute attribute =
+							p.GetCustomAttributes(typeof(DataFieldAttribute), true)
+							 .Cast<DataFieldAttribute>()
+							 .FirstOrDefault();
+
+						return attribute == null ? null : PropertyModel.Data(p, attribute);
+					})
+					.Where(p => p != null);
+		}
+
+		/// <summary>
+		/// Gets the property models for the foreign key properties for the given type.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		[NotNull]
+		private static IEnumerable<PropertyModel> GetForeignKeys([NotNull] Type type)
+		{
+			return
+				type
+#if SIMPLSHARP
+					.GetCType()
+#endif
+					.GetProperties()
+					.Select(p =>
+					{
+						ForeignKeyAttribute attribute =
+							p.GetCustomAttributes(typeof(ForeignKeyAttribute), true)
+							 .Cast<ForeignKeyAttribute>()
+							 .FirstOrDefault();
+
+						return attribute == null ? null : PropertyModel.ForeignKey(p, attribute);
+					})
+					.Where(p => p != null);
+		}
+
+		private IEnumerable<PropertyModel> GetAnonymousProperties([NotNull] Type type)
+		{
+			return
+				type
+#if SIMPLSHARP
+					.GetCType()
+#endif
+					.GetProperties()
+					.Select(p => PropertyModel.Anonymous(p));
 		}
 
 		#endregion
@@ -306,8 +292,10 @@ namespace ICD.Connect.Settings.ORM
 
 			public int Compare(string x, string y)
 			{
-				bool xIsPrimary = x == m_TypeModel.m_PrimaryKeyName;
-				bool yIsPrimary = y == m_TypeModel.m_PrimaryKeyName;
+				string primaryKeyName = m_TypeModel.PrimaryKey == null ? null : m_TypeModel.PrimaryKey.Name;
+
+				bool xIsPrimary = x == primaryKeyName;
+				bool yIsPrimary = y == primaryKeyName;
 
 				if (xIsPrimary && !yIsPrimary)
 					return -1;

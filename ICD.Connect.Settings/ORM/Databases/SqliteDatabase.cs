@@ -43,33 +43,32 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <param name="name"></param>
 		protected override void ValidateTable(Type type, string name)
 		{
-			Dictionary<string, SqliteColumnInfo> columns =
+			Dictionary<string, SqliteColumnInfo> tableColumns =
 				GetConnection().Query<SqliteColumnInfo>(string.Format("PRAGMA table_info({0})", name))
 				               .ToDictionary(c => c.name);
 
 			TypeModel model = TypeModel.Get(type);
-			string[] propertyNames = model.GetPropertyNames().ToArray();
+			PropertyModel[] modelColumns = model.GetColumns().ToArray();
 
 			// Validate properties
-			foreach (string column in columns.Keys)
-				if (!propertyNames.Contains(column))
-					throw new ApplicationException(string.Format("Type {0} does not have property for table {1} column {2}", type.Name, name, column));
+			foreach (string tableColumn in tableColumns.Keys)
+				if (modelColumns.All(p => p.Name != tableColumn))
+					throw new ApplicationException(string.Format("Type {0} does not have property for table {1} column {2}", type.Name, name, tableColumn));
 
 			// Validate columns
-			foreach (string propertyName in propertyNames)
-				if (!columns.ContainsKey(propertyName))
-					throw new ApplicationException(string.Format("Table {0} does not have column for property {1}.{2}", name, type.Name, propertyName));
+			foreach (string modelColumn in modelColumns.Select(p => p.Name))
+				if (!tableColumns.ContainsKey(modelColumn))
+					throw new ApplicationException(string.Format("Table {0} does not have column for property {1}.{2}", name, type.Name, modelColumn));
 
 			// Compare columns
-			foreach (string propertyName in propertyNames)
+			foreach (PropertyModel modelColumn in modelColumns)
 			{
-				SqliteColumnInfo columnInfo = columns[propertyName];
+				SqliteColumnInfo columnInfo = tableColumns[modelColumn.Name];
 				
 				// Type
-				string expectedType = model.GetPropertySqlType(propertyName);
-				if (!expectedType.Equals(columnInfo.type, StringComparison.OrdinalIgnoreCase))
+				if (!modelColumn.SqlType.Equals(columnInfo.type, StringComparison.OrdinalIgnoreCase))
 					throw new ApplicationException(string.Format("{0}.{1} does not match SQL type {2} for table {3} column {4}",
-					                               type.Name, propertyName, columnInfo.type, name, columnInfo.name));
+					                               type.Name, modelColumn, columnInfo.type, name, columnInfo.name));
 			}
 		}
 
@@ -89,7 +88,7 @@ namespace ICD.Connect.Settings.ORM.Databases
 			[PrimaryKey] public string name { get; set; }
 			[DataField] public string type { get; set; }
 			[DataField] public int notnull { get; set; }
-			[DataField] public int dflt_value { get; set; }
+			[DataField] public object dflt_value { get; set; }
 			[DataField] public int pk { get; set; }
 		}
 	}
