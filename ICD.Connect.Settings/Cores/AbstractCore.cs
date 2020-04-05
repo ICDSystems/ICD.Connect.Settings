@@ -24,6 +24,11 @@ namespace ICD.Connect.Settings.Cores
 		/// </summary>
 		public Localization.Localization Localization { get { return m_Localization; } }
 
+		/// <summary>
+		/// Gets the datetime when this core was instantiated.
+		/// </summary>
+		public DateTime CoreStartTime { get; private set; }
+
 		#endregion
 
 		/// <summary>
@@ -31,6 +36,7 @@ namespace ICD.Connect.Settings.Cores
 		/// </summary>
 		protected AbstractCore()
 		{
+			CoreStartTime = DateTime.UtcNow;
 			m_Originators = new CoreOriginatorCollection();
 			m_Originators.OnOriginatorAdded += OriginatorsOnOriginatorAdded;
 			m_Originators.OnOriginatorRemoved += OriginatorsOnOriginatorRemoved;

@@ -63,7 +63,7 @@ namespace ICD.Connect.Settings.Originators
 		/// The name of the originator.
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_NAME, OriginatorApi.HELP_PROPERTY_NAME)]
-		[DynamicPropertyTelemetry(OriginatorTelemetryNames.NAME, OriginatorTelemetryNames.NAME_CHANGED)]
+		[DynamicPropertyTelemetry(OriginatorTelemetryNames.NAME, null, OriginatorTelemetryNames.NAME_CHANGED)]
 		string Name { get; set; }
 
 		/// <summary>

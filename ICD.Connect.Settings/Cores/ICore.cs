@@ -1,5 +1,8 @@
-﻿using ICD.Connect.API.Attributes;
+﻿using System;
+using ICD.Common.Properties;
+using ICD.Connect.API.Attributes;
 using ICD.Connect.Settings.Originators;
+using ICD.Connect.Telemetry.Attributes;
 
 namespace ICD.Connect.Settings.Cores
 {
@@ -17,6 +20,13 @@ namespace ICD.Connect.Settings.Cores
 		/// Gets the configured localization.
 		/// </summary>
 		Localization.Localization Localization { get; }
+
+		/// <summary>
+		/// Gets the datetime when this core was instantiated.
+		/// </summary>
+		[StaticPropertyTelemetry("CoreStartTime")]
+		[UsedImplicitly]
+		DateTime CoreStartTime { get; }
 
 		#endregion
 

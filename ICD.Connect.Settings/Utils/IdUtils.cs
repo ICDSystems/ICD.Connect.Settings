@@ -24,13 +24,12 @@ namespace ICD.Connect.Settings.Utils
 
 	public static class IdUtils
 	{
-
-
 		public const int ID_CORE = 1;
 
 		public const int ID_THEME = 100;
 		public const int ID_ROUTING_GRAPH = 200;
-		public const int ID_PARTITION_MANAGER = 400;
+		public const int ID_PARTITION_MANAGER = 300;
+		public const int ID_TELEMETRY = 400;
 
 		private const int MULTIPLIER_SUBSYSTEM = 10 * 1000 * 1000;
 
@@ -76,7 +75,7 @@ namespace ICD.Connect.Settings.Utils
 		}
 
 		/// <summary>
-		/// Gets a new, unique id given a squence of existing ids and a subsystem
+		/// Gets a new, unique id given a sequence of existing ids and a subsystem
 		/// </summary>
 		/// <param name="existingIds"></param>
 		/// <param name="subsystem"></param>
