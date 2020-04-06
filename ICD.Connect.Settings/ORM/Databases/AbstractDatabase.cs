@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronData;
 #else
@@ -56,7 +57,7 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// </summary>
 		public IEnumerable<T> Query<T>(string sql, object param)
 		{
-			return GetConnection().Query<T>(sql, param);
+			return GetConnection().Query(sql, typeof(T), param).Cast<T>();
 		}
 
 		/// <summary>
@@ -83,8 +84,8 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <returns>All records in the table matching the supplied type.</returns>
 		public IEnumerable<T> All<T>(object param)
 		{
-			string tableName = LazyLoadTable(typeof(T));
-			return GetConnection().All<T>(tableName, param);
+			LazyLoadTable(typeof(T));
+			return GetConnection().All(typeof(T), param).Cast<T>();
 		}
 
 		/// <summary>
@@ -93,8 +94,8 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <returns>All records in the table matching the supplied type.</returns>
 		public IEnumerable<T> All<T>()
 		{
-			string tableName = LazyLoadTable(typeof(T));
-			return GetConnection().All<T>(tableName);
+			LazyLoadTable(typeof(T));
+			return GetConnection().All(typeof(T)).Cast<T>();
 		}
 
 		/// <summary>
@@ -102,8 +103,8 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// </summary>
 		public void Insert<T>(object param)
 		{
-			string tableName = LazyLoadTable(typeof(T));
-			GetConnection().Insert<T>(null, tableName, param);
+			LazyLoadTable(typeof(T));
+			GetConnection().Insert(null, typeof(T), param);
 		}
 
 		/// <summary>
@@ -111,8 +112,8 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// </summary>
 		public void Update<T>(object param)
 		{
-			string tableName = LazyLoadTable(typeof(T));
-			GetConnection().Update<T>(null, tableName, param);
+			LazyLoadTable(typeof(T));
+			GetConnection().Update(null, typeof(T), param);
 		}
 
 		/// <summary>
@@ -122,8 +123,8 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <param name="param"></param>
 		public void Delete<T>(object param)
 		{
-			string tableName = LazyLoadTable(typeof(T));
-			GetConnection().Delete<T>(null, tableName, param);
+			LazyLoadTable(typeof(T));
+			GetConnection().Delete(null, typeof(T), param);
 		}
 
 		#endregion
@@ -163,21 +164,40 @@ namespace ICD.Connect.Settings.ORM.Databases
 
 		#region Private Methods
 
-		private string LazyLoadTable(Type type)
+		/// <summary>
+		/// Checks to see if a table exists for the given type.
+		/// Creates the table and tables for foreign objects recursively if not.
+		/// Performs validation to ensure the tables match the given Type.
+		/// </summary>
+		/// <param name="type"></param>
+		private void LazyLoadTable(Type type)
 		{
 			string tableName = TypeModel.Get(type).TableName;
 
 			if (!m_TableNames.Contains(tableName))
 			{
-				ValidateTable(type, tableName);
-
 				if (!TableExists(tableName))
 					CreateTable(type, tableName);
 
+				ValidateTable(type, tableName);
+
+				LazyLoadForeignTables(type);
+
 				m_TableNames.Add(tableName);
 			}
+		}
 
-			return tableName;
+		/// <summary>
+		/// Loops over the foreign children in the Type and creates tables recursively.
+		/// </summary>
+		/// <param name="type"></param>
+		private void LazyLoadForeignTables(Type type)
+		{
+			TypeModel.Get(type)
+			         .GetProperties()
+			         .Where(p => !p.IsColumn && p.IsForeignKey)
+			         .Select(p => p.PropertyOrEnumerableType)
+			         .ForEach(LazyLoadTable);
 		}
 
 		#endregion

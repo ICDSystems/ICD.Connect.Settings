@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronData;
 using Crestron.SimplSharp.Reflection;
@@ -65,22 +67,38 @@ namespace ICD.Connect.Settings.ORM
 		#region Properties
 
 		/// <summary>
-		/// Gets the property type.
-		/// </summary>
-		[NotNull]
-		public Type PropertyType { get { return Property.PropertyType; } } 
-
-		/// <summary>
-		/// If the property type is nullable returns the underlying type, otherwise returns the property type.
-		/// </summary>
-		[NotNull]
-		public Type UnderlyingPropertyType { get { return Nullable.GetUnderlyingType(PropertyType) ?? PropertyType; } }
-
-		/// <summary>
 		/// Gets the name of the property.
 		/// </summary>
 		[NotNull]
 		public string Name { get { return Property.Name; } }
+
+		/// <summary>
+		/// Gets the property type.
+		/// </summary>
+		[NotNull]
+		public Type PropertyType { get { return Property.PropertyType; } }
+
+		/// <summary>
+		/// If the property type is nullable returns the underlying type.
+		/// If the property type is GUID returns String.
+		/// If the property type is an Enum returns String.
+		/// </summary>
+		[NotNull]
+		public Type StoredPropertyType
+		{
+			get
+			{
+				Type type = Nullable.GetUnderlyingType(PropertyType) ?? PropertyType;
+
+				if (type == typeof(Guid))
+					type = typeof(string);
+
+				if (type.IsEnum)
+					type = typeof(string);
+
+				return type;
+			}
+		}
 
 		/// <summary>
 		/// Returns true if this property is a primary key and a numeric type that should Auto-Increment.
@@ -98,42 +116,32 @@ namespace ICD.Connect.Settings.ORM
 		}
 
 		/// <summary>
-		/// Returns the property as an SQL table creation parameter.
-		/// </summary>
-		[NotNull]
-		public string SqlCreateParam
-		{
-			get
-			{
-				// Name
-				StringBuilder builder = new StringBuilder(Name);
-				{
-					// Type
-					builder.AppendFormat(" {0}", SqlType);
-
-					// Primary key
-					if (IsPrimaryKey)
-						builder.Append(" PRIMARY KEY");
-
-					// Auto-increment
-					if (AutoIncrements)
-						builder.Append(" AUTOINCREMENT");
-				}
-				return builder.ToString();
-			}
-		}
-
-		/// <summary>
 		/// Gets the DbType for the property.
 		/// </summary>
 		/// <returns></returns>
-		public DbType DbType { get { return s_TypeToDbType[UnderlyingPropertyType]; } }
+		public DbType DbType { get { return s_TypeToDbType[StoredPropertyType]; } }
 
 		/// <summary>
 		/// Gets the SQL type for the property.
 		/// </summary>
 		/// <returns></returns>
-		public string SqlType { get { return s_TypeToSqlType[UnderlyingPropertyType]; } }
+		public string SqlType { get { return s_TypeToSqlType[StoredPropertyType]; } }
+
+		/// <summary>
+		/// Returns true if the property represents an enumerable.
+		/// </summary>
+		public bool IsEnumerable { get { return PropertyType.IsAssignableTo(typeof(IEnumerable)); } }
+
+		/// <summary>
+		/// If the property is an enumerable, returns the inner generic type. Otherwise, returns the property type.
+		/// </summary>
+		public Type PropertyOrEnumerableType
+		{
+			get
+			{
+				return IsEnumerable ? PropertyType.GetInnerGenericTypes(typeof(IEnumerable<>)).Single() : PropertyType;
+			}
+		}
 
 		#endregion
 
@@ -216,7 +224,7 @@ namespace ICD.Connect.Settings.ORM
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <returns></returns>
-		public object GetValue(object instance)
+		public object GetDatabaseValue(object instance)
 		{
 			object value = Property.GetValue(instance, null);
 
@@ -224,10 +232,7 @@ namespace ICD.Connect.Settings.ORM
 			if (value is Guid)
 				value = value.ToString();
 
-			if (value == null)
-				value = DBNull.Value;
-
-			return value;
+			return value == null ? DBNull.Value : Convert.ChangeType(value, StoredPropertyType, CultureInfo.InvariantCulture);
 		}
 
 		/// <summary>
@@ -235,28 +240,62 @@ namespace ICD.Connect.Settings.ORM
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <param name="value"></param>
-		public void SetValue(object instance, object value)
+		public void SetDatabaseValue(object instance, object value)
 		{
 			if (value == DBNull.Value)
 				value = null;
 
-			// Is the property nullable?
-			if (value == null)
-			{
-				if (!PropertyType.CanBeNull())
-					throw new ArgumentException(string.Format("Unable to set property {0}.{1} value to NULL",
-					                                          Property.DeclaringType.Name, Property.Name));
-			}
-			else
-			{
-				// Hack - Guids are stored as strings
-				if (UnderlyingPropertyType == typeof(Guid))
-					value = new Guid(value as string);
+			// Hack - Guids are stored as strings
+			if (PropertyType == typeof(Guid))
+				value = new Guid((string)value);
 
-				value = Convert.ChangeType(value, UnderlyingPropertyType, CultureInfo.InvariantCulture);
+			if (value != null)
+			{
+				Type notNullType = Nullable.GetUnderlyingType(PropertyType) ?? PropertyType;
+				value = Convert.ChangeType(value, notNullType, CultureInfo.InvariantCulture);
 			}
 
 			Property.SetValue(instance, value, null);
+		}
+
+		/// <summary>
+		/// Returns the property as an SQL table creation parameter.
+		/// </summary>
+		[NotNull]
+		public string GetSqlCreateParam()
+		{
+			// Name
+			StringBuilder builder = new StringBuilder(Name);
+			{
+				// Type
+				builder.AppendFormat(" {0}", SqlType);
+
+				// Primary key
+				if (IsPrimaryKey)
+					builder.Append(" PRIMARY KEY");
+
+				// Auto-increment
+				if (AutoIncrements)
+					builder.Append(" AUTOINCREMENT");
+			}
+			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Returns the constraint information for this property.
+		/// </summary>
+		/// <returns></returns>
+		[CanBeNull]
+		public string GetSqlConstraintParam()
+		{
+			if (IsForeignKey && ForeignKeyType != null)
+			{
+				TypeModel parent = TypeModel.Get(ForeignKeyType);
+				return string.Format("FOREIGN KEY({0}) REFERENCES {1}({2}) ON DELETE CASCADE", Name,
+				                     parent.TableName, parent.PrimaryKey.Name);
+			}
+
+			return null;
 		}
 
 		#endregion

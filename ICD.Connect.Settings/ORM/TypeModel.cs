@@ -151,12 +151,21 @@ namespace ICD.Connect.Settings.ORM
 		}
 
 		/// <summary>
+		/// Gets all of the properties, including properties that don't have columns.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<PropertyModel> GetProperties()
+		{
+			return m_Props.Values;
+		}
+
+		/// <summary>
 		/// Gets all of the tracked columns for the wrapped type.
 		/// </summary>
 		/// <returns></returns>
 		public IEnumerable<PropertyModel> GetColumns()
 		{
-			return m_Props.Values;
+			return m_Props.Values.Where(p => p.IsColumn);
 		}
 
 		/// <summary>
@@ -166,7 +175,10 @@ namespace ICD.Connect.Settings.ORM
 		/// <returns></returns>
 		public string GetDelimitedCreateParamList(string delimiter)
 		{
-			return string.Join(delimiter, m_Props.Values.Select(p => p.SqlCreateParam).ToArray());
+			IEnumerable<string> columns = GetColumns().Select(p => p.GetSqlCreateParam());
+			IEnumerable<string> constraints = GetColumns().Select(p => p.GetSqlConstraintParam()).Where(p => p != null);
+
+			return string.Join(delimiter, columns.Concat(constraints).ToArray());
 		}
 
 		/// <summary>
@@ -176,7 +188,7 @@ namespace ICD.Connect.Settings.ORM
 		/// <returns></returns>
 		public string GetDelimitedColumnNames(string delimiter)
 		{
-			return string.Join(delimiter, m_Props.Keys.ToArray());
+			return string.Join(delimiter, GetColumns().Select(c => c.Name).ToArray());
 		}
 
 		#endregion

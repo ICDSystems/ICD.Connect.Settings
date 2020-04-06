@@ -44,8 +44,8 @@ namespace ICD.Connect.Settings.ORM.Databases
 		protected override void ValidateTable(Type type, string name)
 		{
 			Dictionary<string, SqliteColumnInfo> tableColumns =
-				GetConnection().Query<SqliteColumnInfo>(string.Format("PRAGMA table_info({0})", name))
-				               .ToDictionary(c => c.name);
+				Query<SqliteColumnInfo>(string.Format("PRAGMA table_info({0})", name))
+					.ToDictionary(c => c.name);
 
 			TypeModel model = TypeModel.Get(type);
 			PropertyModel[] modelColumns = model.GetColumns().ToArray();
@@ -84,12 +84,14 @@ namespace ICD.Connect.Settings.ORM.Databases
 
 		private sealed class SqliteColumnInfo
 		{
+			// ReSharper disable InconsistentNaming
 			[DataField] public string cid { get; set; }
 			[PrimaryKey] public string name { get; set; }
 			[DataField] public string type { get; set; }
 			[DataField] public int notnull { get; set; }
 			[DataField] public object dflt_value { get; set; }
 			[DataField] public int pk { get; set; }
+			// ReSharper restore InconsistentNaming
 		}
 	}
 }
