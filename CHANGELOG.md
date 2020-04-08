@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
  - RoomConfig-Base.xml deprecated in favor of SystemConfig.xml
+ - Added AddItem() and AddItems() methods to IGroup and AbstractGroup
+ - Using new logging context
 
 ## [10.0.0] - 2020-03-20
 ### Added
@@ -18,7 +20,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Settings will be validated before being applied. Critical (or worse) errors will prevent settings being applied.
  - Fixed potential null reference exception when loading permissions
  - Changed IdUtils to use enum for Subsystems, and generate DAV-style ID's
- - Added AddItem() and AddItems() methods to IGroup and AbstractGroup
 
 ## [9.3.0] - 2019-11-20
 ### Changed

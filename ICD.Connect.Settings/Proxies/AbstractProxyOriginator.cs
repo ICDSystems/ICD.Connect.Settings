@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Permissions;
 using ICD.Common.Utils;
 using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
-using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Info;
@@ -46,7 +45,7 @@ namespace ICD.Connect.Settings.Proxies
 		/// </summary>
 		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
-		private ILoggerService m_CachedLogger;
+		private ILoggingContext m_Logger;
 		private string m_Name;
 		private bool m_Disable;
 
@@ -120,11 +119,7 @@ namespace ICD.Connect.Settings.Proxies
 		/// <summary>
 		/// Logger for the originator.
 		/// </summary>
-		[Obsolete]
-		public ILoggerService Logger
-		{
-			get { return m_CachedLogger = m_CachedLogger ?? ServiceProvider.TryGetService<ILoggerService>(); }
-		}
+		public ILoggingContext Logger { get { return m_Logger; } }
 
 		/// <summary>
 		/// Gets the name of the node.
@@ -135,11 +130,18 @@ namespace ICD.Connect.Settings.Proxies
 		/// Gets the help information for the node.
 		/// </summary>
 		public virtual string ConsoleHelp { get { return string.Empty; } }
-
 		
 		public ITelemetryCollection Telemetry { get; [UsedImplicitly] set; }
 
 		#endregion
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractProxyOriginator()
+		{
+			m_Logger = new ServiceLoggingContext(this);
+		}
 
 		#region Methods
 

@@ -176,7 +176,7 @@ namespace ICD.Connect.Settings.SPlusShims
 
 			if (core == null)
 			{
-				Log(eSeverity.Error, "No {0} service found", typeof(ICore));
+				Logger.Log(eSeverity.Error, "No {0} service found", typeof(ICore));
 				return null;
 			}
 
@@ -185,15 +185,15 @@ namespace ICD.Connect.Settings.SPlusShims
 
 			if (!childExists)
 			{
-				Log(eSeverity.Error, "No Originator with id {0}", id);
+				Logger.Log(eSeverity.Error, "No Originator with id {0}", id);
 				return default(TOriginator);
 			}
 
 			if (output is TOriginator)
 				return (TOriginator)output;
 
-			Log(eSeverity.Error, "Originator at id {0} is not of type {1}.",
-			    id, typeof(TOriginator).Name);
+			Logger.Log(eSeverity.Error, "Originator at id {0} is not of type {1}.",
+			           id, typeof(TOriginator).Name);
 
 			return default(TOriginator);
 		}

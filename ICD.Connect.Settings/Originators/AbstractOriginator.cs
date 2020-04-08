@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Permissions;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
-using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Telemetry;
@@ -43,7 +43,7 @@ namespace ICD.Connect.Settings.Originators
 
 		private readonly List<Permission> m_Permissions;
 
-		private ILoggerService m_CachedLogger;
+		private ILoggingContext m_Logger;
 		private PermissionsManager m_CachedPermissionsManager;
 		private string m_Name;
 		private bool m_Disable;
@@ -120,11 +120,7 @@ namespace ICD.Connect.Settings.Originators
 		/// <summary>
 		/// Logger for the originator.
 		/// </summary>
-		[Obsolete]
-		public ILoggerService Logger
-		{
-			get { return m_CachedLogger = m_CachedLogger ?? ServiceProvider.TryGetService<ILoggerService>(); }
-		}
+		public ILoggingContext Logger { get { return m_Logger; } }
 
 		/// <summary>
 		/// Gets the name of the node.
@@ -153,6 +149,7 @@ namespace ICD.Connect.Settings.Originators
 		protected AbstractOriginator()
 		{
 			m_Permissions = new List<Permission>();
+			m_Logger = new ServiceLoggingContext(this);
 		}
 
 		/// <summary>
@@ -210,30 +207,6 @@ namespace ICD.Connect.Settings.Originators
 		public IEnumerable<Permission> GetPermissions()
 		{
 			return m_Permissions.ToList();
-		}
-
-		public void Log(eSeverity severity, string message)
-		{
-// ReSharper disable once CSharpWarnings::CS0612
-			Logger.AddEntry(severity, "{0} - {1}", this, message);
-		}
-
-		public void Log(eSeverity severity, string message, params object[] args)
-		{
-			message = string.Format(message, args);
-			Log(severity, message);
-		}
-
-		public void Log(eSeverity severity, Exception e, string message)
-		{
-			// ReSharper disable once CSharpWarnings::CS0612
-			Logger.AddEntry(severity, e, "{0} - {1}", this, message);
-		}
-
-		public void Log(eSeverity severity, Exception e, string message, params object[] args)
-		{
-			message = string.Format(message, args);
-			Log(severity, e, message);
 		}
 
 		#endregion

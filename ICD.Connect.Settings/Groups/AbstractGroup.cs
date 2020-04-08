@@ -263,7 +263,7 @@ namespace ICD.Connect.Settings.Groups
 				}
 				catch (Exception e)
 				{
-					Log(eSeverity.Error, "Failed to instantiate {0} with id {1} - {2}", typeof(TOriginator).Name, id, e.Message);
+					Logger.Log(eSeverity.Error, "Failed to instantiate {0} with id {1} - {2}", typeof(TOriginator).Name, id, e.Message);
 					continue;
 				}
 

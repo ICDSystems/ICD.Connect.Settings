@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
@@ -9,7 +10,6 @@ using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.IO.Compression;
-using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings.Attributes;
 #if SIMPLSHARP
@@ -33,14 +33,17 @@ namespace ICD.Connect.Settings.Utils
 		};
 
 		private static readonly string[] s_LibDirectories;
+		private static readonly ILoggingContext s_Logger;
 
-		private static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
+		private static ILoggingContext Logger { get { return s_Logger; } }
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		static LibraryUtils()
 		{
+			s_Logger = new ServiceLoggingContext(typeof(LibraryUtils));
+
 			s_LibDirectories = new[]
 			{
 				IcdDirectory.GetApplicationDirectory(),
@@ -129,7 +132,7 @@ namespace ICD.Connect.Settings.Utils
 			try
 			{
 				IcdDirectory.Delete(path, true);
-				Logger.AddEntry(eSeverity.Informational, "Removed old plugin {0}", path);
+				Logger.Log(eSeverity.Informational, "Removed old plugin {0}", path);
 			}
 			catch (Exception e)
 			{
@@ -155,11 +158,11 @@ namespace ICD.Connect.Settings.Utils
 					}
 					catch (Exception e)
 					{
-						Logger.AddEntry(eSeverity.Warning, "Failed to extract archive {0} - {1}", path, e.Message);
+						Logger.Log(eSeverity.Warning, "Failed to extract archive {0} - {1}", path, e.Message);
 						continue;
 					}
 
-					Logger.AddEntry(eSeverity.Informational, "Extracted archive {0}", path);
+					Logger.Log(eSeverity.Informational, "Extracted archive {0}", path);
 				}
 				else
 				{
@@ -167,7 +170,7 @@ namespace ICD.Connect.Settings.Utils
 					if (IcdDirectory.Exists(outputDir))
 						RemoveOldPlugin(outputDir);
 
-					Logger.AddEntry(eSeverity.Warning, "Skipping extracting archive {0} - Already contained in another plugin", path);
+					Logger.Log(eSeverity.Warning, "Skipping extracting archive {0} - Already contained in another plugin", path);
 				}
 
 				// Delete the archive so we don't waste time extracting on next load
@@ -346,7 +349,7 @@ namespace ICD.Connect.Settings.Utils
 #endif
 			catch (Exception e)
 			{
-				Logger.AddEntry(eSeverity.Warning, e, "Failed to load plugin {0} - {1}", path, e.Message);
+				Logger.Log(eSeverity.Warning, e, "Failed to load plugin {0} - {1}", path, e.Message);
 				return null;
 			}
 		}

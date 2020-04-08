@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
-using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.SPlusShims.GlobalEvents;
@@ -12,13 +11,11 @@ namespace ICD.Connect.Settings.SPlusShims
 {
 	public abstract class AbstractSPlusShim : ISPlusShim
 	{
-		#region Private Members
-
-		private static ILoggerService Logger { get { return ServiceProvider.GetService<ILoggerService>(); } }
-
-		#endregion
+		private readonly ServiceLoggingContext m_Logger;
 
 		#region Public Properties
+
+		protected ILoggingContext Logger { get { return m_Logger; } }
 
 		/// <summary>
 		/// Location in the SimplWindows program of the S+ Module
@@ -40,8 +37,13 @@ namespace ICD.Connect.Settings.SPlusShims
 
 		#endregion
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
 		protected AbstractSPlusShim()
 		{
+			m_Logger = new ServiceLoggingContext(this);
+
 			Name = "SPlusShim";
 			SPlusGlobalEvents.RegisterCallback<EnvironmentLoadedEventInfo>(EnvironmentLoaded);
 			SPlusGlobalEvents.RegisterCallback<EnvironmentUnloadedEventInfo>(EnvironmentUnloaded);
@@ -72,17 +74,6 @@ namespace ICD.Connect.Settings.SPlusShims
 			var handler = OnResyncRequested;
 			if (handler != null)
 				handler.Raise(this);
-		}
-
-		protected void Log(eSeverity severity, string message)
-		{
-			Logger.AddEntry(severity, "{0} - {1}", this, message);
-		}
-
-		protected void Log(eSeverity severity, string message, params object[] args)
-		{
-			message = String.Format(message, args);
-			Log(severity, message);
 		}
 
 		public override string ToString()

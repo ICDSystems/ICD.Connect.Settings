@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Settings.Attributes;
+﻿using ICD.Common.Logging.LoggingContexts;
+using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharp.Reflection;
@@ -10,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 
@@ -23,13 +23,14 @@ namespace ICD.Connect.Settings
 		/// </summary>
 		private static readonly Dictionary<string, Type> s_FactoryNameTypeMap;
 
-		private static ILoggerService Logger { get { return ServiceProvider.TryGetService<ILoggerService>(); } }
+		private static readonly ServiceLoggingContext s_Logger;
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		static PluginFactory()
 		{
+			s_Logger = new ServiceLoggingContext(typeof(PluginFactory));
 			s_FactoryNameTypeMap = new Dictionary<string, Type>();
 
 			try
@@ -38,7 +39,7 @@ namespace ICD.Connect.Settings
 			}
 			catch (Exception e)
 			{
-				Logger.AddEntry(eSeverity.Error, e, "{0} failed to cache plugins", typeof(PluginFactory).Name);
+				s_Logger.Log(eSeverity.Error, e, "Failed to cache plugins");
 			}
 		}
 
@@ -80,7 +81,7 @@ namespace ICD.Connect.Settings
 					string name = XmlUtils.ReadElementName(element);
 					string id = XmlUtils.HasAttribute(element, "id") ? XmlUtils.GetAttributeAsString(element, "id") : "NULL";
 
-					Logger.AddEntry(eSeverity.Error, e, "Skipping settings element {0} id {1} - {2}", name, id, e.Message);
+					s_Logger.Log(eSeverity.Error, e, "Skipping settings element {0} id {1} - {2}", name, id, e.Message);
 					continue;
 				}
 
@@ -209,7 +210,7 @@ namespace ICD.Connect.Settings
 				CacheAssembly(assembly);
 
 			foreach (string factoryName in s_FactoryNameTypeMap.Keys.Order())
-				Logger.AddEntry(eSeverity.Informational, "Loaded type {0}", factoryName);
+				s_Logger.Log(eSeverity.Informational, "Loaded type {0}", factoryName);
 		}
 
 		private static void CacheAssembly(Assembly assembly)
@@ -235,14 +236,14 @@ namespace ICD.Connect.Settings
 				{
 					if (inner is System.IO.FileNotFoundException)
 					{
-						Logger.AddEntry(eSeverity.Error,
-						                "{0} failed to cache assembly {1} - Could not find one or more dependencies by path",
-						                typeof(PluginFactory).Name, assembly.GetName().Name);
+						s_Logger.Log(eSeverity.Error,
+						             "Failed to cache assembly {0} - Could not find one or more dependencies by path",
+						             assembly.GetName().Name);
 						continue;
 					}
 
-					Logger.AddEntry(eSeverity.Error, inner, "{0} failed to cache assembly {1}", typeof(PluginFactory).Name,
-					                assembly.GetName().Name);
+					s_Logger.Log(eSeverity.Error, inner, "Failed to cache assembly {0}",
+					             assembly.GetName().Name);
 				}
 
 				return;
@@ -251,11 +252,10 @@ namespace ICD.Connect.Settings
 			catch (TypeLoadException e)
 			{
 #if SIMPLSHARP
-				Logger.AddEntry(eSeverity.Error, "{0} failed to cache assembly {1}", typeof(PluginFactory).Name,
-								assembly.GetName().Name);
+				s_Logger.Log(eSeverity.Error, "Failed to cache assembly {0}", assembly.GetName().Name);
 #else
-				Logger.AddEntry(eSeverity.Error, "{0} failed to cache assembly {1} - could not load type {2}",
-								typeof(PluginFactory).Name, assembly.GetName().Name, e.TypeName);
+				s_Logger.Log(eSeverity.Error, "Failed to cache assembly {0} - could not load type {1}",
+							 assembly.GetName().Name, e.TypeName);
 #endif
 				return;
 			}
@@ -263,7 +263,7 @@ namespace ICD.Connect.Settings
 			foreach (Type type in types)
 				CacheType(type);
 
-			Logger.AddEntry(eSeverity.Informational, "Loaded plugin {0}", assembly.GetName().Name);
+			s_Logger.Log(eSeverity.Informational, "Loaded plugin {0}", assembly.GetName().Name);
 		}
 
 		/// <summary>
@@ -283,7 +283,7 @@ namespace ICD.Connect.Settings
 
 				if (s_FactoryNameTypeMap.ContainsKey(attribute.FactoryName))
 				{
-					Logger.AddEntry(eSeverity.Error, "Failed to cache {0} - Duplicate factory name {1}", type.Name, attribute.FactoryName);
+					s_Logger.Log(eSeverity.Error, "Failed to cache {0} - Duplicate factory name {1}", type.Name, attribute.FactoryName);
 					return;
 				}
 
