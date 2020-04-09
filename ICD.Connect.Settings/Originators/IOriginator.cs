@@ -57,6 +57,7 @@ namespace ICD.Connect.Settings.Originators
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_ID, OriginatorApi.HELP_PROPERTY_ID)]
 		[StaticPropertyTelemetry(OriginatorTelemetryNames.ID)]
+		[TelemetryCollectionIdentity]
 		int Id { get; set; }
 
 		/// <summary>
