@@ -1,6 +1,8 @@
 #if SIMPLSHARP
+using Crestron.SimplSharp.Data.
 using Crestron.SimplSharp.SQLite;
 #else
+using System.Data;
 using SQLiteConnection = Microsoft.Data.Sqlite.SqliteConnection;
 #endif
 using System;
@@ -24,16 +26,17 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <summary>
 		/// Creates the table for the given type.
 		/// </summary>
+		/// <param name="transaction"></param>
 		/// <param name="type"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		protected override void CreateTable(Type type, string name)
+		protected override void CreateTable(IDbTransaction transaction, Type type, string name)
 		{
 			TypeModel typeModel = TypeModel.Get(type);
 
 			string sql = "CREATE TABLE " + name + " (" + typeModel.GetDelimitedCreateParamList(",") + ")";
 
-			GetConnection().Execute(sql);
+			GetConnection().Execute(sql, null, transaction);
 		}
 
 		/// <summary>
@@ -75,11 +78,12 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <summary>
 		/// Returns true if a table with the given name exists.
 		/// </summary>
+		/// <param name="transaction"></param>
 		/// <param name="name"></param>
-		protected override bool TableExists(string name)
+		protected override bool TableExists(IDbTransaction transaction, string name)
 		{
 			string sql = string.Format("SELECT name FROM sqlite_master WHERE type='table' AND name='{0}'", name);
-			return name == GetConnection().ExecuteScalar(sql) as string;
+			return name == GetConnection().ExecuteScalar(sql, null, transaction) as string;
 		}
 
 		private sealed class SqliteColumnInfo

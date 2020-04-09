@@ -495,8 +495,6 @@ namespace ICD.Connect.Settings.ORM.Extensions
 				       }
 					);
 
-			// TODO - Treat properties missing from the parameter as deletions?
-
 			foreach (PropertyModel property in childProperties)
 				UpdateChildItems(connection, transaction, type, param, property);
 		}

@@ -39,17 +39,9 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <summary>
 		/// A wrapper that uses the internally cached connection.
 		/// </summary>
-		public int Execute(string sql, object param, IDbTransaction transaction)
+		public IEnumerable<T> Query<T>(string sql)
 		{
-			return GetConnection().Execute(sql, param, transaction);
-		}
-
-		/// <summary>
-		/// A wrapper that uses the internally cached connection.
-		/// </summary>
-		public int Execute(string sql)
-		{
-			return Execute(sql, null, null);
+			return Query<T>(sql, null);
 		}
 
 		/// <summary>
@@ -58,14 +50,6 @@ namespace ICD.Connect.Settings.ORM.Databases
 		public IEnumerable<T> Query<T>(string sql, object param)
 		{
 			return GetConnection().Query(sql, typeof(T), param).Cast<T>();
-		}
-
-		/// <summary>
-		/// A wrapper that uses the internally cached connection.
-		/// </summary>
-		public IEnumerable<T> Query<T>(string sql)
-		{
-			return Query<T>(sql, null);
 		}
 
 		/// <summary>
@@ -84,7 +68,7 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <returns>All records in the table matching the supplied type.</returns>
 		public IEnumerable<T> All<T>(object param)
 		{
-			LazyLoadTable(typeof(T));
+			LazyLoadTable(null, typeof(T));
 			return GetConnection().All(typeof(T), param).Cast<T>();
 		}
 
@@ -94,44 +78,45 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <returns>All records in the table matching the supplied type.</returns>
 		public IEnumerable<T> All<T>()
 		{
-			LazyLoadTable(typeof(T));
+			LazyLoadTable(null, typeof(T));
 			return GetConnection().All(typeof(T)).Cast<T>();
 		}
 
 		/// <summary>
 		/// Inserts the supplied object into the database. Infers table name from type name.
 		/// </summary>
-		public void Insert<T>(object param)
+		public void Insert<T>(IDbTransaction transaction, object param)
 		{
-			LazyLoadTable(typeof(T));
-			GetConnection().Insert(null, typeof(T), param);
+			LazyLoadTable(transaction, typeof(T));
+			GetConnection().Insert(transaction, typeof(T), param);
 		}
 
 		/// <summary>
 		/// Updates the supplied object. Infers table name from type name.
 		/// </summary>
-		public void Update<T>(object param)
+		public void Update<T>(IDbTransaction transaction, object param)
 		{
-			LazyLoadTable(typeof(T));
-			GetConnection().Update(null, typeof(T), param);
+			LazyLoadTable(transaction, typeof(T));
+			GetConnection().Update(transaction, typeof(T), param);
 		}
 
 		/// <summary>
 		/// Deletes the objects in the database matching the params.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
+		/// <param name="transaction"></param>
 		/// <param name="param"></param>
-		public void Delete<T>(object param)
+		public void Delete<T>(IDbTransaction transaction, object param)
 		{
-			LazyLoadTable(typeof(T));
-			GetConnection().Delete(null, typeof(T), param);
+			LazyLoadTable(transaction, typeof(T));
+			GetConnection().Delete(transaction, typeof(T), param);
 		}
 
 		#endregion
 
 		#region Protected Methods
 
-		protected IDbConnection GetConnection()
+		public IDbConnection GetConnection()
 		{
 			if (m_Connection.State != ConnectionState.Open)
 				m_Connection.Open();
@@ -142,10 +127,11 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <summary>
 		/// Creates the table for the given type.
 		/// </summary>
+		/// <param name="transaction"></param>
 		/// <param name="type"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		protected abstract void CreateTable(Type type, string name);
+		protected abstract void CreateTable(IDbTransaction transaction, Type type, string name);
 
 		/// <summary>
 		/// Throws an exception if the table columns do not match the type properties.
@@ -157,8 +143,9 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <summary>
 		/// Returns true if a table with the given name exists.
 		/// </summary>
+		/// <param name="transaction"></param>
 		/// <param name="name"></param>
-		protected abstract bool TableExists(string name);
+		protected abstract bool TableExists(IDbTransaction transaction, string name);
 
 		#endregion
 
@@ -169,19 +156,20 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// Creates the table and tables for foreign objects recursively if not.
 		/// Performs validation to ensure the tables match the given Type.
 		/// </summary>
+		/// <param name="transaction"></param>
 		/// <param name="type"></param>
-		private void LazyLoadTable(Type type)
+		private void LazyLoadTable(IDbTransaction transaction, Type type)
 		{
 			string tableName = TypeModel.Get(type).TableName;
 
 			if (!m_TableNames.Contains(tableName))
 			{
-				if (!TableExists(tableName))
-					CreateTable(type, tableName);
+				if (!TableExists(transaction, tableName))
+					CreateTable(transaction, type, tableName);
 
 				ValidateTable(type, tableName);
 
-				LazyLoadForeignTables(type);
+				LazyLoadForeignTables(transaction, type);
 
 				m_TableNames.Add(tableName);
 			}
@@ -190,14 +178,15 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <summary>
 		/// Loops over the foreign children in the Type and creates tables recursively.
 		/// </summary>
+		/// <param name="transaction"></param>
 		/// <param name="type"></param>
-		private void LazyLoadForeignTables(Type type)
+		private void LazyLoadForeignTables(IDbTransaction transaction, Type type)
 		{
 			TypeModel.Get(type)
 			         .GetProperties()
 			         .Where(p => !p.IsColumn && p.IsForeignKey)
 			         .Select(p => p.PropertyOrEnumerableType)
-			         .ForEach(LazyLoadTable);
+			         .ForEach(t => LazyLoadTable(transaction, t));
 		}
 
 		#endregion

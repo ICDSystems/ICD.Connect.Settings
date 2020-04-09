@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using ICD.Common.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharp.SQLite;
@@ -64,7 +65,11 @@ namespace ICD.Connect.Settings.ORM
 		/// <param name="param"></param>
 		public void Insert<T>(object param)
 		{
-			m_Database.Insert<T>(param);
+			using (IDbTransaction transaction = m_Database.GetConnection().BeginTransaction())
+			{
+				m_Database.Insert<T>(transaction, param);
+				transaction.Commit();
+			}
 		}
 
 		/// <summary>
@@ -74,7 +79,11 @@ namespace ICD.Connect.Settings.ORM
 		/// <param name="param"></param>
 		public void Update<T>(object param)
 		{
-			m_Database.Update<T>(param);
+			using (IDbTransaction transaction = m_Database.GetConnection().BeginTransaction())
+			{
+				m_Database.Update<T>(transaction, param);
+				transaction.Commit();
+			}
 		}
 
 		/// <summary>
@@ -84,7 +93,11 @@ namespace ICD.Connect.Settings.ORM
 		/// <param name="param"></param>
 		public void Delete<T>(object param)
 		{
-			m_Database.Delete<T>(param);
+			using (IDbTransaction transaction = m_Database.GetConnection().BeginTransaction())
+			{
+				m_Database.Delete<T>(transaction, param);
+				transaction.Commit();
+			}
 		}
 	}
 }
