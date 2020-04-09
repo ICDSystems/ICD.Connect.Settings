@@ -14,6 +14,7 @@ namespace ICD.Connect.Settings.Cores
 		/// <summary>
 		/// Gets the stored originators.
 		/// </summary>
+		[CollectionTelemetry("Originators")]
 		IOriginatorCollection<IOriginator> Originators { get; }
 
 		/// <summary>
