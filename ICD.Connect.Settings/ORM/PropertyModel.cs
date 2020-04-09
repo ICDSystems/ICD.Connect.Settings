@@ -12,6 +12,7 @@ using System.Reflection;
 #endif
 using System.Text;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 
 namespace ICD.Connect.Settings.ORM
@@ -252,7 +253,10 @@ namespace ICD.Connect.Settings.ORM
 			if (value != null)
 			{
 				Type notNullType = Nullable.GetUnderlyingType(PropertyType) ?? PropertyType;
-				value = Convert.ChangeType(value, notNullType, CultureInfo.InvariantCulture);
+
+				value = EnumUtils.IsEnumType(notNullType)
+					? EnumUtils.ParseStrict(notNullType, (string)value, true)
+					: Convert.ChangeType(value, notNullType, CultureInfo.InvariantCulture);
 			}
 
 			Property.SetValue(instance, value, null);
