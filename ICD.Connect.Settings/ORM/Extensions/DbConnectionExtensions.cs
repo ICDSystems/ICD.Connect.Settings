@@ -107,7 +107,7 @@ namespace ICD.Connect.Settings.ORM.Extensions
 					if (type.IsValueType || type == typeof(string))
 						return ReadValues(reader, type).ToArray();
 
-					return ReadReferences(reader, type).ToArray();
+					return ReadReferences(extends, reader, type).ToArray();
 				}
 			}
 		}
@@ -333,15 +333,16 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		/// <summary>
 		/// Reads the rows in the reader as the given reference type.
 		/// </summary>
+		/// <param name="connection"></param>
 		/// <param name="reader"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		private static IEnumerable<object> ReadReferences(IDataReader reader, Type type)
+		private static IEnumerable<object> ReadReferences(IDbConnection connection, IDataReader reader, Type type)
 		{
 			while (reader.Read())
 			{
 				object record = ReflectionUtils.CreateInstance(type);
-				PopulateInstance(record, reader);
+				PopulateInstance(connection, record, reader);
 				yield return record;
 			}
 		}
@@ -411,7 +412,7 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		/// <summary>
 		/// Populate a references type from an IDataRecord by matching column names to property names.
 		/// </summary>
-		private static void PopulateInstance(object instance, IDataRecord reader)
+		private static void PopulateInstance(IDbConnection connection, object instance, IDataRecord reader)
 		{
 			TypeModel typeModel = TypeModel.Get(instance.GetType());
 
@@ -422,7 +423,29 @@ namespace ICD.Connect.Settings.ORM.Extensions
 				typeModel.GetProperty(columnName).SetDatabaseValue(instance, value);
 			}
 
-			// TODO - Populate the foreign keys
+			// Populate the foreign keys
+			PropertyModel primaryKey = typeModel.PrimaryKey;
+			foreach (PropertyModel foreignKey in typeModel.GetProperties().Where(p => !p.IsColumn && p.IsForeignKey))
+			{
+				// Get the keys
+				TypeModel childTypeModel = TypeModel.Get(foreignKey.PropertyOrEnumerableType);
+				PropertyModel childForeignKey =
+					childTypeModel.GetColumns().First(p => p.ForeignKeyType == instance.GetType());
+				object key = primaryKey.GetDatabaseValue(instance);
+				string foreignColumn = childForeignKey.Name;
+
+				// Get the children
+				string sql = string.Format("SELECT * FROM {0} WHERE {1}=@ParentId", childTypeModel.TableName, childForeignKey.Name);
+				IList children =
+					connection.Query(sql, foreignKey.PropertyOrEnumerableType, new {ParentId = key})
+					          .ToList(foreignKey.PropertyOrEnumerableType);
+
+				// Assign the children
+				if (foreignKey.IsEnumerable)
+					foreignKey.Property.SetValue(instance, children, null);
+				else
+					foreignKey.Property.SetValue(instance, children.Cast<object>().SingleOrDefault(), null);
+			}
 		}
 
 		/// <summary>
