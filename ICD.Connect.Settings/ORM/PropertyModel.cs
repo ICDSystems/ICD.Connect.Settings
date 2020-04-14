@@ -89,7 +89,7 @@ namespace ICD.Connect.Settings.ORM
 		{
 			get
 			{
-				Type type = Nullable.GetUnderlyingType(PropertyType) ?? PropertyType;
+				Type type = Nullable.GetUnderlyingType(PropertyOrEnumerableType) ?? PropertyOrEnumerableType;
 
 				if (type == typeof(Guid))
 					type = typeof(string);
@@ -131,7 +131,7 @@ namespace ICD.Connect.Settings.ORM
 		/// <summary>
 		/// Returns true if the property represents an enumerable.
 		/// </summary>
-		public bool IsEnumerable { get { return PropertyType.IsAssignableTo(typeof(IEnumerable)); } }
+		public bool IsEnumerable { get { return PropertyType != typeof(string) && PropertyType.IsAssignableTo(typeof(IEnumerable)); } }
 
 		/// <summary>
 		/// If the property is an enumerable, returns the inner generic type. Otherwise, returns the property type.
@@ -228,12 +228,21 @@ namespace ICD.Connect.Settings.ORM
 		public object GetDatabaseValue(object instance)
 		{
 			object value = Property.GetValue(instance, null);
+			return ToDatabaseValue(value);
+		}
 
-			// Hack - Guids are stored as strings
-			if (value is Guid)
-				value = value.ToString();
+		/// <summary>
+		/// Gets the values for the given instance where the property is an enumerable.
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns></returns>
+		public IEnumerable<object> GetDatabaseValues(object instance)
+		{
+			IEnumerable value = Property.GetValue(instance, null) as IEnumerable;
+			if (value == null)
+				throw new InvalidOperationException(string.Format("{0} is not an enumerable", Name));
 
-			return value == null ? DBNull.Value : Convert.ChangeType(value, StoredPropertyType, CultureInfo.InvariantCulture);
+			return value.Cast<object>().Select(ToDatabaseValue);
 		}
 
 		/// <summary>
@@ -243,22 +252,7 @@ namespace ICD.Connect.Settings.ORM
 		/// <param name="value"></param>
 		public void SetDatabaseValue(object instance, object value)
 		{
-			if (value == DBNull.Value)
-				value = null;
-
-			// Hack - Guids are stored as strings
-			if (PropertyType == typeof(Guid))
-				value = new Guid((string)value);
-
-			if (value != null)
-			{
-				Type notNullType = Nullable.GetUnderlyingType(PropertyType) ?? PropertyType;
-
-				value = EnumUtils.IsEnumType(notNullType)
-					? EnumUtils.ParseStrict(notNullType, (string)value, true)
-					: Convert.ChangeType(value, notNullType, CultureInfo.InvariantCulture);
-			}
-
+			value = FromDatabaseValue(value);
 			Property.SetValue(instance, value, null);
 		}
 
@@ -300,6 +294,50 @@ namespace ICD.Connect.Settings.ORM
 			}
 
 			return null;
+		}
+
+		#endregion
+
+		#region Private Methods
+
+		/// <summary>
+		/// Converts the given object to a database value.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		private object ToDatabaseValue(object value)
+		{
+			// Guids are stored as strings
+			if (value is Guid)
+				value = value.ToString();
+
+			return value == null ? DBNull.Value : Convert.ChangeType(value, StoredPropertyType, CultureInfo.InvariantCulture);
+		}
+
+		/// <summary>
+		/// Converts the given database value to a C# value.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		private object FromDatabaseValue(object value)
+		{
+			if (value == DBNull.Value)
+				value = null;
+
+			// Hack - Guids are stored as strings
+			if (PropertyType == typeof(Guid))
+				value = new Guid((string)value);
+
+			if (value != null)
+			{
+				Type notNullType = Nullable.GetUnderlyingType(PropertyType) ?? PropertyType;
+
+				value = EnumUtils.IsEnumType(notNullType)
+					? EnumUtils.ParseStrict(notNullType, (string)value, true)
+					: Convert.ChangeType(value, notNullType, CultureInfo.InvariantCulture);
+			}
+
+			return value;
 		}
 
 		#endregion

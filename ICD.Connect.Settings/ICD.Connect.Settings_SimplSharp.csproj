@@ -99,6 +99,7 @@
     <Compile Include="ORM\Databases\AbstractDatabase.cs" />
     <Compile Include="ORM\Databases\SqliteDatabase.cs" />
     <Compile Include="ORM\Extensions\DbConnectionExtensions.cs" />
+    <Compile Include="ORM\Extensions\SqlCommandExtensions.cs" />
     <Compile Include="ORM\Persistent.cs" />
     <Compile Include="ORM\PersistentDatabase.cs" />
     <Compile Include="ORM\PropertyModel.cs" />

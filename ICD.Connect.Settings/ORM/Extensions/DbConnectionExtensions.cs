@@ -381,10 +381,16 @@ namespace ICD.Connect.Settings.ORM.Extensions
 
 			foreach (PropertyModel column in typeModel.GetColumns())
 			{
+				// Edge case - Inserting an array of values
+				if (column.IsEnumerable)
+				{
+					cmd.AddArrayParameters(column.Name, column.GetDatabaseValues(data));
+					continue;
+				}
+
 				IDbDataParameter param = cmd.CreateParameter();
 				{
 					param.ParameterName = "@" + column.Name;
-					//param.DbType = column.DbType;
 					param.Value = column.GetDatabaseValue(data);
 				}
 
@@ -564,15 +570,26 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		private static void UpdateChildItemsSequence(IDbConnection connection, IDbTransaction transaction, Type type,
 		                                             object param, IEnumerable<object> childItems, Type childType)
 		{
+			TypeModel childTypeModel = TypeModel.Get(childType);
+			List<object> childKeys = new List<object>();
+
 			foreach (object item in childItems)
 			{
 				if (item == null)
 					throw new ArgumentException("Sequence contains a null item");
 
+				// Insert/update the child item
 				UpdateChildItemSingle(connection, transaction, type, param, item, childType);
+
+				// Get the new primary key value for the child item
+				object key = childTypeModel.PrimaryKey.GetDatabaseValue(item);
+				childKeys.Add(key);
 			}
 
-			// TODO - Delete any child items not in the sequence
+			// Delete any existing foreign items not in the sequence
+			string sql = string.Format("DELETE FROM {0} WHERE {1} NOT IN (@Keys)", childTypeModel.TableName,
+			                           childTypeModel.PrimaryKey.Name);
+			connection.Execute(sql, new {Keys = childKeys}, transaction);
 		}
 
 		/// <summary>
