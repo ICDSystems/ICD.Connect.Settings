@@ -7,6 +7,7 @@ using ICD.Connect.Telemetry.Attributes;
 namespace ICD.Connect.Settings.Cores
 {
 	[ApiClass("Core", "Contains the devices, panels, rooms, etc for a control system.")]
+	[ExternalTelemetry("Core Telemetry", typeof(CoreExternalTelemetryProvider))]
 	public interface ICore : IOriginator
 	{
 		#region Properties
