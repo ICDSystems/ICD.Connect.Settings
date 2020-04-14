@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronData;
@@ -16,16 +17,18 @@ namespace ICD.Connect.Settings.ORM
 		private readonly SqliteDatabase m_Database;
 
 		/// <summary>
-		///  constructor.
+		/// Constructor.
 		/// </summary>
-		public PersistentDatabase(eDb category)
+		public PersistentDatabase(eDb category, string key)
 		{
-			string path = PathUtils.GetProgramDataPath(category + ".sqlite");
+			string path = BuildPath(category, key);
 			string connectionString = string.Format("Data Source={0};", path);
 
 			SQLiteConnection connection = new SQLiteConnection(connectionString);
 			m_Database = new SqliteDatabase(connection);
 		}
+
+		#region Methods
 
 		/// <summary>
 		/// Gets the first or default item matching the given parameters.
@@ -100,5 +103,40 @@ namespace ICD.Connect.Settings.ORM
 				transaction.Commit();
 			}
 		}
+
+		#endregion
+
+		#region Private Methods
+
+		/// <summary>
+		/// Builds a path to the .sqlite file for the given category and key.
+		///		E.g.
+		///			eDb.RoomPreferences for room ID "1001"
+		///			returns "../USER/ProgramXXData/Room1001Data/RoomPreferences.sqlite"
+		/// 
+		///			eDb.UserData for user named "Chris Cameron"
+		///			returns "../USER/ProgramXXData/UserChrisCameronData/UserData.sqlite"
+		/// </summary>
+		/// <param name="category"></param>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		private static string BuildPath(eDb category, string key)
+		{
+			switch (category)
+			{
+				case eDb.RoomPreferences:
+				case eDb.RoomData:
+					return PathUtils.GetRoomDataPath(int.Parse(key), category + ".sqlite");
+
+				case eDb.UserPreferences:
+				case eDb.UserData:
+					return PathUtils.GetUserDataPath(key, category + ".sqlite");
+
+				default:
+					throw new ArgumentOutOfRangeException("category");
+			}
+		}
+
+		#endregion
 	}
 }
