@@ -1,19 +1,23 @@
 ﻿using System.Collections.Generic;
+#if SIMPLSHARP
+using Crestron.SimplSharp.CrestronData;
+#else
 using System.Data;
+#endif
 
 namespace ICD.Connect.Settings.ORM.Extensions
 {
 	public static class SqlCommandExtensions
 	{
 		/// <summary>
-		/// This will add an array of parameters to a SqlCommand. This is used for an IN statement.
-		/// Use the returned value for the IN part of your SQL call. (i.e. SELECT * FROM table WHERE field IN ({paramNameRoot}))
+		/// This will add an array of parameters to a DB Command. This is used for an IN statement.
+		/// Use the returned value for the IN part of your SQL call. (i.e. SELECT * FROM table WHERE field IN (@paramNameRoot))
 		/// </summary>
 		/// <param name="cmd">The SqlCommand object to add parameters to.</param>
-		/// <param name="paramNameRoot">What the parameter should be named followed by a unique value for each value. This value surrounded by {} in the CommandText will be replaced.</param>
-		/// <param name="values">The array of strings that need to be added as parameters.</param>
-		public static IDbDataParameter[] AddArrayParameters<T>(this IDbCommand cmd, string paramNameRoot,
-		                                                       IEnumerable<T> values)
+		/// <param name="paramNameRoot">What the parameter should be named followed by a unique value for each value.</param>
+		/// <param name="values">The array of values that need to be added as parameters.</param>
+		public static IEnumerable<IDbDataParameter> AddArrayParameters<T>(this IDbCommand cmd, string paramNameRoot,
+		                                                                  IEnumerable<T> values)
 		{
 			List<IDbDataParameter> parameters = new List<IDbDataParameter>();
 			List<string> parameterNames = new List<string>();
@@ -39,7 +43,7 @@ namespace ICD.Connect.Settings.ORM.Extensions
 				parameters.Add(p);
 			}
 
-			cmd.CommandText = cmd.CommandText.Replace("@" + paramNameRoot, string.Join(",", parameterNames));
+			cmd.CommandText = cmd.CommandText.Replace("@" + paramNameRoot, string.Join(",", parameterNames.ToArray()));
 
 			return parameters.ToArray();
 		}

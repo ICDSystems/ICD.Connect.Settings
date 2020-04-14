@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using ICD.Common.Utils;
 #if SIMPLSHARP
+using Crestron.SimplSharp.CrestronData;
 using Crestron.SimplSharp.SQLite;
 #else
+using System.Data;
 using SQLiteConnection = Microsoft.Data.Sqlite.SqliteConnection;
 #endif
 using ICD.Connect.Settings.ORM.Databases;

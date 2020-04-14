@@ -242,7 +242,7 @@ namespace ICD.Connect.Settings.ORM
 			if (value == null)
 				throw new InvalidOperationException(string.Format("{0} is not an enumerable", Name));
 
-			return value.Cast<object>().Select(ToDatabaseValue);
+			return value.Cast<object>().Select(o => ToDatabaseValue(o));
 		}
 
 		/// <summary>
