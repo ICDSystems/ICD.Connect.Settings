@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Utils;
+using ICD.Common.Utils.IO;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronData;
 using Crestron.SimplSharp.SQLite;
@@ -22,6 +23,15 @@ namespace ICD.Connect.Settings.ORM
 		public PersistentDatabase(eDb category, string key)
 		{
 			string path = BuildPath(category, key);
+			if (!IcdFile.Exists(path))
+			{
+				string directory = IcdPath.GetDirectoryName(path);
+				IcdDirectory.CreateDirectory(directory);
+
+				using (IcdFileStream fs = IcdFile.Create(path))
+					fs.Close();
+			}
+
 			string connectionString = string.Format("Data Source={0};", path);
 
 			SQLiteConnection connection = new SQLiteConnection(connectionString);
