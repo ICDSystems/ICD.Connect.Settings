@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+ - Added ORM for managing persistant data for Rooms and Users
+
 ### Changed
  - RoomConfig-Base.xml deprecated in favor of SystemConfig.xml
  - Added AddItem() and AddItems() methods to IGroup and AbstractGroup
