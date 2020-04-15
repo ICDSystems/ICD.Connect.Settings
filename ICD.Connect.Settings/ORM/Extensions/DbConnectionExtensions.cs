@@ -570,9 +570,12 @@ namespace ICD.Connect.Settings.ORM.Extensions
 		private static void UpdateChildItemsSequence(IDbConnection connection, IDbTransaction transaction, Type type,
 		                                             object param, IEnumerable<object> childItems, Type childType)
 		{
+			TypeModel typeModel = TypeModel.Get(type);
 			TypeModel childTypeModel = TypeModel.Get(childType);
-			List<object> childKeys = new List<object>();
+			PropertyModel foreignPropertyToParent = childTypeModel.GetColumns().Single(p => p.ForeignKeyType == type);
+			object parentId = typeModel.PrimaryKey.GetDatabaseValue(param);
 
+			List<object> childKeys = new List<object>();
 			foreach (object item in childItems)
 			{
 				if (item == null)
@@ -587,9 +590,11 @@ namespace ICD.Connect.Settings.ORM.Extensions
 			}
 
 			// Delete any existing foreign items not in the sequence
-			string sql = string.Format("DELETE FROM {0} WHERE {1} NOT IN (@Keys)", childTypeModel.TableName,
+			string sql = string.Format("DELETE FROM {0} WHERE {1}=@ParentId AND {2} NOT IN (@Keys)",
+			                           childTypeModel.TableName,
+			                           foreignPropertyToParent.Name,
 			                           childTypeModel.PrimaryKey.Name);
-			connection.Execute(sql, new {Keys = childKeys}, transaction);
+			connection.Execute(sql, new {ParentId = parentId, Keys = childKeys}, transaction);
 		}
 
 		/// <summary>
