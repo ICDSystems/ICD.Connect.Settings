@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Permissions;
 using ICD.Common.Utils.EventArguments;
-using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Originators;
@@ -20,6 +19,8 @@ namespace ICD.Connect.Settings.Tests
 		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
 		public int Id { get; set; }
+
+		public Guid NewId { get; set; }
 
 		public string Name { get; set; }
 

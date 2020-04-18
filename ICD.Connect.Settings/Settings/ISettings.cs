@@ -38,6 +38,11 @@ namespace ICD.Connect.Settings
 		int Id { get; set; }
 
 		/// <summary>
+		/// Unique ID for the originator.
+		/// </summary>
+		Guid NewId { get; set; }
+
+		/// <summary>
 		/// Custom name for the originator.
 		/// </summary>
 		string Name { get; set; }

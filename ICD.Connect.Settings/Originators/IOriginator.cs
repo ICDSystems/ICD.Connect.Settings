@@ -58,8 +58,15 @@ namespace ICD.Connect.Settings.Originators
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_ID, OriginatorApi.HELP_PROPERTY_ID)]
 		[StaticPropertyTelemetry(OriginatorTelemetryNames.ID)]
-		[TelemetryCollectionIdentity]
 		int Id { get; set; }
+
+		/// <summary>
+		/// Unique ID for the originator.
+		/// </summary>
+		[ApiProperty(OriginatorApi.PROPERTY_NEW_ID, OriginatorApi.HELP_PROPERTY_NEW_ID)]
+		[StaticPropertyTelemetry(OriginatorTelemetryNames.NEW_ID)]
+		[TelemetryCollectionIdentity]
+		Guid NewId { get; set; }
 
 		/// <summary>
 		/// The name of the originator.

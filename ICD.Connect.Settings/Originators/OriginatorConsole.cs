@@ -31,6 +31,7 @@ namespace ICD.Connect.Settings.Originators
 				throw new ArgumentNullException("instance");
 
 			addRow("Id", instance.Id);
+			addRow("New ID", instance.NewId);
 			addRow("Name", instance.Name);
 			addRow("CombineName", instance.Name);
 		}

@@ -56,6 +56,11 @@ namespace ICD.Connect.Settings.Originators
 		public int Id { get; set; }
 
 		/// <summary>
+		/// Unique ID for the originator.
+		/// </summary>
+		public Guid NewId { get; set; }
+
+		/// <summary>
 		/// The name of the originator.
 		/// </summary>
 		public string Name { get { return m_Name; }
@@ -276,6 +281,7 @@ namespace ICD.Connect.Settings.Originators
 		public void CopySettings(T settings)
 		{
 			settings.Id = Id;
+			settings.NewId = NewId;
 			settings.Name = Name;
 			settings.CombineName = CombineName;
 			settings.Description = Description;
@@ -303,6 +309,7 @@ namespace ICD.Connect.Settings.Originators
 			ClearSettings();
 
 			Id = settings.Id;
+			NewId = settings.NewId;
 			Name = settings.Name;
 			CombineName = settings.CombineName;
 			Description = settings.Description;
@@ -337,6 +344,7 @@ namespace ICD.Connect.Settings.Originators
 
 			// Don't clear ID - Causes lookup problems
 			//Id = 0;
+			//NewId = default(Guid);
 
 			Name = null;
 			CombineName = null;

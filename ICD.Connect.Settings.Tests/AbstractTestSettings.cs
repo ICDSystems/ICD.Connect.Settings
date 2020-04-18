@@ -17,6 +17,11 @@ namespace ICD.Connect.Settings.Tests
 
 	    public int Id { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
 
+	    /// <summary>
+	    /// Unique ID for the originator.
+	    /// </summary>
+	    public Guid NewId { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
+
 	    public string Name { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
 
 	    public string CombineName { get; set; }
@@ -40,8 +45,6 @@ namespace ICD.Connect.Settings.Tests
 	    public Type OriginatorType { get { throw new NotImplementedException(); } }
 
 	    public IEnumerable<Permission> Permissions { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
-
-	    public int DependencyCount { get { throw new NotImplementedException(); } }
 
 	    public void ParseXml(string xml)
 	    {
