@@ -21,9 +21,9 @@ namespace ICD.Connect.Settings
 	public abstract class AbstractSettings : ISettings
 	{
 		public const string TYPE_ATTRIBUTE = "type";
-
 		private const string ID_ATTRIBUTE = "id";
-		private const string NEW_ID_ATTRIBUTE = "newId";
+		private const string UUID_ATTRIBUTE = "uuid";
+
 		private const string NAME_ELEMENT = "Name";
 		private const string COMBINE_NAME_ELEMENT = "CombineName";
 		private const string HIDE_ELEMENT = "Hide";
@@ -72,7 +72,7 @@ namespace ICD.Connect.Settings
 		/// Unique ID for the originator.
 		/// </summary>
 		[HiddenSettingsProperty]
-		public Guid NewId { get; set; }
+		public Guid Uuid { get; set; }
 
 		/// <summary>
 		/// Custom name for the settings.
@@ -196,7 +196,7 @@ namespace ICD.Connect.Settings
 		public virtual void ParseXml(string xml)
 		{
 			Id = XmlUtils.GetAttributeAsInt(xml, ID_ATTRIBUTE);
-			NewId = XmlUtils.GetAttributeAsGuid(xml, NEW_ID_ATTRIBUTE);
+			Uuid = XmlUtils.GetAttributeAsGuid(xml, UUID_ATTRIBUTE);
 			Name = XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT);
 			CombineName = XmlUtils.TryReadChildElementContentAsString(xml, COMBINE_NAME_ELEMENT);
 			Description = XmlUtils.TryReadChildElementContentAsString(xml, DESCRIPTION_ELEMENT);
@@ -218,7 +218,7 @@ namespace ICD.Connect.Settings
 
 			writer.WriteStartElement(element);
 			writer.WriteAttributeString(ID_ATTRIBUTE, Id.ToString());
-			writer.WriteAttributeString(NEW_ID_ATTRIBUTE, IcdXmlConvert.ToString(NewId));
+			writer.WriteAttributeString(UUID_ATTRIBUTE, IcdXmlConvert.ToString(Uuid));
 			writer.WriteAttributeString(TYPE_ATTRIBUTE, FactoryName);
 			{
 				writer.WriteElementString(NAME_ELEMENT, Name);

@@ -67,7 +67,7 @@ namespace ICD.Connect.Settings.Cores
 		{
 			IcdHashSet<Guid> originatorIds =
 				Parent.Originators
-					  .Select(d => d.NewId)
+					  .Select(d => d.Uuid)
 					  .ToIcdHashSet();
 
 			m_OriginatorIdsSection.Enter();

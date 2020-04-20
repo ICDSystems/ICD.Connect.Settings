@@ -40,7 +40,7 @@ namespace ICD.Connect.Settings
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
-		Guid NewId { get; set; }
+		Guid Uuid { get; set; }
 
 		/// <summary>
 		/// Custom name for the originator.

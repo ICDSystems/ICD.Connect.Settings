@@ -59,7 +59,7 @@ namespace ICD.Connect.Settings.Proxies
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
-		public Guid NewId { get; set; }
+		public Guid Uuid { get; set; }
 
 		/// <summary>
 		/// The name of the originator.
@@ -207,7 +207,7 @@ namespace ICD.Connect.Settings.Proxies
 		public void CopySettings(TSettings settings)
 		{
 			settings.Id = Id;
-			settings.NewId = NewId;
+			settings.Uuid = Uuid;
 			settings.Name = Name;
 			settings.CombineName = CombineName;
 			settings.Description = Description;
@@ -253,7 +253,7 @@ namespace ICD.Connect.Settings.Proxies
 			ClearSettings();
 
 			Id = settings.Id;
-			NewId = settings.NewId;
+			Uuid = settings.Uuid;
 			Name = settings.Name;
 			CombineName = settings.CombineName;
 			Description = settings.Description;
@@ -283,7 +283,7 @@ namespace ICD.Connect.Settings.Proxies
 			ClearSettingsFinal();
 
 			Id = 0;
-			NewId = default(Guid);
+			Uuid = default(Guid);
 			Name = null;
 			CombineName = null;
 			Description = null;

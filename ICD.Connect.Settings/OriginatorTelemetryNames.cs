@@ -3,7 +3,7 @@
 	public static class OriginatorTelemetryNames
 	{
 		public const string ID = "Id";
-		public const string NEW_ID = "NewId";
+		public const string UUID = "Uuid";
 		public const string NAME= "Name";
 		public const string NAME_CHANGED = "OnNameChanged";
 	}

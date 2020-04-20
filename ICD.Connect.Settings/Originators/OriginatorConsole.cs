@@ -30,8 +30,8 @@ namespace ICD.Connect.Settings.Originators
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 
-			addRow("Id", instance.Id);
-			addRow("New ID", instance.NewId);
+			addRow("ID", instance.Id);
+			addRow("UUID", instance.Uuid);
 			addRow("Name", instance.Name);
 			addRow("CombineName", instance.Name);
 		}

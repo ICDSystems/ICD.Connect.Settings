@@ -20,7 +20,7 @@ namespace ICD.Connect.Settings.Tests
 	    /// <summary>
 	    /// Unique ID for the originator.
 	    /// </summary>
-	    public Guid NewId { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
+	    public Guid Uuid { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
 
 	    public string Name { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
 

@@ -58,7 +58,7 @@ namespace ICD.Connect.Settings.Originators
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
-		public Guid NewId { get; set; }
+		public Guid Uuid { get; set; }
 
 		/// <summary>
 		/// The name of the originator.
@@ -281,7 +281,7 @@ namespace ICD.Connect.Settings.Originators
 		public void CopySettings(T settings)
 		{
 			settings.Id = Id;
-			settings.NewId = NewId;
+			settings.Uuid = Uuid;
 			settings.Name = Name;
 			settings.CombineName = CombineName;
 			settings.Description = Description;
@@ -309,7 +309,7 @@ namespace ICD.Connect.Settings.Originators
 			ClearSettings();
 
 			Id = settings.Id;
-			NewId = settings.NewId;
+			Uuid = settings.Uuid;
 			Name = settings.Name;
 			CombineName = settings.CombineName;
 			Description = settings.Description;

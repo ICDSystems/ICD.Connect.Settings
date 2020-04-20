@@ -63,10 +63,10 @@ namespace ICD.Connect.Settings.Originators
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
-		[ApiProperty(OriginatorApi.PROPERTY_NEW_ID, OriginatorApi.HELP_PROPERTY_NEW_ID)]
-		[StaticPropertyTelemetry(OriginatorTelemetryNames.NEW_ID)]
+		[ApiProperty(OriginatorApi.PROPERTY_UUID, OriginatorApi.HELP_PROPERTY_UUID)]
+		[StaticPropertyTelemetry(OriginatorTelemetryNames.UUID)]
 		[TelemetryCollectionIdentity]
-		Guid NewId { get; set; }
+		Guid Uuid { get; set; }
 
 		/// <summary>
 		/// The name of the originator.
