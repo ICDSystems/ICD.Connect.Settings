@@ -178,7 +178,17 @@ namespace ICD.Connect.Settings
 		public virtual void ParseXml(string xml)
 		{
 			Id = XmlUtils.GetAttributeAsInt(xml, ID_ATTRIBUTE);
-			Uuid = XmlUtils.GetAttributeAsGuid(xml, UUID_ATTRIBUTE);
+
+			try
+			{
+				Uuid = XmlUtils.GetAttributeAsGuid(xml, UUID_ATTRIBUTE);
+			}
+			catch (Exception)
+			{
+				// For older configs that haven't been assigned GUIDs from DAV yet
+				Uuid = Guid.Empty;
+			}
+
 			Name = XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT);
 			CombineName = XmlUtils.TryReadChildElementContentAsString(xml, COMBINE_NAME_ELEMENT);
 			Description = XmlUtils.TryReadChildElementContentAsString(xml, DESCRIPTION_ELEMENT);
