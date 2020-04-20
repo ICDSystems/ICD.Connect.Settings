@@ -22,24 +22,6 @@ namespace ICD.Connect.Settings.Tests
 		#region Events
 
 		[Test]
-		public void IdChangedFeedbackTest()
-		{
-			TSettings instance = Instantiate();
-			List<IntEventArgs> eventArgs = new List<IntEventArgs>();
-
-			instance.OnIdChanged += (sender, args) => eventArgs.Add(args);
-
-			instance.Id = 0;
-			instance.Id = 1;
-			instance.Id = 1;
-			instance.Id = 2;
-
-			Assert.AreEqual(2, eventArgs.Count);
-			Assert.AreEqual(1, eventArgs[0].Data);
-			Assert.AreEqual(2, eventArgs[1].Data);
-		}
-
-		[Test]
 		public void NameChangedFeedbackTest()
 		{
 			TSettings instance = Instantiate();

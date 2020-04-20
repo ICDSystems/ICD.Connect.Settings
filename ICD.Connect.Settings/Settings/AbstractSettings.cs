@@ -35,17 +35,11 @@ namespace ICD.Connect.Settings
 		private const string PERMISSIONS_ELEMENT = PERMISSION_ELEMENT + "s";
 
 		/// <summary>
-		/// Raised when the id is changed.
-		/// </summary>
-		public event EventHandler<IntEventArgs> OnIdChanged;
-
-		/// <summary>
 		/// Raised when the name is changed.
 		/// </summary>
 		public event EventHandler<StringEventArgs> OnNameChanged;
 
 		private string m_Name;
-		private int m_Id;
 		private int m_Order = int.MaxValue;
 
 		#region Properties
@@ -54,19 +48,7 @@ namespace ICD.Connect.Settings
 		/// Unique ID for the settings.
 		/// </summary>
 		[HiddenSettingsProperty]
-		public int Id
-		{
-			get { return m_Id; }
-			set
-			{
-				if (value == m_Id)
-					return;
-
-				m_Id = value;
-
-				OnIdChanged.Raise(this, new IntEventArgs(m_Id));
-			}
-		}
+		public int Id { get; set; }
 
 		/// <summary>
 		/// Unique ID for the originator.

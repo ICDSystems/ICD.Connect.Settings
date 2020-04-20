@@ -17,12 +17,6 @@ namespace ICD.Connect.Settings
 		#region Events
 
 		/// <summary>
-		/// Raised when the id is changed.
-		/// </summary>
-		[PublicAPI]
-		event EventHandler<IntEventArgs> OnIdChanged;
-
-		/// <summary>
 		/// Raised when the name is changed.
 		/// </summary>
 		[PublicAPI]
