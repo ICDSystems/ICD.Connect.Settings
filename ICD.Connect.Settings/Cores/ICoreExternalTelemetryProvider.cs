@@ -10,14 +10,5 @@ namespace ICD.Connect.Settings.Cores
 
 		[StaticPropertyTelemetry("SoftwareInformationalVersion")]
 		string SoftwareInformationalVersion { get; }
-
-		[StaticPropertyTelemetry("ThemeName")]
-		string ThemeName { get; }
-
-		[StaticPropertyTelemetry("ThemeVersion")]
-		string ThemeVersion { get; }
-
-		[StaticPropertyTelemetry("ThemeInformationalVersion")]
-		string ThemeInformationalVersion { get; }
 	}
 }
