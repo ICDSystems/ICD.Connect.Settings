@@ -51,6 +51,11 @@ namespace ICD.Connect.Settings.Originators
 		#region Properties
 
 		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public abstract string Category { get; }
+
+		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
 		public int Id { get; set; }
@@ -63,16 +68,19 @@ namespace ICD.Connect.Settings.Originators
 		/// <summary>
 		/// The name of the originator.
 		/// </summary>
-		public string Name { get { return m_Name; }
+		public string Name
+		{
+			get { return m_Name; }
 			set
 			{
 				if (m_Name == value)
 					return;
 
-				m_Name = value; 
-				
+				m_Name = value;
+
 				OnNameChanged.Raise(this);
-			} }
+			}
+		}
 
 		/// <summary>
 		/// The name that is used for the originator while in a combine space.

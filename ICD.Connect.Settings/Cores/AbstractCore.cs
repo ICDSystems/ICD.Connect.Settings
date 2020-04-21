@@ -15,6 +15,11 @@ namespace ICD.Connect.Settings.Cores
 		#region Properties
 
 		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public override string Category { get { return "Core"; } }
+
+		/// <summary>
 		/// Gets the originators contained in the core.
 		/// </summary>
 		public IOriginatorCollection<IOriginator> Originators { get { return m_Originators; } }

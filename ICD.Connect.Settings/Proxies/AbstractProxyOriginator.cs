@@ -52,6 +52,11 @@ namespace ICD.Connect.Settings.Proxies
 		#region Properties
 
 		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public abstract string Category { get; }
+
+		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
 		public int Id { get; set; }

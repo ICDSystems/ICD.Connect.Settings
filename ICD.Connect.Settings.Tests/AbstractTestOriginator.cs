@@ -18,6 +18,11 @@ namespace ICD.Connect.Settings.Tests
 		public event EventHandler OnNameChanged;
 		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
+		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public abstract string Category { get; }
+
 		public int Id { get; set; }
 
 		public Guid Uuid { get; set; }

@@ -52,6 +52,12 @@ namespace ICD.Connect.Settings.Originators
 		#region Properties
 
 		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		[StaticPropertyTelemetry(OriginatorTelemetryNames.CATEGORY)]
+		string Category { get; }
+
+		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_ID, OriginatorApi.HELP_PROPERTY_ID)]
