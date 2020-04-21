@@ -30,13 +30,6 @@ namespace ICD.Connect.Settings
 
 		public bool IsReadOnly { get { return false; } }
 
-		/// <summary>
-		/// Returns the settings instance with the given id.
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		public ISettings this[int id] { get { return GetById(id); } }
-
 		#endregion
 
 		#region Constructors
