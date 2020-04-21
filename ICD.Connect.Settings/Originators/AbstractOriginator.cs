@@ -155,6 +155,8 @@ namespace ICD.Connect.Settings.Originators
 		{
 			m_Permissions = new List<Permission>();
 			m_Logger = new ServiceLoggingContext(this);
+
+			Name = GetType().Name;
 		}
 
 		/// <summary>
