@@ -7,7 +7,6 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Settings.Proxies;
 using ICD.Connect.Telemetry;
 using ICD.Connect.Telemetry.Attributes;
 
@@ -16,7 +15,6 @@ namespace ICD.Connect.Settings.Originators
 	/// <summary>
 	/// IOriginator represents an object that has settings.
 	/// </summary>
-	[ApiClass(typeof(ProxyOriginator))]
 	[ExternalTelemetry("Originator Telemetry", typeof(OriginatorExternalTelemetryProvider))]
 	public interface IOriginator : IConsoleNode, ITelemetryProvider
 	{

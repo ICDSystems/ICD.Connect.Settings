@@ -150,8 +150,6 @@
     <Compile Include="Header\Processor.cs" />
     <Compile Include="Header\Program.cs" />
     <Compile Include="Proxies\IProxySettings.cs" />
-    <Compile Include="Proxies\ProxyOriginator.cs" />
-    <Compile Include="Proxies\ProxyOriginatorSettings.cs" />
     <Compile Include="SettingsCollection.cs" />
     <Compile Include="Originators\Simpl\ISimplOriginatorApi.cs" />
     <Compile Include="Originators\Simpl\RequestShimResyncEventArgs.cs" />
