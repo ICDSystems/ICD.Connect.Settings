@@ -1,11 +1,22 @@
 ﻿using System.Collections.Generic;
 using ICD.Connect.Settings.Header;
+using ICD.Connect.Settings.Localization;
 using ICD.Connect.Settings.Validation;
 
 namespace ICD.Connect.Settings.Cores
 {
 	public interface ICoreSettings : ISettings
 	{
+		/// <summary>
+		/// Gets the header info.
+		/// </summary>
+		ConfigurationHeader Header { get; }
+
+		/// <summary>
+		/// Gets the localization configuration.
+		/// </summary>
+		LocalizationSettings LocalizationSettings { get; }
+
 		/// <summary>
 		/// Gets the child originator settings collection.
 		/// </summary>

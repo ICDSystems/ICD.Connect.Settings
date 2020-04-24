@@ -1,8 +1,5 @@
 using System;
 using ICD.Connect.Settings.Originators;
-using ICD.Common.Utils.EventArguments;
-using ICD.Common.Utils.Services;
-using ICD.Connect.Telemetry.Service;
 
 namespace ICD.Connect.Settings.Cores
 {
@@ -43,43 +40,9 @@ namespace ICD.Connect.Settings.Cores
 		{
 			CoreStartTime = DateTime.UtcNow;
 			m_Originators = new CoreOriginatorCollection();
-			m_Originators.OnOriginatorAdded += OriginatorsOnOriginatorAdded;
-			m_Originators.OnOriginatorRemoved += OriginatorsOnOriginatorRemoved;
 
 			m_Localization = new Localization.Localization();
-
-			ITelemetryService telemetry = ServiceProvider.TryGetService<ITelemetryService>();
-			if (telemetry != null)
-				telemetry.AddTelemetryProvider(this);
 		}
-
-		#region Originator Collection Callbacks
-
-		/// <summary>
-		/// Called when an originator is added to the collection.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		private static void OriginatorsOnOriginatorAdded(object sender, GenericEventArgs<IOriginator> args)
-		{
-			ITelemetryService telemetry = ServiceProvider.TryGetService<ITelemetryService>();
-			if (telemetry != null)
-				telemetry.AddTelemetryProvider(args.Data);
-		}
-
-		/// <summary>
-		/// Called when an originator is removed from the collection.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		private static void OriginatorsOnOriginatorRemoved(object sender, GenericEventArgs<IOriginator> args)
-		{
-			ITelemetryService telemetry = ServiceProvider.TryGetService<ITelemetryService>();
-			if (telemetry != null)
-				telemetry.RemoveTelemetryProvider(args.Data);
-		}
-
-		#endregion
 
 		#region Settings
 
@@ -102,6 +65,27 @@ namespace ICD.Connect.Settings.Cores
 		}
 
 		/// <summary>
+		/// Override to apply properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		protected override void CopySettingsFinal(TSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
+			Localization.CopySettings(settings.LocalizationSettings);
+		}
+
+		/// <summary>
+		/// Override to clear the instance settings.
+		/// </summary>
+		protected override void ClearSettingsFinal()
+		{
+			base.ClearSettingsFinal();
+
+			Localization.ClearSettings();
+		}
+
+		/// <summary>
 		/// Applies the settings to the Core instance.
 		/// </summary>
 		/// <param name="settings"></param>
@@ -112,6 +96,19 @@ namespace ICD.Connect.Settings.Cores
 
 			IDeviceFactory factory = new CoreDeviceFactory(settings);
 			ApplySettings((TSettings)settings, factory);
+		}
+
+		/// <summary>
+		/// Override to apply settings to the instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
+		{
+			base.ApplySettingsFinal(settings, factory);
+
+			// Setup localization first
+			Localization.ApplySettings(settings.LocalizationSettings);
 		}
 
 		/// <summary>
