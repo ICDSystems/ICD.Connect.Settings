@@ -329,8 +329,6 @@ namespace ICD.Connect.Settings.Originators
 
 			ApplySettingsFinal(settings, factory);
 
-			TelemetryUtils.InstantiateTelemetry(this);
-
 			OnSettingsApplied.Raise(this);
 		}
 
