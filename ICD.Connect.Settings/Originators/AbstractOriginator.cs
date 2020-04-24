@@ -320,8 +320,8 @@ namespace ICD.Connect.Settings.Originators
 
 			Id = settings.Id;
 			Uuid = settings.Uuid;
-			Name = settings.Name;
-			CombineName = settings.CombineName;
+			Name = string.IsNullOrEmpty(settings.Name) ? GetType().Name : settings.Name;
+			CombineName = string.IsNullOrEmpty(settings.CombineName) ? Name : settings.CombineName;
 			Description = settings.Description;
 			Hide = settings.Hide;
 
@@ -354,8 +354,8 @@ namespace ICD.Connect.Settings.Originators
 			//Id = 0;
 			//NewId = default(Guid);
 
-			Name = null;
-			CombineName = null;
+			Name = GetType().Name;
+			CombineName = GetType().Name;
 			Description = null;
 			Hide = false;
 
