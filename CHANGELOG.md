@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.6.1] - 2020-04-30
+### Changed
+ - Header CompiledOn is handled as a Date
+
 ## [7.6.0] - 2019-08-13
 ### Changed
  - Marked LicensePath as obsolete in favor of SystemKeyPath
