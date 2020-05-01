@@ -53,7 +53,7 @@ namespace ICD.Connect.Settings.Header
 #else
 			Version = Assembly.GetEntryAssembly().GetName().Version;
 #endif
-			CompiledOn = ProgramUtils.CompiledDate;
+			CompiledOn = ProgramUtils.CompiledDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
 		}
 
 		#region Methods
