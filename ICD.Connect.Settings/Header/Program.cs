@@ -21,7 +21,7 @@ namespace ICD.Connect.Settings.Header
 
 		public Version Version { get; private set; }
 
-		public string CompiledOn { get; private set; }
+		public DateTime CompiledOn { get; private set; }
 
 		#endregion
 
@@ -53,7 +53,7 @@ namespace ICD.Connect.Settings.Header
 #else
 			Version = Assembly.GetEntryAssembly().GetName().Version;
 #endif
-			CompiledOn = ProgramUtils.CompiledDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+			CompiledOn = ProgramUtils.CompiledDate.ToUniversalTime();
 		}
 
 		#region Methods
@@ -62,7 +62,7 @@ namespace ICD.Connect.Settings.Header
 		{
 			Name = string.Empty;
 			Version = new Version(0, 0);
-			CompiledOn = string.Empty;
+			CompiledOn = DateTime.MinValue;
 		}
 
 		/// <summary>
@@ -75,7 +75,7 @@ namespace ICD.Connect.Settings.Header
 			writer.WriteStartElement(element);
 			{
 				writer.WriteElementString(NAME_ELEMENT, Name);
-				writer.WriteElementString(COMPILED_ON_ELEMENT, CompiledOn);
+				writer.WriteElementString(COMPILED_ON_ELEMENT, IcdXmlConvert.ToString(CompiledOn));
 				writer.WriteElementString(VERSION_ELEMENT, Version.ToString());
 			}
 			writer.WriteEndElement();
@@ -87,7 +87,7 @@ namespace ICD.Connect.Settings.Header
 
 			Name = XmlUtils.TryReadChildElementContentAsString(xml, NAME_ELEMENT) ?? string.Empty;
 			Version = new Version(XmlUtils.TryReadChildElementContentAsString(xml, VERSION_ELEMENT) ?? "0.0.0.0");
-			CompiledOn = XmlUtils.TryReadChildElementContentAsString(xml, COMPILED_ON_ELEMENT);
+			CompiledOn = XmlUtils.TryReadChildElementContentAsDateTime(xml, COMPILED_ON_ELEMENT) ?? DateTime.MinValue;
 		}
 
 		#endregion
