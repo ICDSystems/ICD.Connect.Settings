@@ -12,7 +12,7 @@ using ICD.Connect.API.Info;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.API.Proxies;
 using ICD.Connect.Settings.Originators;
-using ICD.Connect.Telemetry;
+using ICD.Connect.Telemetry.Nodes.Collections;
 
 namespace ICD.Connect.Settings.Proxies
 {
