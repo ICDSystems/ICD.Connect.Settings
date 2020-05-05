@@ -26,8 +26,7 @@ namespace ICD.Connect.Settings.Cores
 		/// <summary>
 		/// Gets the datetime when this core was instantiated.
 		/// </summary>
-		[StaticPropertyTelemetry("CoreStartTime")]
-		[UsedImplicitly]
+		[PropertyTelemetry("CoreStartTime", null, null)]
 		DateTime CoreStartTime { get; }
 
 		#endregion

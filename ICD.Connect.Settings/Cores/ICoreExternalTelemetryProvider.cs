@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ICD.Connect.Telemetry;
 using ICD.Connect.Telemetry.Attributes;
+using ICD.Connect.Telemetry.Nodes.External;
 
 namespace ICD.Connect.Settings.Cores
 {
@@ -10,13 +11,13 @@ namespace ICD.Connect.Settings.Cores
 		[EventTelemetry("OnOriginatorIdsChanged")]
 		event EventHandler OnOriginatorIdsChanged;
 
-		[StaticPropertyTelemetry("SoftwareVersion")]
+		[PropertyTelemetry("SoftwareVersion", null, null)]
 		string SoftwareVersion { get; }
 
-		[StaticPropertyTelemetry("SoftwareInformationalVersion")]
+		[PropertyTelemetry("SoftwareInformationalVersion", null, null)]
 		string SoftwareInformationalVersion { get; }
 
-		[DynamicPropertyTelemetry("OriginatorIds", null, "OnOriginatorIdsChanged")]
+		[PropertyTelemetry("OriginatorIds", null, "OnOriginatorIdsChanged")]
 		IEnumerable<Guid> OriginatorIds { get; }
 	}
 }

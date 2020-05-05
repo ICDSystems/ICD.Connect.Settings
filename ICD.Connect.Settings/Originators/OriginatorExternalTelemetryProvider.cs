@@ -1,5 +1,6 @@
 ﻿using ICD.Common.Utils.Extensions;
 using ICD.Connect.Telemetry;
+using ICD.Connect.Telemetry.Nodes.External;
 
 namespace ICD.Connect.Settings.Originators
 {

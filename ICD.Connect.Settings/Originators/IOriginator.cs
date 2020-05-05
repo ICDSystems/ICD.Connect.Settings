@@ -54,21 +54,21 @@ namespace ICD.Connect.Settings.Originators
 		/// <summary>
 		/// Gets the category for this originator type (e.g. Device, Port, etc)
 		/// </summary>
-		[StaticPropertyTelemetry(OriginatorTelemetryNames.CATEGORY)]
+		[PropertyTelemetry(OriginatorTelemetryNames.CATEGORY, null, null)]
 		string Category { get; }
 
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_ID, OriginatorApi.HELP_PROPERTY_ID)]
-		[StaticPropertyTelemetry(OriginatorTelemetryNames.ID)]
+		[PropertyTelemetry(OriginatorTelemetryNames.ID, null, null)]
 		int Id { get; set; }
 
 		/// <summary>
 		/// Unique ID for the originator.
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_UUID, OriginatorApi.HELP_PROPERTY_UUID)]
-		[StaticPropertyTelemetry(OriginatorTelemetryNames.UUID)]
+		[PropertyTelemetry(OriginatorTelemetryNames.UUID, null, null)]
 		[TelemetryCollectionIdentity]
 		Guid Uuid { get; set; }
 
@@ -76,7 +76,7 @@ namespace ICD.Connect.Settings.Originators
 		/// The name of the originator.
 		/// </summary>
 		[ApiProperty(OriginatorApi.PROPERTY_NAME, OriginatorApi.HELP_PROPERTY_NAME)]
-		[DynamicPropertyTelemetry(OriginatorTelemetryNames.NAME, null, OriginatorTelemetryNames.NAME_CHANGED)]
+		[PropertyTelemetry(OriginatorTelemetryNames.NAME, null, OriginatorTelemetryNames.NAME_CHANGED)]
 		string Name { get; set; }
 
 		/// <summary>
