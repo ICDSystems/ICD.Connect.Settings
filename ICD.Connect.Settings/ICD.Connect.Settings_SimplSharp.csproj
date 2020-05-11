@@ -108,6 +108,15 @@
     <Compile Include="ORM\TypeModel.cs" />
     <Compile Include="Originators\IOriginatorExternalTelemetryProvider.cs" />
     <Compile Include="Originators\OriginatorExternalTelemetryProvider.cs" />
+    <Compile Include="Services\AbstractService.cs" />
+    <Compile Include="Services\AbstractServiceProvider.cs" />
+    <Compile Include="Services\AbstractServiceProviderSettings.cs" />
+    <Compile Include="Services\AbstractServiceSettings.cs" />
+    <Compile Include="Services\IServiceProvider.cs" />
+    <Compile Include="Services\IServiceProviderSettings.cs" />
+    <Compile Include="Services\IService.cs" />
+    <Compile Include="Services\IServiceSettings.cs" />
+    <Compile Include="Services\ServiceProviderCollection.cs" />
     <Compile Include="Utils\ConfigUtils.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x0_To_3x1.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x1_To_4x0.cs" />
@@ -197,9 +206,6 @@
       <Project>{9512C0A5-F966-4AC6-9668-62C6F343B0CD}</Project>
       <Name>ICD.Connect.Telemetry_SimplSharp</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Telemetry\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
   <PropertyGroup>
