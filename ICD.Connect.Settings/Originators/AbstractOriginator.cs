@@ -9,7 +9,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Telemetry;
+using ICD.Connect.Settings.Cores;
 
 namespace ICD.Connect.Settings.Originators
 {
@@ -439,9 +439,6 @@ namespace ICD.Connect.Settings.Originators
 		public virtual IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
 			foreach (var node in OriginatorConsole.GetConsoleNodes(this))
-				yield return node;
-
-			foreach (var node in TelemetryConsole.GetConsoleNodes(this))
 				yield return node;
 		}
 
