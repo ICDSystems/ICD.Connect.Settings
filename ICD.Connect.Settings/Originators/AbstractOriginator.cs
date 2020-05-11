@@ -319,7 +319,7 @@ namespace ICD.Connect.Settings.Originators
 			ClearSettings();
 
 			Id = settings.Id;
-			Uuid = settings.Uuid;
+			Uuid = settings.Uuid == default(Guid) ? GenerateUuid() : settings.Uuid;
 			Name = string.IsNullOrEmpty(settings.Name) ? GetType().Name : settings.Name;
 			CombineName = string.IsNullOrEmpty(settings.CombineName) ? Name : settings.CombineName;
 			Description = settings.Description;
@@ -330,6 +330,17 @@ namespace ICD.Connect.Settings.Originators
 			ApplySettingsFinal(settings, factory);
 
 			OnSettingsApplied.Raise(this);
+		}
+
+		/// <summary>
+		/// Generates a UUID based on the core UUID and the originator ID.
+		/// </summary>
+		/// <returns></returns>
+		private Guid GenerateUuid()
+		{
+			ICore core = ServiceProvider.GetService<ICore>();
+			Guid idGuid = GuidUtils.GenerateSeeded(Id);
+			return GuidUtils.Combine(core.Uuid, idGuid);
 		}
 
 		/// <summary>
