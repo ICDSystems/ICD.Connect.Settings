@@ -1,5 +1,4 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.Settings.Originators;
 using ICD.Connect.Telemetry.Attributes;

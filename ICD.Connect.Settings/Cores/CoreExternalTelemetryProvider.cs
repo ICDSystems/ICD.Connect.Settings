@@ -4,7 +4,6 @@ using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Telemetry;
 using ICD.Connect.Telemetry.Nodes.External;
 
 namespace ICD.Connect.Settings.Cores
@@ -18,6 +17,8 @@ namespace ICD.Connect.Settings.Cores
 		private readonly SafeCriticalSection m_OriginatorIdsSection;
 
 		#region Properties
+
+		public bool IsOnline { get { return true; } }
 
 		public string SoftwareVersion { get { return Parent.GetType().GetAssembly().GetName().Version.ToString(); } }
 

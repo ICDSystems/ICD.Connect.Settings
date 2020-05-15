@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Connect.Telemetry;
 using ICD.Connect.Telemetry.Attributes;
 using ICD.Connect.Telemetry.Nodes.External;
 
@@ -10,6 +9,9 @@ namespace ICD.Connect.Settings.Cores
 	{
 		[EventTelemetry("OnOriginatorIdsChanged")]
 		event EventHandler OnOriginatorIdsChanged;
+
+		[PropertyTelemetry("IsOnline", null, null)]
+		bool IsOnline { get; }
 
 		[PropertyTelemetry("SoftwareVersion", null, null)]
 		string SoftwareVersion { get; }
