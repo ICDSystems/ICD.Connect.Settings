@@ -28,8 +28,8 @@ namespace ICD.Connect.Settings.Utils
 
 		public const int ID_THEME = 100;
 		public const int ID_ROUTING_GRAPH = 200;
-		public const int ID_PARTITION_MANAGER = 300;
-		public const int ID_TELEMETRY = 400;
+		public const int ID_TELEMETRY = 300;
+		public const int ID_PARTITION_MANAGER = 400;
 		public const int ID_INTER_CORE = 500;
 
 		private const int MULTIPLIER_SUBSYSTEM = 10 * 1000 * 1000;
