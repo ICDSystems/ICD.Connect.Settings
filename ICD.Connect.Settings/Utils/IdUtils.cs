@@ -19,7 +19,8 @@ namespace ICD.Connect.Settings.Utils
 		Rooms = 8,
 		VolumePoints = 9,
 		ConferencePoints = 10,
-		Cells = 11
+		Cells = 11,
+		CalendarPoints = 12
 	}
 
 	public static class IdUtils
