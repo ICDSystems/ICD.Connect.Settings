@@ -7,6 +7,7 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Settings.Cores;
 using ICD.Connect.Telemetry;
 using ICD.Connect.Telemetry.Attributes;
 
@@ -50,6 +51,11 @@ namespace ICD.Connect.Settings.Originators
 		event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
 		#region Properties
+
+		/// <summary>
+		/// Gets the parent core instance.
+		/// </summary>
+		ICore Core { get; }
 
 		/// <summary>
 		/// Gets the category for this originator type (e.g. Device, Port, etc)

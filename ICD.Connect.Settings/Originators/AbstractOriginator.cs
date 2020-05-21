@@ -42,13 +42,19 @@ namespace ICD.Connect.Settings.Originators
 		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
 		private readonly List<Permission> m_Permissions;
+		private readonly ILoggingContext m_Logger;
 
-		private ILoggingContext m_Logger;
 		private PermissionsManager m_CachedPermissionsManager;
+		private ICore m_CachedCore;
 		private string m_Name;
 		private bool m_Disable;
 
 		#region Properties
+
+		/// <summary>
+		/// Gets the parent core instance.
+		/// </summary>
+		public ICore Core { get { return m_CachedCore = m_CachedCore ?? ServiceProvider.GetService<ICore>(); } }
 
 		/// <summary>
 		/// Gets the category for this originator type (e.g. Device, Port, etc)
@@ -338,9 +344,8 @@ namespace ICD.Connect.Settings.Originators
 		/// <returns></returns>
 		private Guid GenerateUuid()
 		{
-			ICore core = ServiceProvider.GetService<ICore>();
 			Guid idGuid = GuidUtils.GenerateSeeded(Id);
-			return GuidUtils.Combine(core.Uuid, idGuid);
+			return GuidUtils.Combine(Core.Uuid, idGuid);
 		}
 
 		/// <summary>

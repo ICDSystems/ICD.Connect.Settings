@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Permissions;
 using ICD.Common.Utils.EventArguments;
+using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings.Tests
@@ -17,6 +19,13 @@ namespace ICD.Connect.Settings.Tests
 		public event EventHandler OnSettingsApplied;
 		public event EventHandler OnNameChanged;
 		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
+
+		private ICore m_CachedCore;
+
+		/// <summary>
+		/// Gets the parent core instance.
+		/// </summary>
+		public ICore Core { get { return m_CachedCore = m_CachedCore ?? ServiceProvider.GetService<ICore>(); } }
 
 		/// <summary>
 		/// Gets the category for this originator type (e.g. Device, Port, etc)

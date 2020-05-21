@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Permissions;
 using ICD.Common.Utils;
-using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services;
 using ICD.Connect.API;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Info;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.API.Proxies;
+using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Originators;
-using ICD.Connect.Telemetry.Nodes.Collections;
 
 namespace ICD.Connect.Settings.Proxies
 {
@@ -45,11 +45,18 @@ namespace ICD.Connect.Settings.Proxies
 		/// </summary>
 		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
-		private ILoggingContext m_Logger;
+		private readonly ILoggingContext m_Logger;
+
 		private string m_Name;
 		private bool m_Disable;
+		private ICore m_CachedCore;
 
 		#region Properties
+
+		/// <summary>
+		/// Gets the parent core instance.
+		/// </summary>
+		public ICore Core { get { return m_CachedCore = m_CachedCore ?? ServiceProvider.GetService<ICore>(); } }
 
 		/// <summary>
 		/// Gets the category for this originator type (e.g. Device, Port, etc)
@@ -141,8 +148,6 @@ namespace ICD.Connect.Settings.Proxies
 		/// </summary>
 		public virtual string ConsoleHelp { get { return string.Empty; } }
 		
-		public ITelemetryCollection Telemetry { get; [UsedImplicitly] set; }
-
 		#endregion
 
 		/// <summary>
