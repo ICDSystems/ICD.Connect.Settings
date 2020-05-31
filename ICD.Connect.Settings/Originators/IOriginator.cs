@@ -8,8 +8,8 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Cores;
-using ICD.Connect.Telemetry;
 using ICD.Connect.Telemetry.Attributes;
+using ICD.Connect.Telemetry.Providers;
 
 namespace ICD.Connect.Settings.Originators
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Telemetry.Nodes.External;
+using ICD.Connect.Telemetry.Providers.External;
 
 namespace ICD.Connect.Settings.Cores
 {
@@ -50,7 +50,7 @@ namespace ICD.Connect.Settings.Cores
 		/// Sets the parent telemetry provider that this instance extends.
 		/// </summary>
 		/// <param name="parent"></param>
-		public override void SetParent(ICore parent)
+		protected override void SetParent(ICore parent)
 		{
 			base.SetParent(parent);
 
@@ -92,7 +92,7 @@ namespace ICD.Connect.Settings.Cores
 
 		#endregion
 
-		#region Parent Callbacks
+		#region Provider Callbacks
 
 		/// <summary>
 		/// Subscribe to the parent events.
