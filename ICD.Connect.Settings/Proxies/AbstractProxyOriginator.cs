@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Logging.Activities;
 using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Permissions;
 using ICD.Common.Utils;
@@ -46,6 +47,7 @@ namespace ICD.Connect.Settings.Proxies
 		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
 		private readonly ILoggingContext m_Logger;
+		private readonly IActivityContext m_Activities;
 
 		private string m_Name;
 		private bool m_Disable;
@@ -139,6 +141,11 @@ namespace ICD.Connect.Settings.Proxies
 		public ILoggingContext Logger { get { return m_Logger; } }
 
 		/// <summary>
+		/// Gets the activities for this instance.
+		/// </summary>
+		public IActivityContext Activities { get { return m_Activities; } }
+
+		/// <summary>
 		/// Gets the name of the node.
 		/// </summary>
 		public virtual string ConsoleName { get { return string.IsNullOrEmpty(Name) ? GetType().GetNameWithoutGenericArity() : Name; } }
@@ -156,6 +163,7 @@ namespace ICD.Connect.Settings.Proxies
 		protected AbstractProxyOriginator()
 		{
 			m_Logger = new ServiceLoggingContext(this);
+			m_Activities = new ActivityContext();
 		}
 
 		#region Methods

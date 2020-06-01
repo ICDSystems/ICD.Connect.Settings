@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Logging.Activities;
 using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Permissions;
 using ICD.Common.Utils;
@@ -43,6 +44,7 @@ namespace ICD.Connect.Settings.Originators
 
 		private readonly List<Permission> m_Permissions;
 		private readonly ILoggingContext m_Logger;
+		private readonly IActivityContext m_Activities;
 
 		private PermissionsManager m_CachedPermissionsManager;
 		private ICore m_CachedCore;
@@ -142,6 +144,11 @@ namespace ICD.Connect.Settings.Originators
 		public ILoggingContext Logger { get { return m_Logger; } }
 
 		/// <summary>
+		/// Activities for the originator.
+		/// </summary>
+		public IActivityContext Activities { get { return m_Activities; } }
+
+		/// <summary>
 		/// Gets the name of the node.
 		/// </summary>
 		public virtual string ConsoleName { get { return string.IsNullOrEmpty(Name) ? GetType().GetNameWithoutGenericArity() : Name; } }
@@ -169,6 +176,7 @@ namespace ICD.Connect.Settings.Originators
 		{
 			m_Permissions = new List<Permission>();
 			m_Logger = new ServiceLoggingContext(this);
+			m_Activities = new ActivityContext();
 
 			Name = GetType().Name;
 		}
