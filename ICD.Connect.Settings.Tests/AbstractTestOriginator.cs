@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Logging.Activities;
 using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Permissions;
 using ICD.Common.Utils.EventArguments;
@@ -63,6 +64,8 @@ namespace ICD.Connect.Settings.Tests
 		public bool Serialize { get; set; }
 
 		public ILoggingContext Logger { get; set; }
+
+		public IActivityContext Activities { get; set; }
 
 		public ISettings CopySettings()
 		{
