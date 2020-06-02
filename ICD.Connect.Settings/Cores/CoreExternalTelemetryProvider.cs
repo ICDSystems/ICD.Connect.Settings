@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Telemetry.Attributes;
 using ICD.Connect.Telemetry.Providers.External;
 
 namespace ICD.Connect.Settings.Cores
 {
-	public sealed class CoreExternalTelemetryProvider : AbstractExternalTelemetryProvider<ICore>,
-	                                                    ICoreExternalTelemetryProvider
+	public sealed class CoreExternalTelemetryProvider : AbstractExternalTelemetryProvider<ICore>
 	{
+		[PublicAPI("DAV-PRO")]
+		[EventTelemetry("OnOriginatorIdsChanged")]
 		public event EventHandler OnOriginatorIdsChanged;
 
 		private readonly IcdHashSet<Guid> m_OriginatorIds;
@@ -18,10 +21,16 @@ namespace ICD.Connect.Settings.Cores
 
 		#region Properties
 
+		[PublicAPI("DAV-PRO")]
+		[PropertyTelemetry("IsOnline", null, null)]
 		public bool IsOnline { get { return true; } }
 
+		[PublicAPI("DAV-PRO")]
+		[PropertyTelemetry("SoftwareVersion", null, null)]
 		public string SoftwareVersion { get { return Parent.GetType().GetAssembly().GetName().Version.ToString(); } }
 
+		[PublicAPI("DAV-PRO")]
+		[PropertyTelemetry("SoftwareInformationalVersion", null, null)]
 		public string SoftwareInformationalVersion
 		{
 			get
@@ -31,6 +40,8 @@ namespace ICD.Connect.Settings.Cores
 			}
 		}
 
+		[PublicAPI("DAV-PRO")]
+		[PropertyTelemetry("OriginatorIds", null, "OnOriginatorIdsChanged")]
 		public IEnumerable<Guid> OriginatorIds { get { return m_OriginatorIdsSection.Execute(() => m_OriginatorIds.ToArray()); } }
 		
 		#endregion
