@@ -16,7 +16,6 @@ namespace ICD.Connect.Settings.Originators
 	/// <summary>
 	/// IOriginator represents an object that has settings.
 	/// </summary>
-	[ExternalTelemetry("Originator Telemetry", typeof(OriginatorExternalTelemetryProvider))]
 	public interface IOriginator : IConsoleNode, IActivityTelemetryProvider
 	{
 		/// <summary>

@@ -106,8 +106,6 @@
     <Compile Include="ORM\PersistentDatabase.cs" />
     <Compile Include="ORM\PropertyModel.cs" />
     <Compile Include="ORM\TypeModel.cs" />
-    <Compile Include="Originators\IOriginatorExternalTelemetryProvider.cs" />
-    <Compile Include="Originators\OriginatorExternalTelemetryProvider.cs" />
     <Compile Include="Services\AbstractService.cs" />
     <Compile Include="Services\AbstractServiceProvider.cs" />
     <Compile Include="Services\AbstractServiceProviderSettings.cs" />
