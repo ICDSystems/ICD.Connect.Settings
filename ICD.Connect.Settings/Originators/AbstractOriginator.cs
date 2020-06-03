@@ -11,6 +11,7 @@ using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Cores;
+using ICD.Connect.Settings.Utils;
 
 namespace ICD.Connect.Settings.Originators
 {
@@ -333,7 +334,7 @@ namespace ICD.Connect.Settings.Originators
 			ClearSettings();
 
 			Id = settings.Id;
-			Uuid = settings.Uuid == default(Guid) ? GenerateUuid() : settings.Uuid;
+			Uuid = settings.Uuid == default(Guid) ? OriginatorUtils.GenerateUuid(Core, Id) : settings.Uuid;
 			Name = string.IsNullOrEmpty(settings.Name) ? GetType().Name : settings.Name;
 			CombineName = string.IsNullOrEmpty(settings.CombineName) ? Name : settings.CombineName;
 			Description = settings.Description;
@@ -344,16 +345,6 @@ namespace ICD.Connect.Settings.Originators
 			ApplySettingsFinal(settings, factory);
 
 			OnSettingsApplied.Raise(this);
-		}
-
-		/// <summary>
-		/// Generates a UUID based on the core UUID and the originator ID.
-		/// </summary>
-		/// <returns></returns>
-		private Guid GenerateUuid()
-		{
-			Guid idGuid = GuidUtils.GenerateSeeded(Id);
-			return GuidUtils.Combine(Core.Uuid, idGuid);
 		}
 
 		/// <summary>
