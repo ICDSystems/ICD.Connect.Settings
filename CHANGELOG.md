@@ -6,13 +6,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [11.0.0] - 2020-06-19
 ### Added
  - Added ORM for managing persistant data for Rooms and Users
+ - Added OnItemsChanged event to IGroup
+ - Added telemetry for system online state and start time
+ - Added version and theme telemetry to core
+ - Added UUID to originators for telemetry
+ - Added Service and ServiceProvider originators, settings and abstractions
+ - Added activities context to originators
 
 ### Changed
  - RoomConfig-Base.xml deprecated in favor of SystemConfig.xml
  - Added AddItem() and AddItems() methods to IGroup and AbstractGroup
  - Using new logging context
+ - Fixed a bug where group settings would serialize references to non-serialized children
+ - Originator names default to the type name
+ - Config header CompiledOn element is serialized/deserialized as a DateTime
 
 ## [10.0.0] - 2020-03-20
 ### Added
