@@ -51,21 +51,6 @@ namespace ICD.Connect.Settings.ORM
 			}
 		}
 
-		/// <summary>
-		/// Returns true if the primary key is a numeric type that should Auto-Increment.
-		/// </summary>
-		public bool AutoIncrements
-		{
-			get
-			{
-				if (PrimaryKey == null)
-					throw new
-						InvalidOperationException("TypeModel does not represent a Type with a primary key property");
-
-				return PrimaryKey.AutoIncrements;
-			}
-		}
-
 		#endregion
 
 		#region Constructors
@@ -203,22 +188,27 @@ namespace ICD.Connect.Settings.ORM
 		[NotNull]
 		private static PropertyModel GetPrimaryKey([NotNull] Type type)
 		{
-			return
-				type
-#if SIMPLSHARP
-					.GetCType()
-#endif
-					.GetProperties()
-					.Select(p =>
-					{
-						PrimaryKeyAttribute attribute =
-							p.GetCustomAttributes(typeof(PrimaryKeyAttribute), true)
-							 .Cast<PrimaryKeyAttribute>()
-							 .FirstOrDefault();
+			if (type == null)
+				throw new ArgumentNullException("type");
 
-						return attribute == null ? null : PropertyModel.PrimaryKey(p, attribute);
-					})
+			try
+			{
+				return GetProperties(type)
+					.Select(p =>
+					        {
+						        PrimaryKeyAttribute attribute =
+							        p.GetCustomAttributes(typeof(PrimaryKeyAttribute), true)
+							         .OfType<PrimaryKeyAttribute>()
+							         .SingleOrDefault();
+
+						        return attribute == null ? null : PropertyModel.PrimaryKey(p, attribute);
+					        })
 					.Single(p => p != null);
+			}
+			catch (InvalidOperationException)
+			{
+				throw new ArgumentException(type.Name + " has no primary key", "type");
+			}
 		}
 
 		/// <summary>
@@ -229,22 +219,20 @@ namespace ICD.Connect.Settings.ORM
 		[NotNull]
 		private static IEnumerable<PropertyModel> GetData([NotNull] Type type)
 		{
-			return
-				type
-#if SIMPLSHARP
-					.GetCType()
-#endif
-					.GetProperties()
-					.Select(p =>
-					{
-						DataFieldAttribute attribute =
-							p.GetCustomAttributes(typeof(DataFieldAttribute), true)
-							 .Cast<DataFieldAttribute>()
-							 .FirstOrDefault();
+			if (type == null)
+				throw new ArgumentNullException("type");
 
-						return attribute == null ? null : PropertyModel.Data(p, attribute);
-					})
-					.Where(p => p != null);
+			return GetProperties(type)
+				.Select(p =>
+				        {
+					        DataFieldAttribute attribute =
+						        p.GetCustomAttributes(typeof(DataFieldAttribute), true)
+						         .OfType<DataFieldAttribute>()
+						         .SingleOrDefault();
+
+					        return attribute == null ? null : PropertyModel.Data(p, attribute);
+				        })
+				.Where(p => p != null);
 		}
 
 		/// <summary>
@@ -255,33 +243,47 @@ namespace ICD.Connect.Settings.ORM
 		[NotNull]
 		private static IEnumerable<PropertyModel> GetForeignKeys([NotNull] Type type)
 		{
-			return
-				type
-#if SIMPLSHARP
-					.GetCType()
-#endif
-					.GetProperties()
-					.Select(p =>
-					{
-						ForeignKeyAttribute attribute =
-							p.GetCustomAttributes(typeof(ForeignKeyAttribute), true)
-							 .Cast<ForeignKeyAttribute>()
-							 .FirstOrDefault();
+			if (type == null)
+				throw new ArgumentNullException("type");
 
-						return attribute == null ? null : PropertyModel.ForeignKey(p, attribute);
-					})
-					.Where(p => p != null);
+			return GetProperties(type)
+				.Select(p =>
+				        {
+					        ForeignKeyAttribute attribute =
+						        p.GetCustomAttributes(typeof(ForeignKeyAttribute), true)
+						         .OfType<ForeignKeyAttribute>()
+						         .SingleOrDefault();
+
+					        return attribute == null ? null : PropertyModel.ForeignKey(p, attribute);
+				        })
+				.Where(p => p != null);
 		}
 
-		private IEnumerable<PropertyModel> GetAnonymousProperties([NotNull] Type type)
+		private static IEnumerable<PropertyModel> GetAnonymousProperties([NotNull] Type type)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+
+			return GetProperties(type).Select(p => PropertyModel.Anonymous(p));
+		}
+
+		/// <summary>
+		/// Returns the properties for the given type.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		[NotNull]
+		private static IEnumerable<PropertyInfo> GetProperties([NotNull] Type type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+
 			return
 				type
 #if SIMPLSHARP
 					.GetCType()
 #endif
-					.GetProperties()
-					.Select(p => PropertyModel.Anonymous(p));
+					.GetProperties();
 		}
 
 		#endregion

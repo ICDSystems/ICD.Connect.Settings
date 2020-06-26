@@ -46,25 +46,28 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <param name="name"></param>
 		protected override void ValidateTable(Type type, string name)
 		{
+			TypeModel model = TypeModel.Get(type);
+
 			Dictionary<string, SqliteColumnInfo> tableColumns =
 				Query<SqliteColumnInfo>(string.Format("PRAGMA table_info({0})", name))
 					.ToDictionary(c => c.name);
 
-			TypeModel model = TypeModel.Get(type);
-			PropertyModel[] modelColumns = model.GetColumns().ToArray();
+			Dictionary<string, PropertyModel> modelColumns =
+				model.GetColumns()
+				     .ToDictionary(p => p.Name);
 
 			// Validate properties
 			foreach (string tableColumn in tableColumns.Keys)
-				if (modelColumns.All(p => p.Name != tableColumn))
+				if (!modelColumns.ContainsKey(tableColumn))
 					throw new ApplicationException(string.Format("Type {0} does not have property for table {1} column {2}", type.Name, name, tableColumn));
 
 			// Validate columns
-			foreach (string modelColumn in modelColumns.Select(p => p.Name))
+			foreach (string modelColumn in modelColumns.Keys)
 				if (!tableColumns.ContainsKey(modelColumn))
 					throw new ApplicationException(string.Format("Table {0} does not have column for property {1}.{2}", name, type.Name, modelColumn));
 
 			// Compare columns
-			foreach (PropertyModel modelColumn in modelColumns)
+			foreach (PropertyModel modelColumn in modelColumns.Values)
 			{
 				SqliteColumnInfo columnInfo = tableColumns[modelColumn.Name];
 				
