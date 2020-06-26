@@ -89,7 +89,8 @@ namespace ICD.Connect.Settings.ORM.Databases
 			return name == GetConnection().ExecuteScalar(sql, null, transaction) as string;
 		}
 
-		private sealed class SqliteColumnInfo
+		// public due to Eazfuscator issue related to properties on a nested private class
+		public sealed class SqliteColumnInfo
 		{
 			// ReSharper disable InconsistentNaming
 			[DataField] public string cid { get; set; }

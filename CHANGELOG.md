@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
  - Reverted IdUtils for consistency with DAV
+ - Fixed a bug where release builds would fail to validate SQLite ORM databases
 
 ## [11.0.0] - 2020-06-19
 ### Added
