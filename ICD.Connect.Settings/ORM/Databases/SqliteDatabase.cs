@@ -1,3 +1,4 @@
+using ICD.Common.Properties;
 #if SIMPLSHARP
 using Crestron.SimplSharp.CrestronData;
 using Crestron.SimplSharp.SQLite;
@@ -89,6 +90,7 @@ namespace ICD.Connect.Settings.ORM.Databases
 			return name == GetConnection().ExecuteScalar(sql, null, transaction) as string;
 		}
 
+		[Obfuscation(Exclude = true, ApplyToMembers = true)]
 		// public due to Eazfuscator issue related to properties on a nested private class
 		public sealed class SqliteColumnInfo
 		{
