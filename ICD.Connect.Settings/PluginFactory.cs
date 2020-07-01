@@ -252,7 +252,7 @@ namespace ICD.Connect.Settings
 			catch (TypeLoadException e)
 			{
 #if SIMPLSHARP
-				s_Logger.Log(eSeverity.Error, "Failed to cache assembly {0}", assembly.GetName().Name);
+				s_Logger.Log(eSeverity.Error, "Failed to cache assembly {0} - {1}", assembly.GetName().Name, e.Message);
 #else
 				s_Logger.Log(eSeverity.Error, "Failed to cache assembly {0} - could not load type {1}",
 							 assembly.GetName().Name, e.TypeName);
