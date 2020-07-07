@@ -176,6 +176,13 @@ namespace ICD.Connect.Settings.Proxies
 			yield break;
 		}
 
+		/// <summary>
+		/// Initializes the current telemetry state.
+		/// </summary>
+		public void InitializeTelemetry()
+		{
+		}
+
 		#endregion
 
 		#region Settings

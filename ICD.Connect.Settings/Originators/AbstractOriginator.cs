@@ -214,6 +214,13 @@ namespace ICD.Connect.Settings.Originators
 		}
 
 		/// <summary>
+		/// Initializes the current telemetry state.
+		/// </summary>
+		public void InitializeTelemetry()
+		{
+		}
+
+		/// <summary>
 		/// Override to add additional properties to the ToString representation.
 		/// </summary>
 		/// <param name="addPropertyAndValue"></param>
