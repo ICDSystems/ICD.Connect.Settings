@@ -138,5 +138,13 @@ namespace ICD.Connect.Settings.Tests
 		{
 			throw new NotImplementedException();
 		}
+
+		/// <summary>
+		/// Initializes the current telemetry state.
+		/// </summary>
+		public void InitializeTelemetry()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
