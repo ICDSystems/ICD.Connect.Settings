@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [9.2.1] - 2020-08-13
 ### Changed
  - Fixed a bug where originator Order and Disabled was not being updated to/from settings
 
