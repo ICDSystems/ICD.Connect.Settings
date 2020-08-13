@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Fixed a bug where originator Order and Disabled was not being updated to/from settings
+
 ## [9.2.0] - 2019-11-20
 ### Added
  - Added a MAC Address element for the processor in the configuration header
