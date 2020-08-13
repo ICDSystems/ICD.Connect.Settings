@@ -308,6 +308,8 @@ namespace ICD.Connect.Settings.Originators
 			settings.Description = Description;
 			settings.Hide = Hide;
 			settings.Permissions = (GetPermissions() ?? Enumerable.Empty<Permission>()).ToList();
+			settings.Order = Order;
+			settings.Disable = Disable;
 
 			CopySettingsFinal(settings);
 		}
@@ -334,6 +336,8 @@ namespace ICD.Connect.Settings.Originators
 			CombineName = settings.CombineName;
 			Description = settings.Description;
 			Hide = settings.Hide;
+			Order = settings.Order;
+			Disable = settings.Disable;
 
 			SetPermissions(settings.Permissions);
 
@@ -369,6 +373,8 @@ namespace ICD.Connect.Settings.Originators
 			CombineName = null;
 			Description = null;
 			Hide = false;
+			Order = 0;
+			Disable = false;
 
 			SetPermissions(Enumerable.Empty<Permission>());
 
