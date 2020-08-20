@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Originators;
-using ICD.Connect.Settings.Originators.Simpl;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
@@ -14,7 +14,7 @@ using ICD.Connect.Settings.SPlusShims.GlobalEvents;
 namespace ICD.Connect.Settings.SPlusShims
 {
 	public abstract class AbstractSPlusOriginatorShim<TOriginator> : AbstractSPlusShim, ISPlusOriginatorShim<TOriginator>
-		where TOriginator : class, ISimplOriginator
+		where TOriginator : class, IOriginator
 	{
 		#region Events
 
@@ -57,7 +57,7 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// <summary>
 		/// Gets the wrapped originator.
 		/// </summary>
-		ISimplOriginator ISPlusOriginatorShim.Originator { get { return Originator; } }
+		IOriginator ISPlusOriginatorShim.Originator { get { return Originator; } }
 
 		/// <summary>
 		/// Returns true if the shim is currently wrapping an originator.
@@ -103,6 +103,19 @@ namespace ICD.Connect.Settings.SPlusShims
 			SetOriginator(originator);
 		}
 
+		
+		/// <summary>
+		/// Sets the wrapped originator.
+		/// Uses ushort lowword/highword for S+
+		/// </summary>
+		/// <param name="idLowByte"></param>
+		/// <param name="idHighByte"></param>
+		[PublicAPI("S+")]
+		public void SetOriginatorSPlus(ushort idLowByte, ushort idHighByte)
+		{
+			SetOriginator(SPlusUtils.ConvertToInt(idLowByte, idHighByte));
+		}
+
 		protected override void EnvironmentLoaded(EnvironmentLoadedEventInfo environmentLoadedEventInfo)
 		{
 			base.EnvironmentLoaded(environmentLoadedEventInfo);
@@ -127,7 +140,6 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		protected virtual void InitializeOriginator()
 		{
-			RequestResync();
 		}
 
 		/// <summary>
@@ -213,7 +225,6 @@ namespace ICD.Connect.Settings.SPlusShims
 
 			Originator.OnSettingsApplied += OriginatorOnSettingsApplied;
 			Originator.OnSettingsCleared += OriginatorOnSettingsCleared;
-			Originator.OnRequestShimResync += OriginatorOnRequestShimResync;
 		}
 
 		/// <summary>
@@ -227,7 +238,6 @@ namespace ICD.Connect.Settings.SPlusShims
 
 			Originator.OnSettingsApplied -= OriginatorOnSettingsApplied;
 			Originator.OnSettingsCleared -= OriginatorOnSettingsCleared;
-			Originator.OnRequestShimResync -= OriginatorOnRequestShimResync;
 		}
 
 		private void OriginatorOnSettingsApplied(object sender, EventArgs eventArgs)
@@ -238,11 +248,6 @@ namespace ICD.Connect.Settings.SPlusShims
 		private void OriginatorOnSettingsCleared(object sender, EventArgs eventArgs)
 		{
 			OnSettingsCleared.Raise(this);
-		}
-
-		private void OriginatorOnRequestShimResync(object sender, EventArgs eventArgs)
-		{
-			RequestResync();
 		}
 
 		#endregion

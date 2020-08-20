@@ -121,7 +121,6 @@
     <Compile Include="Originators\AbstractOriginatorCollection.cs" />
     <Compile Include="Originators\IOriginator.cs" />
     <Compile Include="Originators\OriginatorConsole.cs" />
-    <Compile Include="Originators\Simpl\ISimplOriginator.cs" />
     <Compile Include="Migration\Migrators\AbstractConfigVersionMigrator.cs" />
     <Compile Include="Comparers\UndefinedVersionComparer.cs" />
     <Compile Include="Comparers\UndefinedVersionEqualityComparer.cs" />
@@ -157,10 +156,6 @@
     <Compile Include="Header\Program.cs" />
     <Compile Include="Proxies\IProxySettings.cs" />
     <Compile Include="SettingsCollection.cs" />
-    <Compile Include="Originators\Simpl\ISimplOriginatorApi.cs" />
-    <Compile Include="Originators\Simpl\RequestShimResyncEventArgs.cs" />
-    <Compile Include="Originators\Simpl\AbstractSimplOriginator.cs" />
-    <Compile Include="Originators\Simpl\ISimplOriginatorSettings.cs" />
     <Compile Include="Settings\ISettings.cs" />
     <Compile Include="SPlusShims\AbstractSPlusOriginatorShim.cs" />
     <Compile Include="SPlusShims\AbstractSPlusShim.cs" />

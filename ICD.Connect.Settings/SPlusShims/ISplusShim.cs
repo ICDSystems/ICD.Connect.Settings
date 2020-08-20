@@ -19,13 +19,6 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// </summary>
 		[PublicAPI("S+")]
 		string Name { get; set; }
-
-		/// <summary>
-		/// This callback is raised when the shim wants the S+ class to re-send incoming data to the shim
-		/// This is for syncronizing, for example, when an originator is attached.
-		/// </summary>
-		[PublicAPI("S+")]
-		event EventHandler OnResyncRequested;
 	}
 
 }

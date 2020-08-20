@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Utils;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.SPlusShims.GlobalEvents;
@@ -28,12 +27,6 @@ namespace ICD.Connect.Settings.SPlusShims
 		/// Used to aid debugging
 		/// </summary>
 		public string Name { get; set; }
-
-		/// <summary>
-		/// This callback is raised when the shim wants the S+ class to re-send incoming data to the shim
-		/// This is for syncronizing, for example, when an originator is attached.
-		/// </summary>
-		public event EventHandler OnResyncRequested;
 
 		#endregion
 
@@ -68,13 +61,6 @@ namespace ICD.Connect.Settings.SPlusShims
 		}
 
 		#region Private/Protected Helpers
-
-		protected virtual void RequestResync()
-		{
-			var handler = OnResyncRequested;
-			if (handler != null)
-				handler.Raise(this);
-		}
 
 		public override string ToString()
 		{
