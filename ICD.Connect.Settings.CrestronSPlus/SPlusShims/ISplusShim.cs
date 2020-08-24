@@ -2,7 +2,7 @@
 using ICD.Common.Properties;
 using ICD.Connect.API.Nodes;
 
-namespace ICD.Connect.Settings.SPlusShims
+namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 {
 	public interface ISPlusShim : IDisposable, IConsoleNode
 	{

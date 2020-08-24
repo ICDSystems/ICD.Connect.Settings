@@ -4,9 +4,9 @@ using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Settings.SPlusShims.GlobalEvents;
+using ICD.Connect.Settings.CrestronSPlus.SPlusShims.GlobalEvents;
 
-namespace ICD.Connect.Settings.SPlusShims
+namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 {
 	public abstract class AbstractSPlusShim : ISPlusShim
 	{

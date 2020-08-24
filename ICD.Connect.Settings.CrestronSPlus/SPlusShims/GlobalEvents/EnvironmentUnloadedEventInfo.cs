@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Settings.SPlusShims.GlobalEvents
+﻿namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims.GlobalEvents
 {
 	public sealed class EnvironmentUnloadedEventInfo : AbstractSPlusEventInfo
 	{

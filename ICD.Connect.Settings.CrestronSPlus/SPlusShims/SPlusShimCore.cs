@@ -4,7 +4,7 @@ using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API;
 
-namespace ICD.Connect.Settings.SPlusShims
+namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 {
 	public static class SPlusShimCore
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 
-namespace ICD.Connect.Settings.SPlusShims.EventArguments
+namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims.EventArguments
 {
 	public sealed class SPlusUShortEventArgs : EventArgs
 	{

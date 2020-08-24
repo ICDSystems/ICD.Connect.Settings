@@ -2,7 +2,7 @@
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
 
-namespace ICD.Connect.Settings.SPlusShims.EventArguments
+namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims.EventArguments
 {
 	public sealed class SPlusBoolEventArgs : EventArgs
 	{

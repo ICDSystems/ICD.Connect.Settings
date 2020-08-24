@@ -1,6 +1,6 @@
 ﻿using ICD.Connect.Settings.Originators;
 
-namespace ICD.Connect.Settings.SPlusShims
+namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 {
 	public interface ISPlusOriginatorShim : ISPlusShim
 	{

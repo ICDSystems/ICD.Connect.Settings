@@ -4,14 +4,14 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
-using ICD.Connect.Settings.Cores;
-using ICD.Connect.Settings.Originators;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Settings.SPlusShims.GlobalEvents;
+using ICD.Connect.Settings.Cores;
+using ICD.Connect.Settings.CrestronSPlus.SPlusShims.GlobalEvents;
+using ICD.Connect.Settings.Originators;
 
-namespace ICD.Connect.Settings.SPlusShims
+namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 {
 	public abstract class AbstractSPlusOriginatorShim<TOriginator> : AbstractSPlusShim, ISPlusOriginatorShim<TOriginator>
 		where TOriginator : class, IOriginator

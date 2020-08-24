@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Utils;
 
-namespace ICD.Connect.Settings.SPlusShims.GlobalEvents
+namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims.GlobalEvents
 {
 	public static class SPlusGlobalEvents
 	{
