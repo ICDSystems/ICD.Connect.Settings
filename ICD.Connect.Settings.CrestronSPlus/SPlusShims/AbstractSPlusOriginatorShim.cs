@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
@@ -10,6 +11,11 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.CrestronSPlus.SPlusShims.GlobalEvents;
 using ICD.Connect.Settings.Originators;
+#if SIMPLSHARP
+using ICDPlatformString = Crestron.SimplSharp.SimplSharpString;
+#else
+using ICDPlatformString = System.String;
+#endif
 
 namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 {
@@ -70,6 +76,44 @@ namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 		/// </summary>
 		[PublicAPI("S+")]
 		public int OriginatorId { get { return m_Originator != null ? m_Originator.Id : 0; } }
+
+		#endregion
+
+		#region SPlus
+
+		public delegate void SPlusStringDelegate(ICDPlatformString data);
+
+		public delegate void SPlusBoolDelegate(ushort data);
+
+		public delegate void SPlusIntDelegate(int data);
+
+		[PublicAPI("S+")]
+		public SPlusStringDelegate OriginatorName { get; set; }
+
+		[PublicAPI("S+")]
+		public SPlusStringDelegate OriginatorCombineName { get; set; }
+
+		[PublicAPI("S+")]
+		public SPlusStringDelegate OriginatorUuid { get; set; }
+
+		[PublicAPI("S+")]
+		public SPlusStringDelegate OriginatorCategory { get; set; }
+
+		[PublicAPI("S+")]
+		public SPlusBoolDelegate OriginatorHide { get; set; }
+
+		[PublicAPI("S+")]
+		public SPlusBoolDelegate OriginatorDisable { get; set; }
+
+		[PublicAPI("S+")]
+		public SPlusIntDelegate OriginatorOrder { get; set; }
+
+		[PublicAPI("S+")]
+		public void SetDisabled(ushort state)
+		{
+			if (Originator != null)
+				Originator.Disable = state.ToBool();
+		}
 
 		#endregion
 
@@ -140,6 +184,36 @@ namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 		/// </summary>
 		protected virtual void InitializeOriginator()
 		{
+			if (Originator == null)
+				return;
+
+			var nameDelegate = OriginatorName;
+			if (nameDelegate != null)
+				nameDelegate(Originator.Name);
+
+			var combineNameDelegate = OriginatorCombineName;
+			if (combineNameDelegate != null)
+				combineNameDelegate(Originator.CombineName);
+
+			var uuidDelegate = OriginatorUuid;
+			if (uuidDelegate != null)
+				uuidDelegate(Originator.Uuid.ToString());
+
+			var categoryDelegate = OriginatorCategory;
+			if (categoryDelegate != null)
+				categoryDelegate(Originator.Category);
+
+			var hideDelegate = OriginatorHide;
+			if (hideDelegate != null)
+				hideDelegate(Originator.Hide.ToUShort());
+
+			var disableDelegate = OriginatorDisable;
+			if (disableDelegate != null)
+				disableDelegate(Originator.Disable.ToUShort());
+
+			var orderDelegate = OriginatorOrder;
+			if (orderDelegate != null)
+				orderDelegate(Originator.Order);
 		}
 
 		/// <summary>
@@ -225,6 +299,8 @@ namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 
 			Originator.OnSettingsApplied += OriginatorOnSettingsApplied;
 			Originator.OnSettingsCleared += OriginatorOnSettingsCleared;
+			originator.OnNameChanged += OriginatorOnNameChanged;
+			originator.OnDisableStateChanged += OriginatorOnDisableStateChanged;
 		}
 
 		/// <summary>
@@ -238,6 +314,8 @@ namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 
 			Originator.OnSettingsApplied -= OriginatorOnSettingsApplied;
 			Originator.OnSettingsCleared -= OriginatorOnSettingsCleared;
+			originator.OnNameChanged -= OriginatorOnNameChanged;
+			originator.OnDisableStateChanged -= OriginatorOnDisableStateChanged;
 		}
 
 		private void OriginatorOnSettingsApplied(object sender, EventArgs eventArgs)
@@ -248,6 +326,24 @@ namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 		private void OriginatorOnSettingsCleared(object sender, EventArgs eventArgs)
 		{
 			OnSettingsCleared.Raise(this);
+		}
+
+		private void OriginatorOnDisableStateChanged(object sender, BoolEventArgs args)
+		{
+			var disableDelegate = OriginatorDisable;
+			if (disableDelegate != null)
+				disableDelegate(args.Data.ToUShort());
+		}
+
+		private void OriginatorOnNameChanged(object sender, EventArgs args)
+		{
+			var nameDelegate = OriginatorName;
+			if (nameDelegate != null)
+				nameDelegate(Originator.Name);
+
+			var combineNameDelegate = OriginatorCombineName;
+			if (combineNameDelegate != null)
+				combineNameDelegate(Originator.CombineName);
 		}
 
 		#endregion
