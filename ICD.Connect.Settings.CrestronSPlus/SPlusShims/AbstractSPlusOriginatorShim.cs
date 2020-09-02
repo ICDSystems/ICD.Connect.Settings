@@ -19,6 +19,12 @@ using ICDPlatformString = System.String;
 
 namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 {
+	public delegate void SPlusStringDelegate(ICDPlatformString data);
+
+	public delegate void SPlusBoolDelegate(ushort data);
+
+	public delegate void SPlusIntDelegate(int data);
+
 	public abstract class AbstractSPlusOriginatorShim<TOriginator> : AbstractSPlusShim, ISPlusOriginatorShim<TOriginator>
 		where TOriginator : class, IOriginator
 	{
@@ -80,12 +86,6 @@ namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 		#endregion
 
 		#region SPlus
-
-		public delegate void SPlusStringDelegate(ICDPlatformString data);
-
-		public delegate void SPlusBoolDelegate(ushort data);
-
-		public delegate void SPlusIntDelegate(int data);
 
 		[PublicAPI("S+")]
 		public SPlusStringDelegate OriginatorName { get; set; }
