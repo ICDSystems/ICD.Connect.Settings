@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
  - ISPlusOriginatorShim now works with any IOriginator
+ - Fixed AbstractSPlusOriginatorShim delegates to be namespace level to work with S+
  
 ### Removed
  - Removed ISimplOriginator
