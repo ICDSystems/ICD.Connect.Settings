@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Fixed a bug that was preventing room-combine systems from migrating to the new format properly
+
 ## [8.2.2] - 2019-08-27
 ### Changed
  - Changed logging to be more accurate for when an assembly fails to be cached.
