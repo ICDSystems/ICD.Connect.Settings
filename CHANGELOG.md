@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.2.3] - 2020-09-30
 ### Changed
  - Fixed a bug that was preventing room-combine systems from migrating to the new format properly
 
