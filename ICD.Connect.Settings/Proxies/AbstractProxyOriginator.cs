@@ -21,20 +21,9 @@ namespace ICD.Connect.Settings.Proxies
 		where TSettings : IProxySettings
 	{
 		/// <summary>
-		/// Called when the settings start clearing.
+		/// Raised when the lifecycle state of the originator changes
 		/// </summary>
-		public event EventHandler OnSettingsClearing;
-
-		/// <summary>
-		/// Called when the settings have been cleared.
-		/// </summary>
-		public event EventHandler OnSettingsCleared;
-
-		/// <summary>
-		/// Called when settings have been applied to the originator.
-		/// This means the originator has finished loading.
-		/// </summary>
-		public event EventHandler OnSettingsApplied;
+		public event EventHandler<LifecycleStateEventArgs> OnLifecycleStateChanged;
 
 		/// <summary>
 		/// Called when this originator changes names.
@@ -49,8 +38,27 @@ namespace ICD.Connect.Settings.Proxies
 		private ILoggerService m_CachedLogger;
 		private string m_Name;
 		private bool m_Disable;
+		private eLifecycleState m_LifecycleState;
 
 		#region Properties
+		
+		/// <summary>
+		/// The lifecycle state of the originator
+		/// Describes the state in the instantiate/load/start/clear/dispose lifecycle
+		/// </summary>
+		public eLifecycleState LifecycleState
+		{
+			get { return m_LifecycleState; }
+			private set
+			{
+				if (m_LifecycleState == value)
+					return;
+
+				m_LifecycleState = value;
+
+				OnLifecycleStateChanged.Raise(this, new LifecycleStateEventArgs(m_LifecycleState));
+			}
+		}
 
 		/// <summary>
 		/// Unique ID for the originator.
@@ -244,6 +252,8 @@ namespace ICD.Connect.Settings.Proxies
 		{
 			ClearSettings();
 
+			LifecycleState = eLifecycleState.Loading;
+
 			Id = settings.Id;
 			Name = settings.Name;
 			CombineName = settings.CombineName;
@@ -252,7 +262,7 @@ namespace ICD.Connect.Settings.Proxies
 
 			ApplySettingsFinal(settings, factory);
 
-			OnSettingsApplied.Raise(this);
+			LifecycleState = eLifecycleState.Loaded;
 		}
 
 		/// <summary>
@@ -269,7 +279,7 @@ namespace ICD.Connect.Settings.Proxies
 		/// </summary>
 		public void ClearSettings()
 		{
-			OnSettingsClearing.Raise(this);
+			LifecycleState = eLifecycleState.Clearing;
 
 			ClearSettingsFinal();
 
@@ -279,9 +289,33 @@ namespace ICD.Connect.Settings.Proxies
 			Description = null;
 			Hide = false;
 
-			OnSettingsCleared.Raise(this);
+			LifecycleState = eLifecycleState.Cleared;
 		}
 
+		/// <summary>
+		/// Start settings for the origintor
+		/// This should be used to start communications with devices and perform initial actions
+		/// </summary>
+		public void StartSettings()
+		{
+			if (LifecycleState == eLifecycleState.Started)
+				return;
+
+			LifecycleState = eLifecycleState.Starting;
+			
+			StartSettingsFinal();
+
+			LifecycleState = eLifecycleState.Started;
+		}
+
+		/// <summary>
+		/// Override to add actions on StartSettings
+		/// This should be used to start communications with devices and perform initial actions
+		/// </summary>
+		protected virtual void StartSettingsFinal()
+		{
+			
+		}
 
 		/// <summary>
 		/// Override to clear the instance settings.
@@ -300,9 +334,9 @@ namespace ICD.Connect.Settings.Proxies
 		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
-			OnSettingsApplied = null;
-			OnSettingsCleared = null;
-			OnSettingsClearing = null;
+			LifecycleState = eLifecycleState.Disposed;
+
+			OnLifecycleStateChanged = null;
 			OnNameChanged = null;
 			OnDisableStateChanged = null;
 

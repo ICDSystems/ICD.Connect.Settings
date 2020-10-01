@@ -20,23 +20,10 @@ namespace ICD.Connect.Settings.Originators
 	public interface IOriginator : IConsoleNode, ITelemetryProvider
 	{
 		/// <summary>
-		/// Called when the settings start clearing.
+		/// Raised when the lifecycle state of the originator changes
 		/// </summary>
-		[PublicAPI]
-		event EventHandler OnSettingsClearing;
+		event EventHandler<LifecycleStateEventArgs> OnLifecycleStateChanged;
 
-		/// <summary>
-		/// Called when the settings have been cleared.
-		/// </summary>
-		[PublicAPI]
-		event EventHandler OnSettingsCleared;
-
-		/// <summary>
-		/// Called when settings have been applied to the originator.
-		/// This means the originator has finished loading.
-		/// </summary>
-		[PublicAPI]
-		event EventHandler OnSettingsApplied;
 
 		/// <summary>
 		/// Called when this originator changes names.
@@ -51,6 +38,12 @@ namespace ICD.Connect.Settings.Originators
 		event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
 		#region Properties
+
+		/// <summary>
+		/// The lifecycle state of the originator
+		/// Describes the state in the instantiate/load/start/clear/dispose lifecycle
+		/// </summary>
+		eLifecycleState LifecycleState { get; }
 
 		/// <summary>
 		/// Unique ID for the originator.
@@ -142,6 +135,13 @@ namespace ICD.Connect.Settings.Originators
 		/// </summary>
 		[PublicAPI]
 		void ClearSettings();
+
+		/// <summary>
+		/// Start settings for the origintor
+		/// This should be used to start communications with devices and perform initial actions
+		/// </summary>
+		[PublicAPI]
+		void StartSettings();
 
 		#endregion
 	}

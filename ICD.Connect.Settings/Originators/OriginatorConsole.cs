@@ -33,6 +33,7 @@ namespace ICD.Connect.Settings.Originators
 			addRow("Id", instance.Id);
 			addRow("Name", instance.Name);
 			addRow("CombineName", instance.Name);
+			addRow("LifecycleState", instance.LifecycleState);
 		}
 
 		/// <summary>

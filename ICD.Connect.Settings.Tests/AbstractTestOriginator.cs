@@ -12,11 +12,12 @@ namespace ICD.Connect.Settings.Tests
 	public abstract class AbstractTestOriginator<TSettings> : IOriginator<TSettings>
 		where TSettings : ISettings
 	{
-		public event EventHandler OnSettingsClearing;
-		public event EventHandler OnSettingsCleared;
-		public event EventHandler OnSettingsApplied;
+		private eLifecycleState m_LifecycleState;
+		public event EventHandler<LifecycleStateEventArgs> OnLifecycleStateChanged;
 		public event EventHandler OnNameChanged;
 		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
+
+		public eLifecycleState LifecycleState => m_LifecycleState;
 
 		public int Id { get; set; }
 
@@ -79,6 +80,14 @@ namespace ICD.Connect.Settings.Tests
 		}
 
 		public void ClearSettings()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Run Settings - called after all settings are applied
+		/// </summary>
+		public void StartSettings()
 		{
 			throw new NotImplementedException();
 		}
