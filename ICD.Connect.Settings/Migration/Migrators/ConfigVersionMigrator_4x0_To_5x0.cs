@@ -96,8 +96,8 @@ namespace ICD.Connect.Settings.Migration.Migrators
 			<Partitions>
 				<Partition id="20010" type="Partition">
 					<Name>Conference Rm A/Conference Rm B</Name>
-					<Cell1>20002</Cell1>
-					<Cell2>20003</Cell2>
+					<CellA>20002</CellA>
+					<CellB>20003</CellB>
 					<PartitionControls>
 						<PartitionControl>
 							<Device>30001</Device>
@@ -106,8 +106,8 @@ namespace ICD.Connect.Settings.Migration.Migrators
 				</Partition>
 				<Partition id="20011" type="Partition">
 					<Name>Conference Rm B/Huddle Rm B</Name>
-					<Cell1>20005</Cell1>
-					<Cell2>20006</Cell2>
+					<CellA>20005</CellA>
+					<CellB>20006</CellB>
 					<PartitionControls>
 						<PartitionControl>
 							<Device>30002</Device>
@@ -116,8 +116,8 @@ namespace ICD.Connect.Settings.Migration.Migrators
 				</Partition>
 				<Partition id="20012" type="Partition">
 					<Name>Huddle Rm B/Huddle Rm A</Name>
-					<Cell1>20006</Cell1>
-					<Cell2>20007</Cell2>
+					<CellA>20006</CellA>
+					<CellB>20007</CellB>
 					<PartitionControls>
 						<PartitionControl>
 							<Device>30003</Device>
@@ -217,11 +217,11 @@ namespace ICD.Connect.Settings.Migration.Migrators
 				int room1 = partitionRoomIds[0];
 				int room2 = partitionRoomIds[1];
 
-				XElement cell1 = new XElement("Cell1", roomToCell[room1]);
-				XElement cell2 = new XElement("Cell2", roomToCell[room2]);
+				XElement cellA = new XElement("CellA", roomToCell[room1]);
+				XElement cellB = new XElement("CellB", roomToCell[room2]);
 
-				partition.Add(cell1);
-				partition.Add(cell2);
+				partition.Add(cellA);
+				partition.Add(cellB);
 			}
 
 			return document.ToString();
