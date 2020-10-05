@@ -54,6 +54,105 @@ namespace ICD.Connect.Settings
 		#region Methods
 
 		/// <summary>
+		/// Loads the settings from disk to the core.
+		/// </summary>
+		/// <typeparam name="TCore"></typeparam>
+		/// <typeparam name="TSettings"></typeparam>
+		/// <param name="core"></param>
+		/// <param name="postApplyAction"></param>
+		public static void LoadCoreSettings<TCore, TSettings>(TCore core, Action postApplyAction)
+			where TSettings : class, ICoreSettings, new()
+			where TCore : class, ICore
+		{
+			if (core == null)
+				throw new ArgumentNullException("core");
+
+			TSettings settings = Activator.CreateInstance<TSettings>();
+
+			// Ensure the new core settings don't default to an id of 0.
+			settings.Id = IdUtils.ID_CORE;
+
+			// Load XML config into string
+			string configXml = null;
+			if (IcdFile.Exists(IcdConfigPath))
+			{
+				Logger.AddEntry(eSeverity.Notice, "Reading settings from {0}", IcdConfigPath);
+
+				configXml = IcdFile.ReadToEnd(IcdConfigPath, new UTF8Encoding(false));
+				configXml = EncodingUtils.StripUtf8Bom(configXml);
+
+				try
+				{
+					if (!string.IsNullOrEmpty(configXml))
+						new IcdXmlDocument().LoadXml(configXml);
+				}
+				catch (IcdXmlException e)
+				{
+					Logger.AddEntry(eSeverity.Error, "Failed to load settings - Error reading XML at line {0} position {1}",
+					                e.LineNumber, e.LinePosition);
+					return;
+				}
+
+				Logger.AddEntry(eSeverity.Notice, "Finished reading settings");
+			}
+			else
+			{
+				Logger.AddEntry(eSeverity.Warning, "Failed to find settings at {0}", IcdConfigPath);
+			}
+
+			bool save;
+
+			// Save a stub xml file if one doesn't already exist
+			if (string.IsNullOrEmpty(configXml))
+				save = true;
+			else
+				ParseXml(settings, configXml, out save);
+
+			SettingsValidationResult critical;
+			if (!ValidateSettings(settings, out critical))
+			{
+				Logger.AddEntry(eSeverity.Critical, "Aborting load of settings - {0} failed to validate - {1}", critical.Source,
+				                critical.Message);
+				return;
+			}
+
+			if (save)
+				SaveSettings(settings, true);
+			else
+				BackupSettings();
+
+			LoadCoreSettings(core, settings, postApplyAction);
+		}
+
+		/// <summary>
+		/// Loads the given settings to the core - applies and starts settings
+		/// </summary>
+		/// <typeparam name="TCore"></typeparam>
+		/// <typeparam name="TSettings"></typeparam>
+		/// <param name="core"></param>
+		/// <param name="settings"></param>
+		/// <param name="postApplyAction"></param>
+		public static void LoadCoreSettings<TCore, TSettings>(TCore core, TSettings settings,
+		                                                      [CanBeNull] Action postApplyAction)
+			where TSettings : class, ICoreSettings
+			where TCore : class, ICore
+		{
+			ApplyCoreSettings(core, settings);
+
+			try
+			{
+				if (postApplyAction != null)
+					postApplyAction();
+			}
+			catch (Exception e)
+			{
+				Logger.AddEntry(eSeverity.Error, e, "Exception in program post-apply action");
+			}
+
+			StartCoreSettings(core);
+		}
+
+		/// <summary>
 		/// Applies the settings to the core.
 		/// </summary>
 		public static void ApplyCoreSettings<TCore, TSettings>(TCore core, TSettings settings)
@@ -72,6 +171,24 @@ namespace ICD.Connect.Settings
 			core.ApplySettings(settings, factory);
 
 			Logger.AddEntry(eSeverity.Notice, "Finished applying settings");
+		}
+
+		/// <summary>
+		/// Starts the settings on the core
+		/// </summary>
+		/// <typeparam name="TCore"></typeparam>
+		/// <param name="core"></param>
+		public static void StartCoreSettings<TCore>([NotNull] TCore core)
+			where TCore: class, ICore
+		{
+			if (core == null)
+				throw new ArgumentNullException("core");
+
+			Logger.AddEntry(eSeverity.Notice, "Starting Settings");
+
+			core.StartSettings();
+
+			Logger.AddEntry(eSeverity.Notice, "Finished starting settings");
 		}
 
 		/// <summary>
@@ -144,73 +261,6 @@ namespace ICD.Connect.Settings
 			IcdFile.Copy(IcdConfigPath, newPath);
 
 			Logger.AddEntry(eSeverity.Notice, "Finished settings backup");
-		}
-
-		/// <summary>
-		/// Loads the settings from disk to the core.
-		/// </summary>
-		public static void LoadCoreSettings<TCore, TSettings>(TCore core)
-			where TSettings : class, ICoreSettings, new()
-			where TCore : class, ICore
-		{
-			if (core == null)
-				throw new ArgumentNullException("core");
-
-			TSettings settings = Activator.CreateInstance<TSettings>();
-
-			// Ensure the new core settings don't default to an id of 0.
-			settings.Id = IdUtils.ID_CORE;
-
-			// Load XML config into string
-			string configXml = null;
-			if (IcdFile.Exists(IcdConfigPath))
-			{
-				Logger.AddEntry(eSeverity.Notice, "Reading settings from {0}", IcdConfigPath);
-
-				configXml = IcdFile.ReadToEnd(IcdConfigPath, new UTF8Encoding(false));
-				configXml = EncodingUtils.StripUtf8Bom(configXml);
-
-				try
-				{
-					if (!string.IsNullOrEmpty(configXml))
-						new IcdXmlDocument().LoadXml(configXml);
-				}
-				catch (IcdXmlException e)
-				{
-					Logger.AddEntry(eSeverity.Error, "Failed to load settings - Error reading XML at line {0} position {1}",
-					                e.LineNumber, e.LinePosition);
-					return;
-				}
-
-				Logger.AddEntry(eSeverity.Notice, "Finished reading settings");
-			}
-			else
-			{
-				Logger.AddEntry(eSeverity.Warning, "Failed to find settings at {0}", IcdConfigPath);
-			}
-
-			bool save;
-
-			// Save a stub xml file if one doesn't already exist
-			if (string.IsNullOrEmpty(configXml))
-				save = true;
-			else
-				ParseXml(settings, configXml, out save);
-
-			SettingsValidationResult critical;
-			if (!ValidateSettings(settings, out critical))
-			{
-				Logger.AddEntry(eSeverity.Critical, "Aborting load of settings - {0} failed to validate - {1}", critical.Source,
-				                critical.Message);
-				return;
-			}
-
-			if (save)
-				SaveSettings(settings, true);
-			else
-				BackupSettings();
-
-			ApplyCoreSettings(core, settings);
 		}
 
 		/// <summary>

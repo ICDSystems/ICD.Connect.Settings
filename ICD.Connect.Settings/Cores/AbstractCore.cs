@@ -1,4 +1,5 @@
 using System;
+using ICD.Common.Properties;
 using ICD.Connect.Settings.Originators;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Services;
@@ -106,9 +107,10 @@ namespace ICD.Connect.Settings.Cores
 		/// <summary>
 		/// Loads settings from disk and updates the Settings property.
 		/// </summary>
-		public void LoadSettings()
+		/// <param name="postApplyAction">Action that gets called after settings are applicd, before they are started</param>
+		public void LoadSettings(Action postApplyAction)
 		{
-			FileOperations.LoadCoreSettings<AbstractCore<TSettings>, TSettings>(this);
+			FileOperations.LoadCoreSettings<AbstractCore<TSettings>, TSettings>(this, postApplyAction);
 		}
 
 		#endregion
