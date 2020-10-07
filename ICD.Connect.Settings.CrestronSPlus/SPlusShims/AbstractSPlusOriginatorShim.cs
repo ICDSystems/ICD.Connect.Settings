@@ -297,10 +297,9 @@ namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 			if (Originator == null)
 				return;
 
-			Originator.OnSettingsApplied += OriginatorOnSettingsApplied;
-			Originator.OnSettingsCleared += OriginatorOnSettingsCleared;
 			originator.OnNameChanged += OriginatorOnNameChanged;
 			originator.OnDisableStateChanged += OriginatorOnDisableStateChanged;
+			Originator.OnLifecycleStateChanged += OriginatorOnLifecycleStateChanged;
 		}
 
 		/// <summary>
@@ -312,20 +311,22 @@ namespace ICD.Connect.Settings.CrestronSPlus.SPlusShims
 			if (Originator == null)
 				return;
 
-			Originator.OnSettingsApplied -= OriginatorOnSettingsApplied;
-			Originator.OnSettingsCleared -= OriginatorOnSettingsCleared;
 			originator.OnNameChanged -= OriginatorOnNameChanged;
 			originator.OnDisableStateChanged -= OriginatorOnDisableStateChanged;
+			Originator.OnLifecycleStateChanged -= OriginatorOnLifecycleStateChanged;
 		}
 
-		private void OriginatorOnSettingsApplied(object sender, EventArgs eventArgs)
+		private void OriginatorOnLifecycleStateChanged(object sender, LifecycleStateEventArgs args)
 		{
-			OnSettingsApplied.Raise(this);
-		}
-
-		private void OriginatorOnSettingsCleared(object sender, EventArgs eventArgs)
-		{
-			OnSettingsCleared.Raise(this);
+			switch (args.Data)
+			{
+				case eLifecycleState.Loaded:
+					OnSettingsApplied.Raise(this);
+					break;
+				case eLifecycleState.Cleared:
+					OnSettingsCleared.Raise(this);
+					break;
+			}
 		}
 
 		private void OriginatorOnDisableStateChanged(object sender, BoolEventArgs args)

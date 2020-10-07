@@ -22,10 +22,6 @@ namespace ICD.Connect.Settings.Cores
 		#region Properties
 
 		[PublicAPI("DAV-PRO")]
-		[PropertyTelemetry("IsOnline", null, null)]
-		public bool IsOnline { get { return true; } }
-
-		[PublicAPI("DAV-PRO")]
 		[PropertyTelemetry("SoftwareVersion", null, null)]
 		public string SoftwareVersion { get { return Parent.GetType().GetAssembly().GetName().Version.ToString(); } }
 

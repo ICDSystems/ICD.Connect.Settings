@@ -114,6 +114,7 @@
     <Compile Include="Services\IService.cs" />
     <Compile Include="Services\IServiceSettings.cs" />
     <Compile Include="Services\ServiceProviderCollection.cs" />
+    <Compile Include="Originators\LifecycleStateEventArgs.cs" />
     <Compile Include="Utils\ConfigUtils.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x0_To_3x1.cs" />
     <Compile Include="Migration\Migrators\ConfigVersionMigrator_3x1_To_4x0.cs" />
