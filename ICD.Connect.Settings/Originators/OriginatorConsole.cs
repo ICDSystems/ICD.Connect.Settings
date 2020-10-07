@@ -40,6 +40,7 @@ namespace ICD.Connect.Settings.Originators
 			addRow("Disable", instance.Disable);
 			addRow("Order", instance.Order);
 			addRow("Serialize", instance.Serialize);
+			addRow("LifecycleState", instance.LifecycleState);
 		}
 
 		/// <summary>

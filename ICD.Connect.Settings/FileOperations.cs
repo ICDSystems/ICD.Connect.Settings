@@ -55,77 +55,13 @@ namespace ICD.Connect.Settings
 		#region Methods
 
 		/// <summary>
-		/// Applies the settings to the core.
-		/// </summary>
-		public static void ApplyCoreSettings<TCore, TSettings>(TCore core, TSettings settings)
-			where TSettings : class, ICoreSettings
-			where TCore : class, ICore
-		{
-			if (core == null)
-				throw new ArgumentNullException("core");
-
-			if (settings == null)
-				throw new ArgumentNullException("settings");
-
-			Logger.AddEntry(eSeverity.Notice, "Applying settings");
-
-			IDeviceFactory factory = new CoreDeviceFactory(settings);
-			core.ApplySettings(settings, factory);
-
-			Logger.AddEntry(eSeverity.Notice, "Finished applying settings");
-		}
-
-		/// <summary>
-		/// Serializes the settings to disk.
-		/// </summary>
-		/// <param name="settings"></param>
-		public static void SaveSettings(ICoreSettings settings)
-		{
-			if (settings == null)
-				throw new ArgumentNullException("settings");
-
-			SaveSettings(settings, true);
-		}
-
-		/// <summary>
-		/// Serializes the settings to disk.
-		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="backup"></param>
-		public static void SaveSettings(ICoreSettings settings, bool backup)
-		{
-			if (settings == null)
-				throw new ArgumentNullException("settings");
-
-			if (backup)
-				BackupSettings();
-
-			string path = SystemConfigPath;
-			string directory = IcdPath.GetDirectoryName(path);
-			IcdDirectory.CreateDirectory(directory);
-
-			Logger.AddEntry(eSeverity.Notice, "Saving settings to {0}", path);
-
-			using (IcdFileStream stream = IcdFile.Open(path, eIcdFileMode.Create))
-			{
-				using (IcdXmlTextWriter writer = new IcdXmlTextWriter(stream, new UTF8Encoding(false)))
-				{
-					writer.WriteStartDocument();
-					{
-						WriteSettingsWarning(writer);
-						settings.ToXml(writer, ROOT_ELEMENT);
-					}
-					writer.WriteEndDocument();
-				}
-			}
-
-			Logger.AddEntry(eSeverity.Notice, "Finished saving settings");
-		}
-
-		/// <summary>
 		/// Loads the settings from disk to the core.
 		/// </summary>
-		public static void LoadCoreSettings<TCore, TSettings>(TCore core)
+		/// <typeparam name="TCore"></typeparam>
+		/// <typeparam name="TSettings"></typeparam>
+		/// <param name="core"></param>
+		/// <param name="postApplyAction"></param>
+		public static void LoadCoreSettings<TCore, TSettings>(TCore core, Action postApplyAction)
 			where TSettings : class, ICoreSettings, new()
 			where TCore : class, ICore
 		{
@@ -195,7 +131,121 @@ namespace ICD.Connect.Settings
 			else
 				BackupSettings();
 
+			LoadCoreSettings(core, settings, postApplyAction);
+		}
+
+		/// <summary>
+		/// Loads the given settings to the core - applies and starts settings
+		/// </summary>
+		/// <typeparam name="TCore"></typeparam>
+		/// <typeparam name="TSettings"></typeparam>
+		/// <param name="core"></param>
+		/// <param name="settings"></param>
+		/// <param name="postApplyAction"></param>
+		public static void LoadCoreSettings<TCore, TSettings>(TCore core, TSettings settings,
+		                                                      [CanBeNull] Action postApplyAction)
+			where TSettings : class, ICoreSettings
+			where TCore : class, ICore
+		{
 			ApplyCoreSettings(core, settings);
+
+			try
+			{
+				if (postApplyAction != null)
+					postApplyAction();
+			}
+			catch (Exception e)
+			{
+				Logger.AddEntry(eSeverity.Error, e, "Exception in program post-apply action");
+			}
+
+			StartCoreSettings(core);
+		}
+
+		/// <summary>
+		/// Applies the settings to the core.
+		/// </summary>
+		public static void ApplyCoreSettings<TCore, TSettings>(TCore core, TSettings settings)
+			where TSettings : class, ICoreSettings
+			where TCore : class, ICore
+		{
+			if (core == null)
+				throw new ArgumentNullException("core");
+
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			Logger.AddEntry(eSeverity.Notice, "Applying settings");
+
+			IDeviceFactory factory = new CoreDeviceFactory(settings);
+			core.ApplySettings(settings, factory);
+
+			Logger.AddEntry(eSeverity.Notice, "Finished applying settings");
+		}
+
+		/// <summary>
+		/// Starts the settings on the core
+		/// </summary>
+		/// <typeparam name="TCore"></typeparam>
+		/// <param name="core"></param>
+		public static void StartCoreSettings<TCore>([NotNull] TCore core)
+			where TCore: class, ICore
+		{
+			if (core == null)
+				throw new ArgumentNullException("core");
+
+			Logger.AddEntry(eSeverity.Notice, "Starting Settings");
+
+			core.StartSettings();
+
+			Logger.AddEntry(eSeverity.Notice, "Finished starting settings");
+		}
+
+		/// <summary>
+		/// Serializes the settings to disk.
+		/// </summary>
+		/// <param name="settings"></param>
+		public static void SaveSettings(ICoreSettings settings)
+		{
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			SaveSettings(settings, true);
+		}
+
+		/// <summary>
+		/// Serializes the settings to disk.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="backup"></param>
+		public static void SaveSettings(ICoreSettings settings, bool backup)
+		{
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			if (backup)
+				BackupSettings();
+
+			string path = SystemConfigPath;
+			string directory = IcdPath.GetDirectoryName(path);
+			IcdDirectory.CreateDirectory(directory);
+
+			Logger.AddEntry(eSeverity.Notice, "Saving settings to {0}", path);
+
+			using (IcdFileStream stream = IcdFile.Open(path, eIcdFileMode.Create))
+			{
+				using (IcdXmlTextWriter writer = new IcdXmlTextWriter(stream, new UTF8Encoding(false)))
+				{
+					writer.WriteStartDocument();
+					{
+						WriteSettingsWarning(writer);
+						settings.ToXml(writer, ROOT_ELEMENT);
+					}
+					writer.WriteEndDocument();
+				}
+			}
+
+			Logger.AddEntry(eSeverity.Notice, "Finished saving settings");
 		}
 
 		#endregion

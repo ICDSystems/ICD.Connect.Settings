@@ -211,8 +211,7 @@ namespace ICD.Connect.Settings.SPlusShims
 			if (Originator == null)
 				return;
 
-			Originator.OnSettingsApplied += OriginatorOnSettingsApplied;
-			Originator.OnSettingsCleared += OriginatorOnSettingsCleared;
+			Originator.OnLifecycleStateChanged += OriginatorOnLifecycleStateChanged;
 			Originator.OnRequestShimResync += OriginatorOnRequestShimResync;
 		}
 
@@ -225,19 +224,21 @@ namespace ICD.Connect.Settings.SPlusShims
 			if (Originator == null)
 				return;
 
-			Originator.OnSettingsApplied -= OriginatorOnSettingsApplied;
-			Originator.OnSettingsCleared -= OriginatorOnSettingsCleared;
+			Originator.OnLifecycleStateChanged -= OriginatorOnLifecycleStateChanged;
 			Originator.OnRequestShimResync -= OriginatorOnRequestShimResync;
 		}
 
-		private void OriginatorOnSettingsApplied(object sender, EventArgs eventArgs)
+		private void OriginatorOnLifecycleStateChanged(object sender, LifecycleStateEventArgs args)
 		{
-			OnSettingsApplied.Raise(this);
-		}
-
-		private void OriginatorOnSettingsCleared(object sender, EventArgs eventArgs)
-		{
-			OnSettingsCleared.Raise(this);
+			switch (args.Data)
+			{
+				case eLifecycleState.Loaded:
+					OnSettingsApplied.Raise(this);
+					break;
+				case eLifecycleState.Cleared:
+					OnSettingsCleared.Raise(this);
+					break;
+			}
 		}
 
 		private void OriginatorOnRequestShimResync(object sender, EventArgs eventArgs)

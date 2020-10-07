@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Common.Properties;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.Settings.Originators;
 using ICD.Connect.Telemetry.Attributes;
@@ -53,7 +54,8 @@ namespace ICD.Connect.Settings.Cores
 		/// <summary>
 		/// Loads settings from disk and updates the Settings property.
 		/// </summary>
-		void LoadSettings();
+		/// <param name="postApplyAction">Action that gets called after settings are applicd, before they are started</param>
+		void LoadSettings([CanBeNull] Action postApplyAction);
 
 		#endregion
 	}

@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Originator names default to the type name
  - Config header CompiledOn element is serialized/deserialized as a DateTime
 
+## [10.1.0] - 2020-10-06
+### Changed
+ - Added LifecycleState property/event to IOriginator, and removed individual events
+
 ## [10.0.0] - 2020-03-20
 ### Added
  - Added validation methods to settings
