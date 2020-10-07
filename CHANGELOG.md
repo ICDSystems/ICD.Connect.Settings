@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Removed
+ - Removed redundant telemetry property for system online state - it's now handled by the telemetry provider
+
 ## [11.1.0] - 2020-07-14
 ### Changed
  - Reverted IdUtils for consistency with DAV
