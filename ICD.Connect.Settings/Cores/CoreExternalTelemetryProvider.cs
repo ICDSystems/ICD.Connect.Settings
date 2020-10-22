@@ -112,7 +112,7 @@ namespace ICD.Connect.Settings.Cores
 			if (parent == null)
 				return;
 
-			parent.Originators.OnChildrenChanged += OriginatorsOnChildrenChanged;
+			parent.Originators.OnCollectionChanged += OriginatorsOnCollectionChanged;
 		}
 
 		/// <summary>
@@ -126,7 +126,7 @@ namespace ICD.Connect.Settings.Cores
 			if (parent == null)
 				return;
 
-			parent.Originators.OnChildrenChanged -= OriginatorsOnChildrenChanged;
+			parent.Originators.OnCollectionChanged -= OriginatorsOnCollectionChanged;
 		}
 
 		/// <summary>
@@ -134,7 +134,7 @@ namespace ICD.Connect.Settings.Cores
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		private void OriginatorsOnChildrenChanged(object sender, EventArgs eventArgs)
+		private void OriginatorsOnCollectionChanged(object sender, EventArgs eventArgs)
 		{
 			UpdateOriginatorIds();
 		}

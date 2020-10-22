@@ -1,21 +1,13 @@
 using System;
 using System.Collections.Generic;
 using ICD.Common.Properties;
-using ICD.Common.Utils.EventArguments;
+using ICD.Common.Utils.Collections;
 
 namespace ICD.Connect.Settings.Originators
 {
-	public interface IOriginatorCollection<TChild> : IEnumerable<TChild>
+	public interface IOriginatorCollection<TChild> : IEnumerable<TChild>, INotifyCollectionChanged
 		where TChild : class, IOriginator
 	{
-		/// <summary>
-		/// Raised when children are added/removed to/from the collection.
-		/// </summary>
-		event EventHandler OnChildrenChanged;
-
-		event EventHandler<GenericEventArgs<IOriginator>> OnOriginatorAdded;
-		event EventHandler<GenericEventArgs<IOriginator>> OnOriginatorRemoved; 
-
 		/// <summary>
 		/// Gets the number of children in this collection.
 		/// </summary>
