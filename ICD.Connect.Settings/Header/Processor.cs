@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 
@@ -16,7 +15,7 @@ namespace ICD.Connect.Settings.Header
 
 		public string Model { get; set; }
 
-		public Version Firmware { get; set; }
+		public string Firmware { get; set; }
 
 		public string NetworkAddress { get; set; }
 
@@ -57,7 +56,7 @@ namespace ICD.Connect.Settings.Header
 		public void Clear()
 		{
 			Model = string.Empty;
-			Firmware = new Version(0, 0);
+			Firmware = string.Empty;
 			NetworkAddress = string.Empty;
 			MacAddress = string.Empty;
 		}
@@ -72,7 +71,7 @@ namespace ICD.Connect.Settings.Header
 			writer.WriteStartElement(element);
 			{
 				writer.WriteElementString(MODEL_ELEMENT, Model);
-				writer.WriteElementString(FIRMWARE_ELEMENT, Firmware.ToString());
+				writer.WriteElementString(FIRMWARE_ELEMENT, Firmware);
 				writer.WriteElementString(NETWORK_ADDRESS_ELEMENT, NetworkAddress);
 				writer.WriteElementString(MAC_ADDRESS_ELEMENT, MacAddress);
 			}
@@ -84,7 +83,7 @@ namespace ICD.Connect.Settings.Header
 			Clear();
 
 			Model = XmlUtils.TryReadChildElementContentAsString(xml, MODEL_ELEMENT) ?? string.Empty;
-			Firmware = new Version(XmlUtils.TryReadChildElementContentAsString(xml, FIRMWARE_ELEMENT) ?? "0.0.0.0");
+			Firmware = XmlUtils.TryReadChildElementContentAsString(xml, FIRMWARE_ELEMENT) ?? string.Empty;
 			NetworkAddress = XmlUtils.TryReadChildElementContentAsString(xml, NETWORK_ADDRESS_ELEMENT);
 			MacAddress = XmlUtils.TryReadChildElementContentAsString(xml, MAC_ADDRESS_ELEMENT);
 		}

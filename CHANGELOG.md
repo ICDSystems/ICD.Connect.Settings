@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
  - ISPlusOriginatorShim now works with any IOriginator
  - Fixed AbstractSPlusOriginatorShim delegates to be namespace level to work with S+
+ - Changed Processor Header firmware to be a string instead of Version
  
 ### Removed
  - Removed ISimplOriginator
