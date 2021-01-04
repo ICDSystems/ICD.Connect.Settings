@@ -12,6 +12,8 @@ namespace ICD.Connect.Settings.ORM
 		RoomData,
 		UserPreferences,
 		UserData,
+		ProgramPreferences,
+		ProgramData
 	}
 
 	public static class Persistent

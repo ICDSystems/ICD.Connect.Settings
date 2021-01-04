@@ -120,12 +120,17 @@ namespace ICD.Connect.Settings.ORM
 
 		/// <summary>
 		/// Builds a path to the .sqlite file for the given category and key.
+		///
 		///		E.g.
 		///			eDb.RoomPreferences for room ID "1001"
 		///			returns "../USER/ProgramXXData/Room1001Data/RoomPreferences.sqlite"
 		/// 
 		///			eDb.UserData for user named "Chris Cameron"
 		///			returns "../USER/ProgramXXData/UserChrisCameronData/UserData.sqlite"
+		///
+		///			eDb.ProgramData
+		///			returns "../USER/ProgramXXData/ProgramData.sqlite"
+		///
 		/// </summary>
 		/// <param name="category"></param>
 		/// <param name="key"></param>
@@ -141,6 +146,12 @@ namespace ICD.Connect.Settings.ORM
 				case eDb.UserPreferences:
 				case eDb.UserData:
 					return PathUtils.GetUserDataPath(key, category + ".sqlite");
+
+				case eDb.ProgramPreferences:
+				case eDb.ProgramData:
+					if (key != null)
+						throw new ArgumentException("ProgramData does not take a key", key);
+					return PathUtils.GetProgramDataPath(category + ".sqlite");
 
 				default:
 					throw new ArgumentOutOfRangeException("category");
