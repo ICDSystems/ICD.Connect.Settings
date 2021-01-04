@@ -41,6 +41,22 @@ namespace ICD.Connect.Settings.ORM
 		#region Methods
 
 		/// <summary>
+		/// A wrapper that uses the internally cached connection.
+		/// </summary>
+		public IEnumerable<T> Query<T>(string sql)
+		{
+			return m_Database.Query<T>(sql);
+		}
+
+		/// <summary>
+		/// A wrapper that uses the internally cached connection.
+		/// </summary>
+		public IEnumerable<T> Query<T>(string sql, object param)
+		{
+			return m_Database.Query<T>(sql, param);
+		}
+
+		/// <summary>
 		/// Gets the first or default item matching the given parameters.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
