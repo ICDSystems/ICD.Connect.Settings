@@ -49,6 +49,7 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// </summary>
 		public IEnumerable<T> Query<T>(string sql, object param)
 		{
+			LazyLoadTable(null, typeof(T));
 			return GetConnection().Query(sql, typeof(T), param).Cast<T>();
 		}
 
@@ -147,10 +148,6 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// <param name="name"></param>
 		protected abstract bool TableExists(IDbTransaction transaction, string name);
 
-		#endregion
-
-		#region Private Methods
-
 		/// <summary>
 		/// Checks to see if a table exists for the given type.
 		/// Creates the table and tables for foreign objects recursively if not.
@@ -158,7 +155,7 @@ namespace ICD.Connect.Settings.ORM.Databases
 		/// </summary>
 		/// <param name="transaction"></param>
 		/// <param name="type"></param>
-		private void LazyLoadTable(IDbTransaction transaction, Type type)
+		protected virtual void LazyLoadTable(IDbTransaction transaction, Type type)
 		{
 			string tableName = TypeModel.Get(type).TableName;
 
@@ -174,6 +171,10 @@ namespace ICD.Connect.Settings.ORM.Databases
 				m_TableNames.Add(tableName);
 			}
 		}
+
+		#endregion
+
+		#region Private Methods
 
 		/// <summary>
 		/// Loops over the foreign children in the Type and creates tables recursively.

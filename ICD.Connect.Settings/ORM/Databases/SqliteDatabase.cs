@@ -40,6 +40,22 @@ namespace ICD.Connect.Settings.ORM.Databases
 		}
 
 		/// <summary>
+		/// Checks to see if a table exists for the given type.
+		/// Creates the table and tables for foreign objects recursively if not.
+		/// Performs validation to ensure the tables match the given Type.
+		/// </summary>
+		/// <param name="transaction"></param>
+		/// <param name="type"></param>
+		protected override void LazyLoadTable(IDbTransaction transaction, Type type)
+		{
+			// Skip validation of SQLite info tables
+			if (type == typeof(SqliteColumnInfo))
+				return;
+
+			base.LazyLoadTable(transaction, type);
+		}
+
+		/// <summary>
 		/// Throws an exception if the table columns do not match the type properties.
 		/// </summary>
 		/// <param name="type"></param>
