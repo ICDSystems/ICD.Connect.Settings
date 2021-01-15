@@ -4,5 +4,5 @@
 [assembly: AssemblyCompany("ICD Systems")]
 [assembly: AssemblyProduct("ICD.Connect.Settings.CrestronSPlus")]
 [assembly: AssemblyCopyright("Copyright © ICD Systems 2021")]
-[assembly: AssemblyVersion("11.1.0.0")]
+[assembly: AssemblyVersion("12.0.0.0")]
 
