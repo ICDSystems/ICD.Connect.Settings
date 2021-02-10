@@ -29,7 +29,8 @@ namespace ICD.Connect.Settings.Utils
 		{
 			".CPZ",
 			".CLZ",
-			".CPLZ"
+			".CPLZ",
+			".KPZ"
 		};
 
 		private static readonly string[] s_LibDirectories;
