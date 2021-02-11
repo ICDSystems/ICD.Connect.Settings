@@ -132,6 +132,9 @@ namespace ICD.Connect.Settings.Utils
 		{
 			try
 			{
+#if STANDARD
+				IcdFile.SetAttributes(path, FileAttributes.Normal, true);
+#endif
 				IcdDirectory.Delete(path, true);
 				Logger.Log(eSeverity.Informational, "Removed old plugin {0}", path);
 			}
@@ -175,6 +178,9 @@ namespace ICD.Connect.Settings.Utils
 				}
 
 				// Delete the archive so we don't waste time extracting on next load
+#if STANDARD
+				IcdFile.SetAttributes(path, FileAttributes.Normal, true);
+#endif
 				IcdFile.Delete(path);
 			}
 		}
