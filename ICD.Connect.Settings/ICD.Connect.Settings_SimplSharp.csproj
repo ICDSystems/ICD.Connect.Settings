@@ -86,6 +86,7 @@
     <Compile Include="Attributes\SettingsProperties\ISettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\OriginatorIdSettingsPropertyAttribute.cs" />
     <Compile Include="Attributes\SettingsProperties\PathSettingsPropertyAttribute.cs" />
+    <Compile Include="Cores\CoreConsole.cs" />
     <Compile Include="Cores\CoreExternalTelemetryProvider.cs" />
     <Compile Include="Cores\ICoreSettings.cs" />
     <Compile Include="Groups\GroupConsole.cs" />
