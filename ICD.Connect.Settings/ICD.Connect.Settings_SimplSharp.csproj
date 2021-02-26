@@ -96,6 +96,8 @@
     <Compile Include="Groups\IGroup.cs" />
     <Compile Include="Groups\IGroupSettings.cs" />
     <Compile Include="IDeviceFactory.cs" />
+    <Compile Include="Organizations\OrganizationSettings.cs" />
+    <Compile Include="Organizations\Organization.cs" />
     <Compile Include="ORM\Attributes.cs" />
     <Compile Include="ORM\Databases\AbstractDatabase.cs" />
     <Compile Include="ORM\Databases\SqliteDatabase.cs" />

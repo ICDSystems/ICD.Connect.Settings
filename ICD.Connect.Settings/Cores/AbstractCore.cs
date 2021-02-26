@@ -1,5 +1,5 @@
 using System;
-using ICD.Common.Properties;
+using ICD.Connect.Settings.Organizations;
 using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Settings.Cores
@@ -7,6 +7,7 @@ namespace ICD.Connect.Settings.Cores
 	public abstract class AbstractCore<TSettings> : AbstractOriginator<TSettings>, ICore
 		where TSettings : class, ICoreSettings, new()
 	{
+		private readonly Organization m_Organization;
 		private readonly CoreOriginatorCollection m_Originators;
 		private readonly Localization.Localization m_Localization;
 
@@ -16,6 +17,11 @@ namespace ICD.Connect.Settings.Cores
 		/// Gets the category for this originator type (e.g. Device, Port, etc)
 		/// </summary>
 		public override string Category { get { return "Core"; } }
+
+		/// <summary>
+		/// Gets/sets the organization info.
+		/// </summary>
+		public Organization Organization { get { return m_Organization; } }
 
 		/// <summary>
 		/// Gets the originators contained in the core.
@@ -39,10 +45,11 @@ namespace ICD.Connect.Settings.Cores
 		/// </summary>
 		protected AbstractCore()
 		{
-			CoreStartTime = DateTime.UtcNow;
+			m_Organization = new Organization();
 			m_Originators = new CoreOriginatorCollection();
-
 			m_Localization = new Localization.Localization();
+
+			CoreStartTime = DateTime.UtcNow;
 		}
 
 		#region Settings
@@ -73,6 +80,7 @@ namespace ICD.Connect.Settings.Cores
 		{
 			base.CopySettingsFinal(settings);
 
+			Organization.CopySettings(settings.OrganizationSettings);
 			Localization.CopySettings(settings.LocalizationSettings);
 		}
 
@@ -83,6 +91,7 @@ namespace ICD.Connect.Settings.Cores
 		{
 			base.ClearSettingsFinal();
 
+			Organization.ClearSettings();
 			Localization.ClearSettings();
 		}
 
@@ -108,7 +117,7 @@ namespace ICD.Connect.Settings.Cores
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			// Setup localization first
+			Organization.ApplySettings(settings.OrganizationSettings);
 			Localization.ApplySettings(settings.LocalizationSettings);
 		}
 

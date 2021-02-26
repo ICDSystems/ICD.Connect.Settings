@@ -6,6 +6,7 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Header;
 using ICD.Connect.Settings.Localization;
+using ICD.Connect.Settings.Organizations;
 using ICD.Connect.Settings.Validation;
 
 namespace ICD.Connect.Settings.Cores
@@ -13,9 +14,11 @@ namespace ICD.Connect.Settings.Cores
 	public abstract class AbstractCoreSettings : AbstractSettings, ICoreSettings
 	{
 		private const string HEADER_ELEMENT = "Header";
+		private const string ORGANIZATION_ELEMENT = "Organization";
 		private const string LOCALIZATION_ELEMENT = "Localization";
 
 		private readonly ConfigurationHeader m_Header;
+		private readonly OrganizationSettings m_OrganizationSettings;
 		private readonly LocalizationSettings m_LocalizationSettings;
 		private readonly SettingsCollection m_OriginatorSettings;
 
@@ -25,6 +28,11 @@ namespace ICD.Connect.Settings.Cores
 		/// Gets the header info.
 		/// </summary>
 		public ConfigurationHeader Header { get { return m_Header; } }
+
+		/// <summary>
+		/// Gets the organization settings.
+		/// </summary>
+		public OrganizationSettings OrganizationSettings { get { return m_OrganizationSettings; } }
 
 		/// <summary>
 		/// Gets the localization configuration.
@@ -44,6 +52,7 @@ namespace ICD.Connect.Settings.Cores
 		protected AbstractCoreSettings()
 		{
 			m_Header = new ConfigurationHeader();
+			m_OrganizationSettings = new OrganizationSettings();
 			m_LocalizationSettings = new LocalizationSettings();
 			m_OriginatorSettings = new SettingsCollection();
 
@@ -104,24 +113,6 @@ namespace ICD.Connect.Settings.Cores
 			return base.Validate(coreSettings);
 		}
 
-		private void UpdateHeaderFromXml(ConfigurationHeader header, string xml)
-		{
-			header.Clear();
-
-			string child;
-			if (XmlUtils.TryGetChildElementAsString(xml, HEADER_ELEMENT, out child))
-				header.ParseXml(child);
-		}
-
-		private void UpdateLocalizationSettingsFromXml(string xml)
-		{
-			m_LocalizationSettings.Clear();
-
-			string child;
-			if (XmlUtils.TryGetChildElementAsString(xml, LOCALIZATION_ELEMENT, out child))
-				m_LocalizationSettings.ParseXml(child);
-		}
-
 		/// <summary>
 		/// Called when device settings are removed. We remove any settings that depend on the device.
 		/// </summary>
@@ -160,6 +151,7 @@ namespace ICD.Connect.Settings.Cores
 
 			new ConfigurationHeader(true).ToXml(writer, HEADER_ELEMENT);
 
+			OrganizationSettings.ToXml(writer, ORGANIZATION_ELEMENT);
 			LocalizationSettings.ToXml(writer, LOCALIZATION_ELEMENT);
 		}
 
@@ -172,7 +164,35 @@ namespace ICD.Connect.Settings.Cores
 			base.ParseXml(xml);
 
 			UpdateHeaderFromXml(m_Header, xml);
-			UpdateLocalizationSettingsFromXml(xml);
+			UpdateOrganizationSettingsFromXml(m_OrganizationSettings, xml);
+			UpdateLocalizationSettingsFromXml(m_LocalizationSettings, xml);
+		}
+
+		private static void UpdateHeaderFromXml(ConfigurationHeader header, string xml)
+		{
+			header.Clear();
+
+			string child;
+			if (XmlUtils.TryGetChildElementAsString(xml, HEADER_ELEMENT, out child))
+				header.ParseXml(child);
+		}
+
+		private static void UpdateOrganizationSettingsFromXml(OrganizationSettings settings, string xml)
+		{
+			settings.Clear();
+
+			string child;
+			if (XmlUtils.TryGetChildElementAsString(xml, ORGANIZATION_ELEMENT, out child))
+				settings.ParseXml(child);
+		}
+
+		private static void UpdateLocalizationSettingsFromXml(LocalizationSettings settings, string xml)
+		{
+			settings.Clear();
+
+			string child;
+			if (XmlUtils.TryGetChildElementAsString(xml, LOCALIZATION_ELEMENT, out child))
+				settings.ParseXml(child);
 		}
 
 		#endregion

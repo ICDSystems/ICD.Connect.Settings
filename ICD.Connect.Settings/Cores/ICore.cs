@@ -1,6 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Connect.API.Attributes;
+using ICD.Connect.Settings.Organizations;
 using ICD.Connect.Settings.Originators;
 using ICD.Connect.Telemetry.Attributes;
 
@@ -11,6 +12,12 @@ namespace ICD.Connect.Settings.Cores
 	public interface ICore : IOriginator
 	{
 		#region Properties
+
+		/// <summary>
+		/// Gets/sets the organization info.
+		/// </summary>
+		[NodeTelemetry("Organization")]
+		Organization Organization { get; }
 
 		/// <summary>
 		/// Gets the stored originators.

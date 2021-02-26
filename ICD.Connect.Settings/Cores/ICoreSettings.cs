@@ -1,12 +1,18 @@
 ﻿using System.Collections.Generic;
 using ICD.Connect.Settings.Header;
 using ICD.Connect.Settings.Localization;
+using ICD.Connect.Settings.Organizations;
 using ICD.Connect.Settings.Validation;
 
 namespace ICD.Connect.Settings.Cores
 {
 	public interface ICoreSettings : ISettings
 	{
+		/// <summary>
+		/// Gets the organization settings.
+		/// </summary>
+		OrganizationSettings OrganizationSettings { get; }
+
 		/// <summary>
 		/// Gets the header info.
 		/// </summary>

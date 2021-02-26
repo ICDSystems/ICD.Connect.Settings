@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+ - Added organization settings to the system configuration
+
 ## [12.0.0] - 2021-01-14
 ### Added
  - Added Query methods to the persistant database
