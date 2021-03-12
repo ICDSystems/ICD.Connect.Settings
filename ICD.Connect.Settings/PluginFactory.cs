@@ -5,6 +5,7 @@ using ICD.Connect.Settings.Utils;
 using Crestron.SimplSharp.Reflection;
 #else
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 #endif
 using System;
 using System.Collections.Generic;
@@ -176,9 +177,12 @@ namespace ICD.Connect.Settings
 			}
 			catch (TargetInvocationException e)
 			{
-				if (e.InnerException != null)
-					throw e.InnerException;
+#if SIMPLSHARP
+				throw e.InnerException ?? e;
+#else
+				ExceptionDispatchInfo.Capture(e.InnerException ?? e).Throw();
 				throw;
+#endif
 			}
 		}
 
