@@ -19,7 +19,7 @@ namespace ICD.Connect.Settings
 		public event EventHandler<GenericEventArgs<ISettings>> OnItemAdded;
 		public event EventHandler<GenericEventArgs<ISettings>> OnItemRemoved;
 
-		private readonly IcdOrderedDictionary<int, ISettings> m_Collection;
+		private readonly IcdSortedDictionary<int, ISettings> m_Collection;
 		private readonly SafeCriticalSection m_CollectionSection;
 
 		#region Properties
@@ -52,7 +52,7 @@ namespace ICD.Connect.Settings
 			if (settings == null)
 				throw new ArgumentNullException("settings");
 
-			m_Collection = new IcdOrderedDictionary<int, ISettings>();
+			m_Collection = new IcdSortedDictionary<int, ISettings>();
 			m_CollectionSection = new SafeCriticalSection();
 
 			AddRange(settings);

@@ -19,7 +19,7 @@ namespace ICD.Connect.Settings.Originators
 		public event EventHandler OnCollectionChanged;
 
 		private readonly Dictionary<Type, List<TChild>> m_TypeToChildren;
-		private readonly IcdOrderedDictionary<int, TChild> m_Children;
+		private readonly IcdSortedDictionary<int, TChild> m_Children;
 		private readonly SafeCriticalSection m_ChildrenSection;
 		private readonly PredicateComparer<TChild, int> m_ChildIdComparer;
 
@@ -54,7 +54,7 @@ namespace ICD.Connect.Settings.Originators
 		protected AbstractOriginatorCollection(IEnumerable<TChild> children)
 		{
 			m_TypeToChildren = new Dictionary<Type, List<TChild>>();
-			m_Children = new IcdOrderedDictionary<int, TChild>();
+			m_Children = new IcdSortedDictionary<int, TChild>();
 			m_ChildrenSection = new SafeCriticalSection();
 			m_ChildIdComparer = new PredicateComparer<TChild, int>(c => c.Id);
 

@@ -16,7 +16,7 @@ namespace ICD.Connect.Settings.ORM
 	{
 		private static readonly Dictionary<Type, TypeModel> s_TypeModels;
 
-		private readonly IcdOrderedDictionary<string, PropertyModel> m_Props;
+		private readonly IcdSortedDictionary<string, PropertyModel> m_Props;
 		private readonly Type m_Type;
 
 		private PropertyModel m_PrimaryKey;
@@ -73,7 +73,7 @@ namespace ICD.Connect.Settings.ORM
 				throw new ArgumentNullException("type");
 
 			m_Type = type;
-			m_Props = new IcdOrderedDictionary<string, PropertyModel>(new ColumnComparer(this));
+			m_Props = new IcdSortedDictionary<string, PropertyModel>(new ColumnComparer(this));
 
 			if (m_Type.IsAnonymous())
 				PopulateAnonymous(m_Type);
