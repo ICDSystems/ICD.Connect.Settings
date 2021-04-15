@@ -1375,11 +1375,11 @@ namespace ICD.Connect.Settings.Tests.Migration.Migrators
   </Rooms>
   <Partitioning id=""300"" type=""PartitionManager"">
     <Cells>
-      <Cell id=""800000"" type=""Cell"">
+      <Cell id=""110000000"" type=""Cell"">
         <Name>Cell 1</Name>
         <Room>1000</Room>
       </Cell>
-      <Cell id=""800002"" type=""Cell"">
+      <Cell id=""110000001"" type=""Cell"">
         <Name>Cell 2</Name>
         <Room>2000</Room>
       </Cell>
@@ -1397,8 +1397,8 @@ namespace ICD.Connect.Settings.Tests.Migration.Migrators
             <Control>0</Control>
           </PartitionControl>
         </PartitionControls>
-        <Cell1>800000</Cell1>
-        <Cell2>800002</Cell2>
+        <CellA>110000000</CellA>
+        <CellB>110000001</CellB>
       </Partition>
     </Partitions>
   </Partitioning>

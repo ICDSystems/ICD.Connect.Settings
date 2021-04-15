@@ -410,7 +410,7 @@ Any invalid data, whitespace, and comments will be deleted the next time this is
         <Config>DialingPlan.xml</Config>
       </DialingPlan>
       <VolumePoints>
-        <VolumePoint>9</VolumePoint>
+        <VolumePoint>90000000</VolumePoint>
       </VolumePoints>
       <DisplayRelays />
       <CombinePriority>0</CombinePriority>
@@ -535,7 +535,7 @@ Any invalid data, whitespace, and comments will be deleted the next time this is
     <Partitions />
   </Partitioning>
   <VolumePoints>
-    <VolumePoint id=""9"" type=""MetlifeVolumePoint"">
+    <VolumePoint id=""90000000"" type=""MetlifeVolumePoint"">
       <Device>201007</Device>
       <Control>2</Control>
       <VolumeType>Program</VolumeType>
