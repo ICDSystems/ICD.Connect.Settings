@@ -227,13 +227,13 @@ namespace ICD.Connect.Settings.Utils
 		/// <returns></returns>
 		private static IEnumerable<string> GetLibAssemblyPaths()
 		{
-			return s_LibDirectories.Where(p => IcdDirectory.Exists(p))
+			return s_LibDirectories.Where(IcdDirectory.Exists)
 			                       .SelectMany(d => GetLibAssemblyPaths(d));
 		}
 
 		private static IEnumerable<string> GetLibAssemblyPaths(string root)
 		{
-			return RecursionUtils.BreadthFirstSearch(root, p => IcdDirectory.GetDirectories(p))
+			return RecursionUtils.BreadthFirstSearch(root, IcdDirectory.GetDirectories)
 			                     .SelectMany(p => IcdDirectory.GetFiles(p, "*.dll"));
 		}
 
