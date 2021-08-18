@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [12.1.1] - 2021-08-18
+### Changed
+ - Minor tidying
+
 ## [12.1.0] - 2021-05-14
 ### Added
  - Added organization settings to the system configuration
