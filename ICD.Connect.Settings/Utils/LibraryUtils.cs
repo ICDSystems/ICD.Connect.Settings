@@ -162,7 +162,7 @@ namespace ICD.Connect.Settings.Utils
 					}
 					catch (Exception e)
 					{
-						Logger.Log(eSeverity.Warning, "Failed to extract archive {0} - {1}", path, e.Message);
+						Logger.Log(eSeverity.Error, "Failed to extract archive {0} - {1}", path, e.Message);
 						continue;
 					}
 
