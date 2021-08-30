@@ -233,7 +233,7 @@ namespace ICD.Connect.Settings
 				                .Where(t => t.IsClass && !t.IsAbstract && t.IsAssignableTo<ISettings>())
 				                .ToArray();
 			}
-#if STANDARD
+#if !SIMPLSHARP
 			catch (ReflectionTypeLoadException e)
 			{
 				foreach (Exception inner in e.LoaderExceptions)

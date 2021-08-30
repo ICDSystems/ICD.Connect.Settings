@@ -132,7 +132,7 @@ namespace ICD.Connect.Settings.Utils
 		{
 			try
 			{
-#if STANDARD
+#if !SIMPLSHARP
 				IcdFile.SetAttributes(path, FileAttributes.Normal, true);
 #endif
 				IcdDirectory.Delete(path, true);
@@ -178,7 +178,7 @@ namespace ICD.Connect.Settings.Utils
 				}
 
 				// Delete the archive so we don't waste time extracting on next load
-#if STANDARD
+#if !SIMPLSHARP
 				IcdFile.SetAttributes(path, FileAttributes.Normal, true);
 #endif
 				IcdFile.Delete(path);
@@ -210,7 +210,7 @@ namespace ICD.Connect.Settings.Utils
 		/// <returns></returns>
 		private static IEnumerable<string> GetAssemblyPaths()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return GetLibAssemblyPaths();
 #else
 			return GetBuildAssemblyPaths().Concat(GetLibAssemblyPaths());
