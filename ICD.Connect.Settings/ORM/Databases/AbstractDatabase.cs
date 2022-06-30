@@ -4,7 +4,7 @@ using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharp.CrestronData;
 #else
 using System.Data;

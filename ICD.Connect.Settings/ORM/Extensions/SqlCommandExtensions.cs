@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharp.CrestronData;
 #else
 using System.Data;
@@ -34,7 +34,7 @@ namespace ICD.Connect.Settings.ORM.Extensions
 					p.Value = value;
 				}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 				// Hack - Crestron's Add(object) method doesn't do the necessary cast
 				cmd.Parameters.Add(p.InnerObject);
 #else

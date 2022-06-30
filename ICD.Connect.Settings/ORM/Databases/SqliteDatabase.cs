@@ -1,4 +1,4 @@
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharp.CrestronData;
 using Crestron.SimplSharp.SQLite;
 #else
