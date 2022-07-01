@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [12.1.2] - 2022-07-01
 ### Changed
+ - Using Crestron SQLite for 4-series instead of System
+ - Plugin load exceptions logged as errors instead of warnings
  - Updated Dependencies, Updated Crestron SDK to 2.18.96
 
 ## [12.1.1] - 2021-08-18
