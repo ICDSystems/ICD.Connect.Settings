@@ -142,12 +142,32 @@ namespace ICD.Connect.Settings.Cores
 			try
 			{
 				// Instantiate the originator
-				output = (T)ReflectionUtils.CreateInstance(originatorType);
+
+				try
+				{
+					output = (T)ReflectionUtils.CreateInstance(originatorType);
+				}
+				catch (Exception e)
+				{
+					throw new TypeLoadException(
+						string.Format("Exception loading originator factory:{0} type:{1} id:{2} - {3}",
+							settings.FactoryName, originatorType, id, e.Message));
+				}
 
 				// This instance came from settings, so we want to store it back to settings.
 				output.Serialize = true;
-				output.ApplySettings(settings, this);
+
+				try
+				{
+					output.ApplySettings(settings, this);
+				}
+				catch (Exception e)
+				{
+					throw new InvalidOperationException(
+						string.Format("Exception loading settings  on originator id:{0} - {1}", id, e.Message));
+				}
 			}
+			
 			finally
 			{
 				PopDependency(id);
