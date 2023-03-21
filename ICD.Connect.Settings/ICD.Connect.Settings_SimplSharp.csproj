@@ -143,7 +143,6 @@
     <Compile Include="FileOperations.cs" />
     <Compile Include="Utils\IdUtils.cs" />
     <Compile Include="Originators\IOriginatorCollection.cs" />
-    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Proxies\AbstractProxySettings.cs" />
     <Compile Include="Proxies\IProxyOriginator.cs" />
     <Compile Include="Utils\LibraryUtils.cs" />
