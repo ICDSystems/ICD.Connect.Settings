@@ -4,4 +4,4 @@ using System.Reflection;
 [assembly: AssemblyCompany("ICD Systems")]
 [assembly: AssemblyProduct("ICD.Connect.Settings")]
 [assembly: AssemblyCopyright("Copyright © ICD Systems 2023")]
-[assembly: AssemblyVersion("12.1.3.0")]
+[assembly: AssemblyVersion("12.1.4.0")]
